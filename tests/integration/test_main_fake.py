@@ -102,3 +102,28 @@ async def test_manifest_records_the_commit_at_start(tmp_settings, fake_responder
     monkeypatch.setattr(main_mod, "git_commit", lambda: "commit-later")
     res = await drive(state, deps)
     assert json.loads(Path(res.run_dir, "manifest.json").read_text())["git_commit"] == "commit-at-start"
+
+
+async def test_strict_policy_holds_back_medium_confidence(tmp_settings, fake_responders):
+    from app.testing.fake_llm import register_responders
+    from app.testing.responders import fake_matcher
+
+    def half_sure(prompt, req):
+        out = json.loads(fake_matcher(prompt, req))
+        for d in out["decisions"][::2]:
+            d["confidence"] = "medium"
+        return json.dumps(out)
+
+    register_responders({"requirement_matcher": half_sure})
+    try:
+        strict = await run_case(REAR_LAMP, markets=[], mode="benchmark", settings=tmp_settings, run_dir=None)
+        recall = await run_case(REAR_LAMP, markets=[], mode="benchmark",
+                                settings=dataclasses.replace(tmp_settings, submit_policy="recall"), run_dir=None)
+    finally:
+        register_responders({"requirement_matcher": fake_matcher})
+    from app.pipeline.state import RunState
+
+    s, r = RunState.load(Path(strict.run_dir)), RunState.load(Path(recall.run_dir))
+    assert s.requirements and s.held_back and all(q.state == "applicable" for q in s.requirements)
+    assert len(r.requirements) == len(s.requirements) + len(s.held_back) and not r.held_back
+    assert strict.validation_problems == [] and "held back" in Path(strict.run_dir, "report.md").read_text()

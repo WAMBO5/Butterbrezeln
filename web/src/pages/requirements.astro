@@ -102,7 +102,7 @@ import Base from "../layouts/Base.astro";
     }
   }
 
-  function row(r: Requirement) {
+  function row(r: Requirement, submitted = true) {
     const test = r.test_case ? h("details", {}, h("summary", {}, "How to test"), h("p", {}, r.test_case)) : null;
     return h("article", { class: "req" },
       h("div", { class: "rid" }, r.id),
@@ -110,7 +110,7 @@ import Base from "../layouts/Base.astro";
       h("div", { class: "chips" }, chip(r.state, r.reason), chip(r.evidence_status)),
       h("div", { class: "meta" },
         h("button", { class: "linklike", type: "button", onclick: () => showSource(r) }, citation(r.source.regulation, r.source.page, r.source.paragraph)),
-        h("button", { class: "linklike", type: "button", onclick: () => showLineage(r) }, "Why is this here?"),
+        submitted ? h("button", { class: "linklike", type: "button", onclick: () => showLineage(r) }, "Why is this here?") : null,
         h("span", { class: "ai-tag" }, "AI-drafted"), test));
   }
 
@@ -134,12 +134,17 @@ import Base from "../layouts/Base.astro";
     }
     const list = $("#list");
     if (!groups.length) return message(list, run.requirements.length ? "No requirement matches these filters." : "This run has no requirements yet.");
-    list.replaceChildren(...groups.map((g) => {
+    const held = run.held_back.filter((r) => (!q || r.text.toLowerCase().includes(q)) && (!reg || r.source.regulation === reg));
+    const heldSection = held.length ? h("details", { class: "req-group sheet" },
+      h("summary", {}, `${held.length} held back: uncertain, not in the submission`),
+      h("p", { class: "quiet" }, "The matcher was not sure these bind the product as described, or a reviewer disputed them. Open one to check it against the regulation."),
+      ...held.map((r) => row(r, false))) : null;
+    list.replaceChildren(heldSection ?? "", ...groups.map((g) => {
       const byReg = new Map<string, Requirement[]>();
       for (const r of g.items) byReg.set(r.source.regulation, [...(byReg.get(r.source.regulation) ?? []), r]);
       return h("section", { class: "req-group" }, h("h2", {}, g.title), h("p", { class: "quiet" }, `${g.items.length} requirements. ${g.note}`),
         ...[...byReg.entries()].map(([name, items]) => h("div", { class: "reg-block" },
-          h("h3", {}, name, h("span", { class: "quiet" }, `${items.length}`)), ...items.map(row))));
+          h("h3", {}, name, h("span", { class: "quiet" }, `${items.length}`)), ...items.map((r) => row(r)))));
     }));
   }
 

@@ -205,7 +205,7 @@ async def step_match(rc: RunContext) -> None:
 
 def _gate(rc: RunContext, dropped: set[str]):
     decisions = [d for d in rc.state.decisions if d.obligation_id not in dropped]
-    reqs = assemble(decisions, rc.state.obligations, rc.deps.store, rc.settings.include_uncertain)
+    reqs = assemble(decisions, rc.state.obligations, rc.deps.store, rc.settings.submit_uncertain)
     ctx = OutputContext(store=rc.deps.store, versions=rc.deps.versions, profile=rc.state.profile,
                         plan=rc.state.plan, obligations=rc.state.obligations, decisions=decisions,
                         human_actions=rc.state.human_actions)
@@ -239,14 +239,26 @@ async def step_assemble(rc: RunContext) -> None:
             issues = issues + issues2
     rc.state.requirements, rc.state.lineage = apply_requirement_pins(kept, lineages, rc.state.human_actions)
     rc.state.output_issues = issues
+    rc.state.held_back = held_back(rc, dropped)
     rc.ledger.append("note", "orchestrator", None, assembly_snapshot(rc.state, rc.settings, dropped),
                      {"step": "assemble", "snapshot": True})
+
+
+def held_back(rc: RunContext, dropped: set[str]) -> list:
+    """Uncertain requirements the strict policy leaves out of the submission, numbered H-001, ..."""
+    if rc.settings.submit_uncertain:
+        return []
+    submitted = {oid for r in rc.state.requirements for oid in r.obligation_ids}
+    decisions = [d for d in rc.state.decisions if d.obligation_id not in dropped and d.obligation_id not in submitted
+                 and d.state == "uncertain"]
+    reqs = assemble(decisions, rc.state.obligations, rc.deps.store, True)
+    return [r.model_copy(update={"id": f"H-{n:03d}"}) for n, r in enumerate(reqs, start=1)]
 
 
 def assembly_snapshot(state: RunState, settings: Settings, dropped: set[str]) -> dict:
     """Everything code needs to rebuild requirements, lineage and submission (`certivity verify`)."""
     return {"profile": state.profile, "plan": state.plan, "obligations": state.obligations,
-            "decisions": state.decisions, "dropped": sorted(dropped), "include_uncertain": settings.include_uncertain,
+            "decisions": state.decisions, "dropped": sorted(dropped), "include_uncertain": settings.submit_uncertain,
             "human_actions": state.human_actions, "team_id": settings.team_id, "case_id": state.case_id}
 
 
@@ -349,7 +361,7 @@ def build_manifest(state: RunState, deps: RunDeps, models: dict[str, str], revie
                   "max_retries": settings.max_retries, "max_cost_usd": settings.max_cost_usd,
                   "include_uncertain": settings.include_uncertain, "concurrency": settings.concurrency,
                   "fake_llm": settings.fake_llm, "retention_days": settings.retention_days,
-                  "cost_mode": settings.cost_mode},
+                  "cost_mode": settings.cost_mode, "submit_policy": settings.submit_policy},
         inputs=inputs,
         corpus={"index_sha256": file_sha256(settings.index_path), "text_sha256": corpus_files,
                 "cards": sorted(c.regulation for c in deps.cards if c.evidence[:1] != ["no card: decide from the title and the tools"]),

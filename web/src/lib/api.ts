@@ -32,7 +32,7 @@ export interface Run {
   cost: { spent_usd?: number; max_cost_usd?: number; per_agent?: Record<string, AgentCost> };
   validation_problems: string[]; score: Record<string, ScoreLevel> | null; give_ups: string[];
   markets_result: MarketsResult | null; open_items: string[]; human_actions: Record<string, unknown>[];
-  review_status: "reviewed" | "unreviewed"; label: string | null; missing_texts: string[]; quotes: Record<string, string>;
+  review_status: "reviewed" | "unreviewed"; label: string | null; missing_texts: string[]; quotes: Record<string, string>; held_back: Requirement[];
 }
 export interface AgentCost { model: string; calls: number; input: number; output: number; cache_read: number; cache_write: number; cost_usd: number }
 export interface RunListItem { run_id: string; case_id: string; mode: string; status: string; checkpoint: string | null; started_at: string; requirements: number; cost_usd: number; partial: boolean }

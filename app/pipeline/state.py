@@ -45,6 +45,7 @@ class RunState(BaseModel):
     obligations: dict[str, Obligation] = Field(default_factory=dict)
     decisions: list[MatchDecision] = Field(default_factory=list)
     requirements: list[Requirement] = Field(default_factory=list)
+    held_back: list[Requirement] = Field(default_factory=list)  # uncertain, not in the submission
     lineage: list[Lineage] = Field(default_factory=list)
     output_issues: list[Issue] = Field(default_factory=list)
     output_review: dict | None = None

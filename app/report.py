@@ -50,6 +50,9 @@ def render_report(state: RunState, models: dict[str, str]) -> str:
                 f"{states['uncertain']} uncertain.",
                 f"- Evidence: {evidence['met']} met, {evidence['not_met']} not met, "
                 f"{evidence['evidence_needed']} evidence needed."]
+    if state.held_back:
+        out += [f"- {len(state.held_back)} uncertain requirements are held back from the submission (strict policy); "
+                "they are listed in the UI and in state.json."]
     out += ["", "## Give-ups and dropped items", ""]
     out += [f"- {g}" for g in state.give_ups] or ["- none"]
     if state.output_issues:
