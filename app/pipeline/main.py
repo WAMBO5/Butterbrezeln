@@ -465,3 +465,28 @@ async def run_case(case_dir: Path, *, markets: list[str], mode: str, settings: S
     deps = deps or RunDeps.load(settings)
     state = create_run(case_dir, markets=markets, mode=mode, settings=settings, run_dir=run_dir, deps=deps)
     return await drive(state, deps, listeners)
+
+
+KEEP_BEFORE = {"collect": ("profile", "profile_loop", "plan", "scope_loop", "safety_hits", "pinned_decisions"),
+               "scope": ("profile", "profile_loop")}
+
+
+async def rerun_from(run_dir: Path, step: str, *, settings: Settings, deps: RunDeps | None = None,
+                     listeners: list | None = None) -> RunResult:
+    """A new run that reuses the earlier run's results before `step` (for example the product profile
+    and scope plan) and runs every step from `step` on: a controlled experiment on the later agents."""
+    if step not in KEEP_BEFORE:
+        raise ValueError(f"rerun can start from {sorted(KEEP_BEFORE)}, not {step}")
+    deps = deps or RunDeps.load(settings)
+    old = RunState.load(Path(run_dir))
+    state = create_run(Path(old.case_dir), markets=old.markets, mode=old.mode, settings=settings, run_dir=None,
+                       deps=deps)
+    for name in KEEP_BEFORE[step]:
+        setattr(state, name, getattr(old, name))
+    state.step = STEPS[STEPS.index(step) - 1]
+    state.parent_run = old.run_id
+    state.save()
+    Ledger(Path(state.run_dir)).append("note", "orchestrator", {"parent_run": old.run_id, "from_step": step},
+                                       {name: getattr(state, name) for name in KEEP_BEFORE[step]},
+                                       {"rerun_of": old.run_id, "from_step": step})
+    return await drive(state, deps, listeners)

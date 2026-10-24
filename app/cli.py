@@ -35,6 +35,9 @@ def build_parser() -> argparse.ArgumentParser:
                        help="replay the run's decisions under this submit policy and the current filters (free)")
     score.add_argument("--write", default=None, help="with --policy: write that submission to this file")
     sub.add_parser("bench", help="run + score on the rear-lamp case (paid)")
+    rerun = sub.add_parser("rerun", help="re-run an earlier run from a step, reusing what came before (paid)")
+    rerun.add_argument("run_dir")
+    rerun.add_argument("--from", dest="from_step", choices=("scope", "collect"), default="collect")
     verify = sub.add_parser("verify", help="check the ledger chain and replay a run (free)")
     verify.add_argument("run_dir")
     sub.add_parser("technical-file", help="regenerate the measured parts of docs/ai-act (free)")
@@ -211,6 +214,17 @@ def cmd_score(args, settings: Settings) -> int:
     return _score(settings, Path(args.run_dir), Path(args.expected) if args.expected else None, args.judge)
 
 
+def cmd_rerun(args, settings: Settings) -> int:
+    from app.pipeline.main import rerun_from
+
+    deps = _store(settings)
+    if settings.fake_llm:
+        _register_fakes(settings, deps)
+    res = asyncio.run(rerun_from(Path(args.run_dir), args.from_step, settings=settings, deps=deps))
+    _print_run(res)
+    return _score(settings, Path(res.run_dir), None, False)
+
+
 def cmd_bench(args, settings: Settings) -> int:
     res = _run(settings, settings.challenge_dir / REAR_LAMP, [], "benchmark", None)
     if res is None:
@@ -308,7 +322,7 @@ def cmd_serve(args, settings: Settings) -> int:
 
 
 COMMANDS = {"doctor": cmd_doctor, "build-corpus": cmd_build_corpus, "run": cmd_run, "score": cmd_score,
-            "bench": cmd_bench, "verify": cmd_verify, "signoff": cmd_signoff, "serve": cmd_serve,
+            "bench": cmd_bench, "rerun": cmd_rerun, "verify": cmd_verify, "signoff": cmd_signoff, "serve": cmd_serve,
             "markets": cmd_markets, "subgoal": cmd_subgoal, "technical-file": cmd_technical_file}
 
 

@@ -33,6 +33,7 @@ class RunState(BaseModel):
     started_at: str
     finished_at: str | None = None
     git_commit: str | None = None
+    parent_run: str | None = None  # set when this run reuses an earlier run's profile and scope
     error: str | None = None
 
     profile: ProductProfile | None = None

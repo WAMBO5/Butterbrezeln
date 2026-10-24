@@ -12,29 +12,36 @@ from app.models import GroupMatchBatch, Issue
 from app.tools.corpus_tools import read_provision
 
 INSTRUCTION = """\
-You select, from the candidate obligations of one regulation section, the ones that a homologation
-engineer would list as requirements for these parts of this product. Precision matters: list an
-obligation only when it binds the parts as the inputs describe them. Obligations you do not list bind
-none of the parts; there is no need to explain them.
+You select, from the candidate obligations of one regulation section, the ones that bind these parts
+of the product, as a homologation engineer would list them. Obligations you do not list bind none of
+the parts; there is no need to explain them.
 
-Select an obligation only when all of these hold:
-- It is about the device type or function of the parts (a rear position lamp rule for the rear
-  position lamp, not for the stop lamp; a front lamp rule for none of them).
-- It applies to the product as described. Leave out obligations that only apply to a variant or
-  optional feature the inputs do not show: variable luminous intensity, sequential activation,
-  manufacturer logos, interdependent lamp systems, movable components, replaceable light sources,
-  categories or classes the spec does not name, fail-safe or replacement functions, other vehicle
-  categories.
-- It is a requirement on the product: a design, performance, photometric, colour, marking or
-  installation requirement, or the pass/fail result a test must reach ("after the test the device
-  shall show no cracking", "the intensity shall be at least 4 cd"). Leave out instructions to the
-  test laboratory (apparatus, conditioning, test steps, how to measure or add up results), duties of
-  the approval authority, the application documents, approval numbering, communication forms and
-  conformity of production.
+Select an obligation when its subject is one of the parts' device types or functions, or the
+installation of that function on a vehicle, and it can apply to the product as described:
+- requirements on design, performance, emitted or reflected light, colour, materials, markings and
+  durability, including the limits or pass/fail results the part must reach in a test, also when
+  the text says how they are measured;
+- installation rules for the parts' functions: position, number, spacing, visibility, orientation,
+  electrical connections and tell-tales;
+- conditional obligations whose condition concerns the part itself or how it is built, combined or
+  installed ("where the lamp is mounted below ...", "if the device is combined with ..."). The
+  condition is part of the requirement; select it.
 
-For each selected obligation: part_ids (the parts it binds), confidence "high" when you are sure it
-binds those parts as described, "medium" when it most likely does but depends on a detail the inputs
-leave open; reason (one sentence naming the device or fact it turns on); fact_refs (ids of the
+Leave an obligation out when:
+- it is about another device type or function than the parts' (a rule for a different kind of
+  device, or for a different light function);
+- it needs a feature the inputs show the product does not have, or an optional add-on the inputs do
+  not mention (for example a variable or adaptive control function, a decorative logo, sequential
+  activation, a fail-safe replacement function), or it is limited to vehicle categories the product
+  is not for;
+- it instructs the test laboratory rather than the product: test apparatus, conditioning, the order
+  of test steps, how to compute or record results;
+- it concerns the approval procedure: the authority, application documents, approval numbering,
+  communication forms, conformity of production.
+
+For each selected obligation: part_ids (the parts it binds), confidence "high" when it clearly binds
+those parts as described, "medium" when it binds them only if a detail the inputs leave open turns
+out a certain way; reason (one sentence naming the device or fact it turns on); fact_refs (ids of the
 parts' facts you used); evidence_status ("met" when a fact shows it is fulfilled, "not_met" when a
 fact contradicts it, otherwise "evidence_needed"); test_case (one line on how to verify it). Copy
 obligation ids exactly. Use read_provision only to look up a referenced annex or definition (at most 3

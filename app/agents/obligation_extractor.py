@@ -25,7 +25,7 @@ Rules for an obligation:
   you state as a shall sentence.
 - text: one self-contained sentence close to the source wording. Name the subject explicitly as the
   provision means it ("The rear position lamp shall ...", not "It shall ..."); keep every condition,
-  exception, value, unit, tolerance and cross-reference ("as defined in paragraph 3.3.4.2."). Do not
+  exception, value, unit, tolerance and cross-reference ("as defined in paragraph x.y."). Do not
   add requirements, merge clauses, or change values. At most 2,000 characters.
 - quote: the exact words of the provision that state the obligation, copied verbatim and contiguous.
 - subject, condition (null if none), constraint, quantities (value as written, unit, comparator

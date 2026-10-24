@@ -10,20 +10,23 @@ from app.matching.match import MatchInput
 from app.models import GroupMatchBatch, Review
 
 INSTRUCTION = """\
-You review the obligations a matcher selected as requirements for some parts of a product, one
-regulation section at a time. Your job is precision: challenge every selection that a homologation
-engineer would not list for these parts. Flag, one issue per obligation:
-- "wrong_device": it is about another device type or function, or a part it does not bind.
-- "conditional": it only applies to a variant or optional feature the inputs do not show (variable
-  intensity, logos, movable components, other categories or classes, fail-safe functions).
-- "test_method": it is an instruction to the test laboratory (apparatus, conditioning, steps,
-  measurement method), not the result the product must reach.
-- "administrative": it concerns the authority, the application, approval numbering, communication or
-  conformity of production.
-- "missed": a candidate the matcher left out that clearly binds a part as described (only when you
-  are certain); proposed "add".
+You review which candidate obligations a matcher selected as requirements for some parts of a
+product, one regulation section at a time. You see every candidate and the selection. An obligation
+belongs in the selection when its subject is one of the parts' device types or functions (or the
+installation of that function) and it can apply to the product as described, including its
+conditional obligations and the limits or pass/fail results it must reach in a test.
+
+Flag only clear errors, one issue per obligation:
+- "wrong_device": selected, but about another device type or function, or a part it does not bind.
+- "absent_feature": selected, but it needs a feature the inputs show is absent, an optional add-on the
+  inputs do not mention, or a vehicle category the product is not for.
+- "test_method": selected, but it instructs the test laboratory (apparatus, conditioning, steps, how
+  to compute results) instead of stating what the product must reach.
+- "administrative": selected, but it concerns the authority, the application, approval numbering,
+  communication or conformity of production.
+- "missed": not selected, although it clearly binds a part as described; proposed "add".
 target_id is the obligation id; reason says why; evidence lists fact or provision ids; proposed is
-"remove" (or "add" for missed). Return verdict "pass" with no issues when every selection holds.
+"remove" (or "add" for missed). Return verdict "pass" with no issues when the selection holds.
 """
 
 

@@ -116,7 +116,8 @@ async def test_strict_policy_holds_back_medium_confidence(tmp_settings, fake_res
 
     register_responders({"requirement_matcher": half_sure})
     try:
-        strict = await run_case(REAR_LAMP, markets=[], mode="benchmark", settings=tmp_settings, run_dir=None)
+        strict = await run_case(REAR_LAMP, markets=[], mode="benchmark",
+                                settings=dataclasses.replace(tmp_settings, submit_policy="strict"), run_dir=None)
         recall = await run_case(REAR_LAMP, markets=[], mode="benchmark",
                                 settings=dataclasses.replace(tmp_settings, submit_policy="recall"), run_dir=None)
     finally:
@@ -127,3 +128,18 @@ async def test_strict_policy_holds_back_medium_confidence(tmp_settings, fake_res
     assert s.requirements and s.held_back and all(q.state == "applicable" for q in s.requirements)
     assert len(r.requirements) == len(s.requirements) + len(s.held_back) and not r.held_back
     assert strict.validation_problems == [] and "held back" in Path(strict.run_dir, "report.md").read_text()
+
+
+async def test_rerun_from_collect_keeps_profile_and_scope(tmp_settings, fake_responders):
+    from app.compliance.ledger import Ledger
+    from app.pipeline.main import RunDeps, rerun_from
+    from app.pipeline.state import RunState
+
+    first = await run_case(REAR_LAMP, markets=[], mode="benchmark", settings=tmp_settings, run_dir=None)
+    res = await rerun_from(Path(first.run_dir), "collect", settings=tmp_settings, deps=RunDeps.load(tmp_settings))
+    old, new = RunState.load(Path(first.run_dir)), RunState.load(Path(res.run_dir))
+    assert res.run_dir != first.run_dir and new.parent_run == old.run_id and new.status == "done"
+    assert new.profile == old.profile and new.plan == old.plan and res.validation_problems == []
+    actors = {r.actor for r in Ledger(Path(res.run_dir)).records() if r.kind == "agent_call"}
+    assert "product_analyst" not in actors and "scope_narrower" not in actors and "requirement_matcher" in actors
+    assert verify_chain(Path(res.run_dir)) == []

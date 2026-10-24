@@ -42,7 +42,7 @@ class Settings:
     prices_path: Path
     fake_llm: bool
     cost_mode: str = "full"  # "reduced": matcher at low effort without tools, no extraction verifier
-    submit_policy: str = "strict"  # "strict": only high-confidence requirements; "recall": uncertain ones too
+    submit_policy: str = "recall"  # "recall": high and medium confidence; "strict": high confidence only
 
     @property
     def submit_uncertain(self) -> bool:
@@ -105,5 +105,5 @@ def load_settings(env: Mapping[str, str] | None = None, *, fake_llm: bool = Fals
         prices_path=Path(env.get("CERTIVITY_PRICES") or _DEFAULT_PRICES),
         fake_llm=fake_llm,
         cost_mode=(_str(env, "CERTIVITY_COST_MODE") or "full").lower(),
-        submit_policy=(_str(env, "CERTIVITY_SUBMIT_POLICY") or "strict").lower(),
+        submit_policy=(_str(env, "CERTIVITY_SUBMIT_POLICY") or "recall").lower(),
     )

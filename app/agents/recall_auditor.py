@@ -26,7 +26,7 @@ Report only well-founded problems:
 - "wrong_inclusion": a kept regulation that a kept regulation consolidates, or that only covers vehicle
   categories the product is not for.
 
-Each issue: target_id the regulation ("UN R10") or section id, reason, evidence (card fields or
+Each issue: target_id the regulation id as written in the cards or the section id, reason, evidence (card fields or
 provision ids), proposed (the state or section ids you propose). Keyword overlap alone is not a
 reason. Return verdict "pass" with no issues when nothing is missing.
 """

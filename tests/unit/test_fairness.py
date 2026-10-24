@@ -28,3 +28,13 @@ def test_no_golden_text_in_prompts():
 
 def test_agent_modules_found():
     assert len(list(iter_agent_modules())) >= 2
+
+
+def test_prompts_name_no_regulation_paragraph_or_count_target():
+    """Agent instructions stay general: no regulation numbers, paragraph numbers or target counts that
+    would tune them to the worked example."""
+    import re
+
+    pattern = re.compile(r"\bUN R\s?\d|\bR\s?\d{1,3}\b|Regulation No\.? ?\d|paragraph \d|§\s?\d|\b\d{2,} requirements")
+    offenders = {m.__name__: pattern.findall(m.INSTRUCTION) for m in iter_agent_modules() if pattern.search(m.INSTRUCTION)}
+    assert offenders == {}
