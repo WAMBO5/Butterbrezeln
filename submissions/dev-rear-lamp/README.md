@@ -4,7 +4,8 @@ Every file here passes `industrial-ai-hackathon/tools/validate.py` and carries `
 
 | File | Reqs | How it was made | Platform Req F2 (P / R) |
 |---|---|---|---|
-| `08-pipeline-run6-opus.json` | 337 | run 3's scope plan and obligations, matching with the final prompts on Opus (`ANTHROPIC_MODEL=claude-opus-5-5`) | **74.7 %** (48.7 / 86.3) |
+| `09-pipeline-run6-opus-exemptions.json` | 341 | run 6 + `tools/evalkit/add_exemptions.py` (only difference: 4 R10 "deemed to comply" provisions) | **75.4 %** (48.7 / 87.4) |
+| `08-pipeline-run6-opus.json` | 337 | run 3's scope plan and obligations, matching with the final prompts on Opus (`ANTHROPIC_MODEL=claude-opus-5-5`) | 74.7 % (48.7 / 86.3) |
 | `07-pipeline-run5.json` | 368 | run 4 re-assembled with the cross-regulation duplicate fix | 74.0 % (45.4 / 87.9) |
 | `06-ensemble-run4-lane-v7-exemptions.json` | 351 | ensemble + `tools/evalkit/add_exemptions.py` | 73.8 % (46.7 / 86.3) |
 | `05-ensemble-run4-lane-v7.json` | 347 | `tools/evalkit/ensemble.py` on run 4 (primary) + lane v7 | not uploaded (dominated by 06) |
