@@ -103,3 +103,16 @@ def test_onboard_market_from_upload(client):
     res = client.post("/markets", data={"name": "Market D"}, files=[("files", ("market_d_source.md", sample, "text/markdown"))])
     assert res.status_code == 200 and res.json()["market_id"] == "market_d" and res.json()["illustrative"]
     assert "market_d" in {m["market_id"] for m in client.get("/markets").json()}
+
+
+def test_case_dir_outside_the_cases_is_refused(client, tmp_path):
+    (tmp_path / "secret.md").write_text("# private notes")
+    res = client.post("/runs", json={"case_dir": str(tmp_path), "markets": [], "mode": "benchmark"})
+    assert res.status_code == 400 and "case folder" in res.json()["detail"]
+
+
+def test_cors_only_for_the_dev_ui(client):
+    evil = client.options("/runs", headers={"Origin": "https://evil.example", "Access-Control-Request-Method": "POST"})
+    assert evil.headers.get("access-control-allow-origin") is None
+    dev = client.options("/runs", headers={"Origin": "http://localhost:4321", "Access-Control-Request-Method": "POST"})
+    assert dev.headers.get("access-control-allow-origin") == "http://localhost:4321"

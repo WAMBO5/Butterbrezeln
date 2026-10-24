@@ -64,7 +64,18 @@ class RunManager:
 
         self.tasks[run_id] = asyncio.create_task(guarded())
 
+    def allowed_case_dir(self, case_dir: Path) -> Path:
+        """Case folders come from the challenge's `cases/` or from uploads, never from anywhere else."""
+        from app.matching.case_loader import CaseError
+
+        resolved = Path(case_dir).resolve()
+        roots = [self.settings.cases_dir.resolve(), (self.settings.data_dir / "uploads").resolve()]
+        if not any(resolved == r or r in resolved.parents for r in roots):
+            raise CaseError(f"the case folder must be inside {roots[0]} or an upload, not {case_dir}")
+        return resolved
+
     def start(self, case_dir: Path, markets: list[str], mode: str) -> str:
+        case_dir = self.allowed_case_dir(case_dir)
         state = create_run(case_dir, markets=markets, mode=mode, settings=self.settings, run_dir=None, deps=self.deps)
         self._spawn(state.run_id, drive(state, self.deps))
         return state.run_id

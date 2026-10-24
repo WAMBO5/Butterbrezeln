@@ -97,7 +97,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             task.cancel()
 
     app = FastAPI(title="Certivity requirements engine", lifespan=lifespan)
-    app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+    # The built UI is served from this origin; only the Astro dev server needs CORS. A wildcard would let
+    # any website start paid runs on this machine.
+    app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:4321", "http://127.0.0.1:4321"],
+                       allow_methods=["GET", "POST"], allow_headers=["Content-Type"])
 
     def manager() -> RunManager:
         return holder["m"]
