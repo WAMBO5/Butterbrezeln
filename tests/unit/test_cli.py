@@ -32,3 +32,14 @@ def test_fake_bench(monkeypatch, tmp_path, capsys):
     assert main(["--fake-llm", "bench"]) == 0
     out = capsys.readouterr().out
     assert "regulation_level" in out and "validate.py: no problems" in out and "golden pages in sections" in out
+
+
+def test_signoff_refuses_unfinished_run(tmp_path, capsys):
+    from datetime import datetime, timezone
+
+    from app.pipeline.state import RunState
+
+    RunState(run_id="r", run_dir=str(tmp_path), case_dir=str(tmp_path), case_id="c", started_at=datetime.now(
+        timezone.utc).isoformat(), status="awaiting_review").save()
+    assert main(["signoff", str(tmp_path), "--reviewer", "alex"]) == 1
+    assert "sign-off refused" in capsys.readouterr().err

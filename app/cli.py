@@ -34,6 +34,10 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("bench", help="run + score on the rear-lamp case (paid)")
     verify = sub.add_parser("verify", help="check the ledger chain and replay a run (free)")
     verify.add_argument("run_dir")
+    signoff = sub.add_parser("signoff", help="record a named sign-off for a reviewed run (free)")
+    signoff.add_argument("run_dir")
+    signoff.add_argument("--reviewer", required=True)
+    signoff.add_argument("--statement", default="I reviewed the requirements of this run and accept them.")
     return parser
 
 
@@ -193,8 +197,20 @@ def cmd_verify(args, settings: Settings) -> int:
     return 0 if not problems else 1
 
 
+def cmd_signoff(args, settings: Settings) -> int:
+    from app.compliance.oversight import OversightError, sign_off
+
+    try:
+        s = sign_off(Path(args.run_dir), args.reviewer, args.statement)
+    except OversightError as exc:
+        print(f"sign-off refused: {exc}", file=sys.stderr)
+        return 1
+    print(f"signed off by {s.reviewer} at {s.ts}; the export now counts as reviewed")
+    return 0
+
+
 COMMANDS = {"doctor": cmd_doctor, "build-corpus": cmd_build_corpus, "run": cmd_run, "score": cmd_score,
-            "bench": cmd_bench, "verify": cmd_verify}
+            "bench": cmd_bench, "verify": cmd_verify, "signoff": cmd_signoff}
 
 
 def main(argv: list[str] | None = None) -> int:
