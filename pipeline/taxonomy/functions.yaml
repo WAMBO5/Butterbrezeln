@@ -1,0 +1,47 @@
+# Functionality ids: the join key for bindings and markets. Lighting ids follow the device types of UN R48 section 6
+# and the scopes of UN R148, R149 and R150. Agents pick from this list or use `unmapped`; they never invent ids.
+lighting_devices:
+  main_beam_headlamp: Main-beam (driving-beam) headlamp
+  dipped_beam_headlamp: Dipped-beam (passing-beam) headlamp
+  front_fog_lamp: Front fog lamp
+  reversing_lamp: Reversing lamp
+  direction_indicator: Direction-indicator lamp
+  hazard_warning_signal: Hazard warning signal
+  stop_lamp: Stop lamp
+  rear_registration_plate_lamp: Rear registration plate lamp
+  front_position_lamp: Front position lamp
+  rear_position_lamp: Rear position lamp
+  rear_fog_lamp: Rear fog lamp
+  parking_lamp: Parking lamp
+  end_outline_marker_lamp: End-outline marker lamp
+  rear_retro_reflector: Rear retro-reflector, non-triangular
+  rear_retro_reflector_triangular: Rear retro-reflector, triangular
+  front_retro_reflector: Front retro-reflector, non-triangular
+  side_retro_reflector: Side retro-reflector, non-triangular
+  side_marker_lamp: Side-marker lamp
+  daytime_running_lamp: Daytime running lamp
+  cornering_lamp: Cornering lamp
+  conspicuity_marking: Conspicuity markings
+  adaptive_front_lighting: Adaptive front lighting system (AFS)
+  emergency_stop_signal: Emergency stop signal
+  exterior_courtesy_lamp: Exterior courtesy lamp
+  rear_end_collision_alert: Rear-end collision alert signal
+  manoeuvring_lamp: Manoeuvring lamp
+  answer_back_signal: Answer-back signal
+  reversing_projection: Reversing projection
+lighting_parts:
+  lens_colour: Outer lens, light transmission and colour
+  light_source: Light source (LED module, filament lamp, LED light source)
+  installation_lighting: Installation of lighting and light-signalling devices on the vehicle
+other:
+  emc: Electromagnetic compatibility of electrical/electronic sub-assemblies
+  bumper_protection: Front and rear protective devices (bumpers) in low-speed impacts
+  pedestrian_impact: Pedestrian protection (head, upper and lower leg impact)
+  external_projection: External projections of the vehicle body
+  rear_underrun: Rear-end collision protection
+  frontal_impact: Frontal collision occupant protection
+  glazing: Safety glazing
+  sound: Vehicle sound emission
+  braking: Braking
+  steering: Steering
+  anti_theft: Anti-theft, immobiliser and alarm

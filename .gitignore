@@ -10,3 +10,15 @@ __pycache__/
 .env
 .env.*
 !.env.example
+
+# Challenge data stays local (industrial-ai-hackathon/LICENSE-DATA.md)
+industrial-ai-hackathon/regulations/pdf/
+industrial-ai-hackathon/subgoal/*/*.pdf
+industrial-ai-hackathon/cases/heldout-*/
+industrial-ai-hackathon/subgoal/heldout*/
+
+# Pipeline outputs
+data/
+runs/
+out/
+*.log

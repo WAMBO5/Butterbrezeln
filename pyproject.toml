@@ -1,15 +1,29 @@
 [project]
 name = "certivity"
 version = "0.1.0"
-description = "Add your description here"
+description = "Product spec to cited UN Regulation requirements (Certivity hackathon)"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "google-adk>=2.13.0",
-    "litellm>=1.106.3",
+    "anthropic>=2.3.0",
+    "fastapi>=0.162.0",
+    "fastembed>=0.9.0",
+    "jsonschema>=4.26.0",
+    "langgraph>=1.2.17",
+    "pydantic>=2.14.1",
+    "pymupdf>=2.0",
+    "python-multipart>=0.0.32",
+    "pyyaml>=6.0.3",
+    "qdrant-client>=1.20.0",
+    "rapidfuzz>=3.14.6",
+    "uvicorn[standard]>=0.54.0",
 ]
 
 [dependency-groups]
 dev = [
     "pytest>=9.1.1",
 ]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

@@ -1,0 +1,14 @@
+# Demo only. A capability outside this hackathon: the corpus holds UN Regulations only.
+# Slices filter the envelope and recommendations in the UI. They never change the export (always unece_all, base).
+unece_all:
+  label: All UN Regulations in the index (export market)
+  regulation_ids: all
+lighting_signal:
+  label: Lighting and signalling package
+  regulation_ids: [UN R148, UN R48, UN R150, UN R10]
+bumper_pedestrian:
+  label: Bumper and pedestrian package
+  regulation_ids: [UN R42, UN R127, UN GTR 9, UN R26]
+china:
+  label: China (no regulations loaded)
+  regulation_ids: []
