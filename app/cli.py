@@ -31,6 +31,9 @@ def build_parser() -> argparse.ArgumentParser:
     score.add_argument("run_dir")
     score.add_argument("--expected", default=None)
     score.add_argument("--judge", action="store_true", help="requirement-level estimate with an LLM judge (paid)")
+    score.add_argument("--policy", choices=("strict", "recall"), default=None,
+                       help="replay the run's decisions under this submit policy and the current filters (free)")
+    score.add_argument("--write", default=None, help="with --policy: write that submission to this file")
     sub.add_parser("bench", help="run + score on the rear-lamp case (paid)")
     verify = sub.add_parser("verify", help="check the ledger chain and replay a run (free)")
     verify.add_argument("run_dir")
@@ -189,6 +192,22 @@ def _score(settings: Settings, run_dir: Path, expected: Path | None, judge: bool
 
 
 def cmd_score(args, settings: Settings) -> int:
+    if args.policy:
+        from app.eval.policy import simulate
+        from app.matching.submission import score_submission, validate_submission
+        from app.pipeline.state import RunState
+
+        run_dir = Path(args.run_dir)
+        reqs, submission = simulate(run_dir, _store(settings).store, settings, args.policy)
+        problems = validate_submission(submission, settings)
+        expected = Path(args.expected) if args.expected else Path(RunState.load(run_dir).case_dir) / "expected.json"
+        print(f"policy {args.policy}: {len(reqs)} requirements; validate.py: {'no problems' if not problems else problems}")
+        if expected.exists():
+            print(json.dumps(score_submission(submission, expected, settings), indent=1))
+        if args.write:
+            Path(args.write).write_text(json.dumps(submission, indent=1, ensure_ascii=False), encoding="utf-8")
+            print(f"wrote {args.write}")
+        return 0 if not problems else 1
     return _score(settings, Path(args.run_dir), Path(args.expected) if args.expected else None, args.judge)
 
 

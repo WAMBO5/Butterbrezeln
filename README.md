@@ -21,7 +21,7 @@ uv run pytest               # offline, no API calls
 | `uv run certivity build-corpus [--cards] [--prefill]` | `--cards` ≈ $5, `--prefill` | Parses the corpus (free); writes regulation cards; pre-fills obligations |
 | `uv run certivity run <case_dir> [--markets a,b] [--mode benchmark\|assisted]` | yes | The full pipeline; writes `data/runs/<id>/` |
 | `uv run certivity bench` | yes | `run` + validate + score on the rear lamp |
-| `uv run certivity score <run_dir> [--judge]` | `--judge` | Validation, `score_local.py`, funnel metrics; `--judge` estimates the requirement level |
+| `uv run certivity score <run_dir> [--judge] [--policy strict\|recall --write FILE]` | `--judge` | Validation, `score_local.py`, funnel metrics; `--judge` estimates the requirement level; `--policy` replays the run under a submit policy and the current filters |
 | `uv run certivity verify <run_dir>` | no | Checks the ledger's hash chain and replays the submission from it |
 | `uv run certivity signoff <run_dir> --reviewer NAME` | no | Named sign-off; refused while items are open |
 | `uv run certivity subgoal <subgoal_dir>` | yes | Sub-goal: which old requirements change in the new version |
@@ -33,7 +33,7 @@ Every command takes `--fake-llm`, a scripted stand-in model, for offline demos a
 
 The UI is an Astro app in `web/`; `certivity serve` serves its build. Build it once with `cd web && npm ci && npm run build`. For UI work, run `npm run dev` there (it talks to the API on port 8000).
 
-`CERTIVITY_COST_MODE=reduced` runs the match reviewer only on disputed decisions and skips the extraction verifier. A budget guard (`CERTIVITY_MAX_COST_USD`, default $5) stops a run; a stopped run is marked partial in its report.
+`CERTIVITY_SUBMIT_POLICY=strict` (default) submits only requirements the matcher is sure of; uncertain ones are held back and shown in the UI. Assisted runs keep them for the reviewer to decide. `CERTIVITY_COST_MODE=reduced` runs the match reviewer only on disputed decisions and skips the extraction verifier. A budget guard (`CERTIVITY_MAX_COST_USD`, default $5) stops a run; a stopped run is marked partial in its report.
 
 ## Modes
 

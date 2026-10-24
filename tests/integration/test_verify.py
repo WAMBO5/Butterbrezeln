@@ -61,3 +61,16 @@ async def test_replay_ignores_later_market_exports(fake_run, tmp_settings, fake_
 
     Ledger(fake_run).append("export", "orchestrator", None, {"markets": {}}, {"files": ["markets.json"]})
     assert replay(fake_run, fake_responders, tmp_settings) == []
+
+
+def test_policy_simulation_writes_a_valid_submission(monkeypatch, tmp_path, capsys):
+    monkeypatch.setenv("CERTIVITY_DATA_DIR", str(tmp_path))
+    assert main(["--fake-llm", "run", str(REAR_LAMP)]) == 0
+    [run_dir] = list((tmp_path / "runs").iterdir())
+    out = tmp_path / "strict.json"
+    assert main(["--fake-llm", "score", str(run_dir), "--policy", "strict", "--write", str(out)]) == 0
+    text = capsys.readouterr().out
+    assert "policy strict" in text and json.loads(out.read_text())["requirements"]
+    from app.matching.submission import validate_submission
+    from app.config.settings import load_settings
+    assert validate_submission(json.loads(out.read_text()), load_settings()) == []
