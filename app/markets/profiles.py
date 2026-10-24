@@ -16,7 +16,7 @@ BUILTIN_DIR = Path(__file__).with_name("profiles")
 
 
 def _profile(data: dict, regulations: list[str]) -> MarketProfile:
-    rules = [MarketRule(**{"source_ref": None, **r}) for r in data.get("rules") or []]
+    rules = [MarketRule(**{"source_ref": None, **r}) for r in data.get("rules") or []]  # explicit rules first
     listed = {r.regulation for r in rules}
     default = data.get("default")
     if default:

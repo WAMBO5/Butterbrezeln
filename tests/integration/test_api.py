@@ -96,3 +96,10 @@ def test_markets_endpoints(client):
         time.sleep(0.2)
     result = client.get(f"/runs/{run_id}").json()["markets_result"]
     assert {v["market_id"]: v["verdict"] for v in result["markets"]["verdicts"]}["market_c"] == "not_covered"
+
+
+def test_onboard_market_from_upload(client):
+    sample = open("app/markets/samples/market_d_source.md", "rb").read()
+    res = client.post("/markets", data={"name": "Market D"}, files=[("files", ("market_d_source.md", sample, "text/markdown"))])
+    assert res.status_code == 200 and res.json()["market_id"] == "market_d" and res.json()["illustrative"]
+    assert "market_d" in {m["market_id"] for m in client.get("/markets").json()}

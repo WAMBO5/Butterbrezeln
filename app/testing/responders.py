@@ -141,6 +141,26 @@ def fake_synergy(prompt: str, req: FakeRequest) -> str:
                                     "rationale": "One test campaign covers every market that asks for them."}]})
 
 
+_SOURCE_RE = re.compile(r'<untrusted_input name="source ([^" ]+)[^"]*">\n(.*?)\n</untrusted_input>', re.S)
+
+
+def fake_onboarding(prompt: str, req: FakeRequest) -> str:
+    payload = extract_payload(prompt)
+    rules, outside, sample = [], [], False
+    for doc_id, text in _SOURCE_RE.findall(prompt):
+        sample = sample or text.lstrip().startswith("ILLUSTRATIVE SAMPLE")
+        for sentence in (line.strip() for line in text.splitlines() if line.strip()):
+            m = re.search(r"Regulation No\. (\d+)", sentence)
+            if m:
+                rules.append({"regulation": f"UN R{m.group(1)}", "status": "accepted" if "accepts" in sentence else "mandatory",
+                              "version_role": "latest" if "latest" in sentence else "base",
+                              "source_ref": {"document_id": doc_id, "quote": sentence.strip()}})
+            elif "outside" in sentence:
+                outside.append({"document_id": doc_id, "quote": sentence.strip()})
+    return json.dumps({"market_id": "x", "name": payload["market_name"], "illustrative": sample, "rules": rules,
+                       "outside_corpus": outside})
+
+
 def build_fake_responders(settings: Settings, store: CorpusStore) -> dict[str, Responder]:
     """Scripted outputs for a whole offline run. They read the prompt payload only."""
     return {
@@ -156,4 +176,5 @@ def build_fake_responders(settings: Settings, store: CorpusStore) -> dict[str, R
         "match_reviewer": fake_pass_review,
         "output_auditor": fake_pass_review,
         "synergy_advisor": fake_synergy,
+        "market_onboarding": fake_onboarding,
     }

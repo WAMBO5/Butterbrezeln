@@ -277,6 +277,23 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         regulations = sorted({v.regulation for v in manager().deps.versions})
         return [p.model_dump() for p in available_profiles(settings, regulations)]
 
+    @app.post("/markets")
+    async def onboard(name: str = Form(...), files: list[UploadFile] = File(...)) -> dict:
+        from app.compliance.ledger import Ledger
+        from app.llm import LLM, Budget, load_prices
+        from app.markets.onboarding import OnboardingError, onboard_market
+        from app.pipeline.calls import bind_call
+        from app.pipeline.main import new_run_id
+
+        upload = manager().save_upload(f"market-{name}", [(f.filename or "source.md", await f.read()) for f in files])
+        ledger = Ledger(settings.data_dir / "market_runs" / new_run_id(upload.name))
+        llm = LLM(settings, budget=Budget(settings.max_cost_usd, load_prices(settings.prices_path)))
+        try:
+            profile = await onboard_market(name, sorted(upload.iterdir()), settings, bind_call(llm, ledger), ledger)
+        except OnboardingError as exc:
+            raise HTTPException(422, str(exc))
+        return profile.model_dump()
+
     @app.post("/runs/{run_id}/markets", status_code=202)
     async def rerun_markets(run_id: str, body: MarketsBody) -> dict:
         state = state_or_404(run_id)

@@ -34,6 +34,12 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("bench", help="run + score on the rear-lamp case (paid)")
     verify = sub.add_parser("verify", help="check the ledger chain and replay a run (free)")
     verify.add_argument("run_dir")
+    markets = sub.add_parser("markets", help="market profiles")
+    markets_sub = markets.add_subparsers(dest="markets_command", required=True)
+    markets_sub.add_parser("list", help="list the market profiles (free)")
+    add = markets_sub.add_parser("add", help="build a market profile from cited source files (paid)")
+    add.add_argument("name")
+    add.add_argument("--source", action="append", required=True, help="a source document (repeatable)")
     serve = sub.add_parser("serve", help="FastAPI service and UI on localhost (paid when runs are started)")
     serve.add_argument("--port", type=int, default=8000)
     serve.add_argument("--host", default="127.0.0.1")
@@ -212,6 +218,38 @@ def cmd_signoff(args, settings: Settings) -> int:
     return 0
 
 
+def cmd_markets(args, settings: Settings) -> int:
+    from app.pipeline.markets import available_profiles
+
+    deps = _store(settings)
+    regulations = sorted({v.regulation for v in deps.versions})
+    if args.markets_command == "list":
+        for p in available_profiles(settings, regulations):
+            applied = sum(1 for r in p.rules if r.status != "not_applied")
+            print(f"{p.market_id}: {p.name}{' (illustrative)' if p.illustrative else ''} — {applied} regulations applied"
+                  f"{', rules outside the corpus' if p.outside_corpus else ''}")
+        return 0
+    from app.compliance.ledger import Ledger
+    from app.llm import LLM, Budget, load_prices
+    from app.markets.onboarding import OnboardingError, onboard_market
+    from app.pipeline.calls import bind_call
+    from app.pipeline.main import new_run_id
+
+    if settings.fake_llm:
+        _register_fakes(settings, deps)
+    ledger = Ledger(settings.data_dir / "market_runs" / new_run_id(args.name.replace(" ", "_")))
+    llm = LLM(settings, budget=Budget(settings.max_cost_usd, load_prices(settings.prices_path)))
+    try:
+        profile = asyncio.run(onboard_market(args.name, [Path(s) for s in args.source], settings,
+                                             bind_call(llm, ledger), ledger))
+    except OnboardingError as exc:
+        print(f"onboarding failed: {exc}", file=sys.stderr)
+        return 1
+    print(f"wrote {settings.markets_dir / (profile.market_id + '.yaml')}: {len(profile.rules)} rules, "
+          f"{len(profile.outside_corpus)} outside the corpus{', illustrative' if profile.illustrative else ''}")
+    return 0
+
+
 def cmd_serve(args, settings: Settings) -> int:
     import uvicorn
 
@@ -222,7 +260,8 @@ def cmd_serve(args, settings: Settings) -> int:
 
 
 COMMANDS = {"doctor": cmd_doctor, "build-corpus": cmd_build_corpus, "run": cmd_run, "score": cmd_score,
-            "bench": cmd_bench, "verify": cmd_verify, "signoff": cmd_signoff, "serve": cmd_serve}
+            "bench": cmd_bench, "verify": cmd_verify, "signoff": cmd_signoff, "serve": cmd_serve,
+            "markets": cmd_markets}
 
 
 def main(argv: list[str] | None = None) -> int:
