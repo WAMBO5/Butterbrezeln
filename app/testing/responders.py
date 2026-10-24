@@ -120,7 +120,7 @@ def make_fake_extractor(store: CorpusStore) -> Responder:
 def fake_matcher(prompt: str, req: FakeRequest) -> str:
     payload = extract_payload(prompt)
     return json.dumps({"decisions": [
-        {"part_id": payload["part_id"], "obligation_id": oid, "state": "applicable", "reason": "fake: applies",
+        {"obligation_id": oid, "state": "applicable", "part_ids": payload["part_ids"], "reason": "fake: applies",
          "fact_refs": [], "evidence_status": "evidence_needed", "test_case": "Inspect and test per the paragraph."}
         for oid in payload["obligation_ids"]]})
 

@@ -211,6 +211,22 @@ class MatchBatch(_Model):
     decisions: list[MatchDecision]
 
 
+class GroupDecision(_Model):
+    """The matcher's decision on one obligation for a group of parts that share a section: the
+    parts it binds (state applies to them); the group's other parts are not bound by it."""
+    obligation_id: str
+    state: DecisionState
+    part_ids: list[str]
+    reason: str
+    fact_refs: list[str]
+    evidence_status: EvidenceStatus
+    test_case: str
+
+
+class GroupMatchBatch(_Model):
+    decisions: list[GroupDecision]
+
+
 class Requirement(_Model):
     id: str
     text: str = Field(max_length=TEXT_LIMIT)
@@ -312,6 +328,7 @@ OUTPUT_SCHEMAS: tuple[type[BaseModel], ...] = (
     ProductProfile,
     ScopePlan,
     MatchBatch,
+    GroupMatchBatch,
     Review,
     MarketProfile,
     ShipPlan,

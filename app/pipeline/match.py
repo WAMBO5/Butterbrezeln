@@ -8,18 +8,18 @@ from app.compliance.ledger import Ledger
 from app.config.settings import Settings
 from app.gates.match_gate import match_gate
 from app.matching.match import MatchInput, resolve
-from app.models import MatchBatch, MatchDecision
+from app.models import GroupMatchBatch, MatchDecision
 from app.pipeline.calls import AgentCall
 from app.pipeline.loop import LoopSpec, run_verified
 
 
-def disputed(batch: MatchInput, out: MatchBatch) -> bool:
+def disputed(batch: MatchInput, out: GroupMatchBatch) -> bool:
     """A batch with a not_applicable or uncertain decision: the decisions that can lose recall."""
     return any(d.state != "applicable" for d in out.decisions)
 
 
-def match_loop(settings: Settings) -> LoopSpec[MatchBatch]:
-    return LoopSpec(name="requirement_match", producer=create_requirement_matcher(settings), output_schema=MatchBatch,
+def match_loop(settings: Settings) -> LoopSpec[GroupMatchBatch]:
+    return LoopSpec(name="requirement_match", producer=create_requirement_matcher(settings), output_schema=GroupMatchBatch,
                     build_prompt=build_match_prompt, gate=match_gate, verifier=create_match_reviewer(settings),
                     build_review_prompt=build_match_review_prompt, max_retries=settings.max_retries,
                     needs_review=disputed if settings.cost_mode == "reduced" else None)
