@@ -112,7 +112,7 @@ import Base from "../layouts/Base.astro";
     const flagged = new Set(r.safety_hits.filter((s) => s.excluded && s.best_rank <= 2).map((s) => s.regulation));
     excluded.sort((a, b) => Number(flagged.has(b.regulation)) - Number(flagged.has(a.regulation)));
     return h("div", { class: "stack" },
-      h("section", { class: "sheet stack" }, h("h2", {}, `${kept.length} regulations apply`), ...kept.map(decisionRow)),
+      h("section", { class: "sheet stack" }, h("h2", {}, `${kept.length} regulations apply`), ...kept.map((d) => decisionRow(d))),
       h("section", { class: "sheet stack" }, h("h2", {}, `${excluded.length} were excluded`),
         h("p", { class: "quiet" }, "Read these too: a missed regulation costs more than an extra one. Regulations that the full-text search ranked high for a part come first."),
         ...excluded.map((d) => {
