@@ -40,7 +40,10 @@ def main() -> int:
     a = ap.parse_args()
     block, warn = [], []
     v = subprocess.run([sys.executable, str(HACK / "tools" / "validate.py"), a.submission], capture_output=True, text=True)
-    if v.returncode != 0:
+    if v.returncode != 0 and "jsonschema" in (v.stdout + v.stderr) and "No module" in (v.stdout + v.stderr):
+        block.append("validate.py could not run: jsonschema is not installed for this python. "
+                     "Run with `uv run python check_heldout.py ...` from the repo.")
+    elif v.returncode != 0:
         block.append("validate.py failed:\n" + v.stdout[-1500:] + v.stderr[-500:])
     doc = json.loads(Path(a.submission).read_text())
     if doc.get("case_id") != a.case:

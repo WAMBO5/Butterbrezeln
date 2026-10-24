@@ -18,7 +18,8 @@ a product. You see the matcher's full context and its decisions. Flag only real 
 - "missed": not_applicable, or a part left out, for an obligation that does bind it; proposed
   "applicable". These are correctly not_applicable, so do not flag them: the mechanics of how a
   laboratory carries out a test (preparing, mounting, positioning or rotating the sample, masking,
-  instrument set-up, recording, calculation); alternative test methods and tests that apply only at
+  instrument set-up, recording, calculation); the specification or certification of test equipment
+  (impactors, dummies, barriers, instruments); alternative test methods and tests that apply only at
   the manufacturer's request; the approval and conformity-of-production procedure; entries that only
   say whether the vehicle must carry the device; and categories or classes of a device the part
   cannot belong to. Do flag as "missed" a not_applicable test condition (test voltage, measuring

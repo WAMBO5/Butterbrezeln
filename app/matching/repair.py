@@ -39,7 +39,10 @@ def apply_output_review(reqs: list[Requirement], review: Review) -> RepairPlan:
         if issue.target_id not in by_id:
             continue
         if issue.type == "duplicate":
-            partners = [e for e in issue.evidence if e in by_id and e != issue.target_id]
+            # the same wording in two regulations is two requirements: each regulation must be met
+            regulation = by_id[issue.target_id].source.regulation
+            partners = [e for e in issue.evidence if e in by_id and e != issue.target_id
+                        and by_id[e].source.regulation == regulation]
             if partners:
                 drop.add(max([issue.target_id, *partners], key=_number))
         elif issue.type in ("merged", "unclear_subject"):

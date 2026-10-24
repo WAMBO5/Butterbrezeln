@@ -82,6 +82,13 @@ def test_repair_plan(mini_store):
     assert [r.id for r in plan.kept] == ["R-001", "R-004"] and plan.kept[1].source.paragraph == "3.1"
 
 
+def test_same_wording_in_two_regulations_is_not_a_duplicate(mini_store):
+    reqs = [_req(mini_store, 1), _req(mini_store, 2)]
+    other = reqs[1].model_copy(update={"source": reqs[1].source.model_copy(update={"regulation": "UN R998"})})
+    plan = apply_output_review([reqs[0], other], Review(verdict="retry", issues=[issue("duplicate", "R-001", ["R-002"])]))
+    assert plan.dropped == [] and [r.id for r in plan.kept] == ["R-001", "R-002"]
+
+
 def test_audit_prompt_lists_every_id(mini_store):
     reqs = [_req(mini_store, 1), _req(mini_store, 2)]
     assert extract_payload(build_output_audit_prompt(reqs))["requirement_ids"] == ["R-001", "R-002"]

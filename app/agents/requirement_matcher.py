@@ -26,7 +26,8 @@ ids copied exactly:
   application documents, approval numbering, the communication of approvals, the sampling plans
   and statistics of conformity-of-production checks; the mechanics of how a laboratory carries out a
   test (preparing, mounting, positioning or rotating the sample, masking, instrument set-up,
-  calibration, recording, calculation steps); an alternative test method or test procedure, or a
+  calibration, recording, calculation steps); the specification, calibration or certification of
+  test equipment (impactors, dummies, barriers, instruments); an alternative test method or test procedure, or a
   test that applies only at the manufacturer's request, together with its steps; and entries that
   only say whether the vehicle must carry the device ("Presence: mandatory" or "optional"). The
   conditions a requirement is defined or tested under stay applicable (test voltage, the field or

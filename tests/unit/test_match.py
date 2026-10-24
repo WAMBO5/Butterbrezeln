@@ -55,6 +55,23 @@ def test_collect_adds_referenced_provision_once(mini_store):
     assert ids.count("UN R999@1.0.0#Annex 3 Part 1 1.2") == 1
 
 
+def test_collect_follows_a_reference_to_one_annex_paragraph(tmp_path):
+    from app.corpus.store import CorpusStore
+    from tests.conftest import _version
+
+    text = ("=== PDF page 1 ===\n1. Specifications\n1.1. When tested in accordance with Annex 1, paragraph 2., the "
+            "elongation shall not exceed 22 mm.\n=== PDF page 2 ===\nAnnex 1 Test procedures\n1. Impactor\n"
+            "1.1. The impactor shall be stored at 20 °C.\n2. Bumper test\n2.1. The impact velocity shall be 11.1 m/s.\n")
+    target = tmp_path / "text" / "UN_R999" / "base" / "UN_R999_base.txt"
+    target.parent.mkdir(parents=True)
+    target.write_text(text)
+    store = CorpusStore(tmp_path / "c.sqlite")
+    store.build([_version("UN R999", "1.0.0")], tmp_path / "text")
+    ids = [p.provision_id for c in collect_candidates(store, plan(sections=("UN R999@1.0.0#1",), parts=("p1",)))
+           for p in c.provisions]
+    assert "UN R999@1.0.0#Annex 1 2.1" in ids and "UN R999@1.0.0#Annex 1 1.1" not in ids
+
+
 def test_parts_sharing_a_section_are_matched_together(mini_store):
     cands = collect_candidates(mini_store, plan())
     obligations = {p.provision_id: [ob(n, p.provision_id) for n in range(1, 31)] for c in cands for p in c.provisions}

@@ -1,9 +1,12 @@
 """Candidate provisions per part and section: the scope plan's sections, plus the provisions they
 reference (one level deep), each counted once per part (design spec section 7). A reference to a
-whole annex adds nothing: which annexes matter is the scope plan's decision."""
+whole annex adds nothing: which annexes matter is the scope plan's decision. A reference to one
+paragraph of an annex ("when tested in accordance with Annex 5, paragraph 1") adds that paragraph
+with its subparagraphs."""
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 
 from app.corpus.store import CorpusStore
@@ -22,9 +25,22 @@ class SectionCandidates:
     provisions: list[Provision]
 
 
+ANNEX_PARAGRAPH_RE = re.compile(r"Annex (\d+[A-Z]?),? paragraphs? (\d+(?:\.\d+)*)")
+
+
 def _is_annex_heading(p: Provision) -> bool:
     words = p.paragraph.split(" ")
     return words[0] == "Annex" and len(words) == 2
+
+
+def _annex_paragraphs(store: CorpusStore, p: Provision) -> list[Provision]:
+    """The annex paragraphs `p` cites by number, each with its subparagraphs."""
+    out: list[Provision] = []
+    for m in ANNEX_PARAGRAPH_RE.finditer(p.text):
+        target = store.find(p.regulation, p.version_label, f"Annex {m.group(1)} {m.group(2).rstrip('.')}")
+        if target is not None:
+            out += store.provisions_under([target.provision_id])
+    return out
 
 
 def collect_candidates(store: CorpusStore, plan: ScopePlan) -> list[SectionCandidates]:
@@ -57,6 +73,8 @@ def collect_candidates(store: CorpusStore, plan: ScopePlan) -> list[SectionCandi
                         if target is None or target.kind == "definition" or _is_annex_heading(target):
                             continue
                         take(target)
+                    for t in _annex_paragraphs(store, p):
+                        take(t)
                 if chosen:
                     heading = root.text.split("\n", 1)[0][:120]
                     out.append(SectionCandidates(part_id=ps.part_id, regulation=d.regulation,

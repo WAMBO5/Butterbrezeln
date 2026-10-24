@@ -51,6 +51,14 @@ Wording may differ; a requirement that states the obligation with slightly more 
 Each id may be used at most once. Leave out requirements without a counterpart. Be strict about different
 values, different subjects or different directions.
 """
+JUDGE_STRICT_SYSTEM = """\
+You compare two lists of engineering requirements derived from the same UN Regulation: OURS and EXPECTED.
+Pair one of ours with one expected requirement only when both state exactly the same engineering obligation:
+the same scope (what it applies to), the same condition, and the same constraint (value, limit, property).
+Do not pair when ours merges several obligations of which the expected states one, when ours adds or drops a
+condition, exception or value, when the subject differs, or when ours only refers to the obligation in general
+terms. Wording may differ. Each id may be used at most once. Leave out requirements without an exact counterpart.
+"""
 JUDGE_SCHEMA = {"type": "object", "properties": {"pairs": {"type": "array", "items": {"type": "object", "properties": {
     "ours": {"type": "string"}, "expected": {"type": "string"}}, "required": ["ours", "expected"],
     "additionalProperties": False}}}, "required": ["pairs"], "additionalProperties": False}
@@ -100,14 +108,14 @@ async def judge_json(system: str, prompt: str, schema: dict, tag: str, model: st
     raise RuntimeError(f"judge failed [{tag}]: {last}")
 
 
-async def judge(sub: list[dict], exp: list[dict]) -> tuple[int, dict, list]:
+async def judge(sub: list[dict], exp: list[dict], system: str = JUDGE_SYSTEM) -> tuple[int, dict, list]:
     regs = sorted({r["source"]["regulation"] for r in sub} & {g["source"]["regulation"] for g in exp})
     jobs = []
     for reg in regs:
         o = [r for r in sub if r["source"]["regulation"] == reg]
         g = [x for x in exp if x["source"]["regulation"] == reg]
         prompt = f"<ours>\n{lines(o)}\n</ours>\n\n<expected>\n{lines(g)}\n</expected>\n\nPair requirements that state the same obligation."
-        jobs.append((reg, o, g, judge_json(JUDGE_SYSTEM, prompt, JUDGE_SCHEMA, tag=f"judge:{reg}")))
+        jobs.append((reg, o, g, judge_json(system, prompt, JUDGE_SCHEMA, tag=f"judge:{reg}")))
     outs = await asyncio.gather(*[j[3] for j in jobs])
     matched, per, pairs = 0, {}, []
     for (reg, o, g, _), out in zip(jobs, outs):
@@ -125,9 +133,13 @@ def main() -> int:
     ap.add_argument("submission")
     ap.add_argument("--expected", default=str(HACK / "cases" / "dev-rear-lamp" / "expected.json"))
     ap.add_argument("--judge", action="store_true")
+    ap.add_argument("--strict", action="store_true", help="stricter judge, calibrated against the platform")
     ap.add_argument("--label")
     a = ap.parse_args()
     v = subprocess.run([sys.executable, str(HACK / "tools" / "validate.py"), a.submission], capture_output=True, text=True)
+    if v.returncode != 0 and "jsonschema" in (v.stdout + v.stderr) and "No module" in (v.stdout + v.stderr):
+        print("validate.py could not run: jsonschema is not installed for this python; use `uv run python score.py ...`")
+        return 2
     if v.returncode != 0:
         print("VALIDATION FAILED\n" + v.stdout[-2000:] + v.stderr[-1000:])
         return 2
@@ -157,15 +169,15 @@ def main() -> int:
     print(f"gold paragraphs missed ({sum(missed.values())} reqs): " + ", ".join(
         f"{r.split()[-1]}§{p}" for r, p in sorted(missed)))
     if a.judge:
-        m, jper, pairs = asyncio.run(judge(sub, exp))
+        m, jper, pairs = asyncio.run(judge(sub, exp, JUDGE_STRICT_SYSTEM if a.strict else JUDGE_SYSTEM))
         jp, jr = m / max(len(sub), 1), m / max(len(exp), 1)
         rows["req(judge)"] = (jp, jr, f2(jp, jr))
-        print(f"{'req(judge)':<12}{jp:>7.3f}{jr:>7.3f}{f2(jp, jr):>7.3f}   {len(sub)} / {len(exp)} / {m}")
+        print(f"{'req(strict)' if a.strict else 'req(judge)':<12}{jp:>7.3f}{jr:>7.3f}{f2(jp, jr):>7.3f}   {len(sub)} / {len(exp)} / {m}")
         print("  " + "; ".join(f"{r} {x}/{y}/{z}" for r, (x, y, z) in jper.items()))
         out_dir = HERE / "pairs"  # never next to the submission: other lanes' folders are not ours to write
         out_dir.mkdir(exist_ok=True)
         tag = hashlib.sha256(str(Path(a.submission).resolve()).encode()).hexdigest()[:8]
-        (out_dir / f"{Path(a.submission).stem}.{tag}.judge_pairs.json").write_text(json.dumps(pairs, indent=0))
+        (out_dir / f"{Path(a.submission).stem}.{tag}.{'strict' if a.strict else 'judge'}_pairs.json").write_text(json.dumps(pairs, indent=0))
     if a.label:
         SCOREBOARD.parent.mkdir(parents=True, exist_ok=True)
         if not SCOREBOARD.exists():

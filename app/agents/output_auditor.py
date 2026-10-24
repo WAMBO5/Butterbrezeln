@@ -10,8 +10,9 @@ from app.models import Requirement, Review
 INSTRUCTION = """\
 You audit the final list of engineering requirements drawn from UN Regulations. Each line has an id,
 its citation, the parts it binds and its text. Report only these problems, one issue each:
-- "duplicate": the requirement states the same obligation as another one (same scope, condition and
-  constraint); target_id one of the two ids, evidence [the other id].
+- "duplicate": the requirement states the same obligation as another one of the same regulation
+  (same scope, condition, constraint and device); target_id one of the two ids, evidence [the other
+  id]. Requirements from different regulations, or about different devices, are never duplicates.
 - "merged": the requirement holds two or more separate obligations.
 - "unclear_subject": the subject cannot be understood without its paragraph ("It shall ...").
 - "format": the paragraph label is malformed (labels look like "5.4.2", "Annex 8 2.1", "Annex 4 Part 1 1.2").
