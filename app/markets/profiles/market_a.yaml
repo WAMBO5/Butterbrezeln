@@ -1,0 +1,7 @@
+# Illustrative sample market, not real law: applies every UN Regulation of the corpus, base versions.
+market_id: market_a
+name: Market A (illustrative)
+illustrative: true
+default: {status: mandatory, version_role: base}
+rules: []
+outside_corpus: []

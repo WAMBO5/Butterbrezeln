@@ -1,0 +1,9 @@
+# Illustrative sample market, not real law: does not apply R150 and relies on a rule outside the corpus.
+market_id: market_c
+name: Market C (illustrative)
+illustrative: true
+default: {status: mandatory, version_role: base}
+rules:
+  - {regulation: UN R150, status: not_applied, version_role: base}
+outside_corpus:
+  - {document_id: sample-note, quote: national standard outside corpus}

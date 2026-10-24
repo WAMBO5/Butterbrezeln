@@ -1,0 +1,9 @@
+# Illustrative sample market, not real law: like Market A, but on the latest versions of R10 and R48.
+market_id: market_b
+name: Market B (illustrative)
+illustrative: true
+default: {status: mandatory, version_role: base}
+rules:
+  - {regulation: UN R10, status: mandatory, version_role: latest}
+  - {regulation: UN R48, status: mandatory, version_role: latest}
+outside_corpus: []
