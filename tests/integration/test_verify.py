@@ -54,3 +54,10 @@ def test_score_with_fake_judge(monkeypatch, tmp_path, capsys):
     register_responders({"requirement_judge": judge})
     assert main(["--fake-llm", "score", str(run_dir), "--judge"]) == 0
     assert "matched: 3" in capsys.readouterr().out
+
+
+async def test_replay_ignores_later_market_exports(fake_run, tmp_settings, fake_responders):
+    from app.compliance.ledger import Ledger
+
+    Ledger(fake_run).append("export", "orchestrator", None, {"markets": {}}, {"files": ["markets.json"]})
+    assert replay(fake_run, fake_responders, tmp_settings) == []

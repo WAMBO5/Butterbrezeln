@@ -63,6 +63,22 @@ def render_report(state: RunState, models: dict[str, str]) -> str:
                 for level, s in state.score.items()]
         out += ["", "## Score against expected.json (offline: regulation and page level)", "",
                 _table(rows, ["level", "precision", "recall", "F1", "cited / expected / matched"])]
+    markets = (state.markets_result or {}).get("markets")
+    if markets:
+        names = {p["market_id"]: p["name"] for p in markets["profiles"]}
+        rows = [[names.get(v["market_id"], v["market_id"]), v["verdict"].replace("_", " "),
+                 str(len(markets["sets"].get(v["market_id"], []))), str(len(v["blocking"])),
+                 str(len(v["missing_evidence"])), str(len(v["extras"]))] for v in markets["verdicts"]]
+        out += ["", "## Markets (illustrative sample profiles, not real law)", "",
+                _table(rows, ["market", "verdict", "requirements", "blocking", "missing evidence", "extras"]),
+                "", f"Shared core: {len(markets['core_extras']['core'])} requirements; envelope: "
+                    f"{len(markets['core_extras']['envelope'])}."]
+        plan = state.markets_result.get("ship_plan")
+        if plan:
+            out += ["", "### Ship plan", "", plan["envelope_summary"], ""]
+            out += [f"{n}. **{a['title']}** ({a['kind'].replace('_', ' ')}) — unlocks "
+                    f"{', '.join(names.get(m, m) for m in a['markets_unlocked']) or 'no market alone'}. {a['rationale']}"
+                    for n, a in enumerate(plan["actions"], start=1)]
     if state.missing_texts:
         out += ["", "## Missing regulation texts", "",
                 "These versions have no text file; the run continued without them:", ""]

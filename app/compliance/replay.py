@@ -61,7 +61,7 @@ def replay(run_dir: Path, store: CorpusStore, settings: Settings) -> list[str]:
                        ("submission.json", submission)):
         if not _same(run_dir / name, data):
             problems.append(f"{name} differs from what the ledger reproduces")
-    exports = [r for r in ledger.records() if r.kind == "export"]
+    exports = [r for r in ledger.records() if r.kind == "export" and "submission_sha256" in r.meta]
     if exports and (run_dir / "submission.json").exists():
         if exports[-1].meta.get("submission_sha256") != file_sha256(run_dir / "submission.json"):
             problems.append("submission.json does not match the hash recorded at export")

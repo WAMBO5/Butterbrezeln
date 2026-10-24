@@ -10,6 +10,12 @@ import Base from "../layouts/Base.astro";
   </div>
   <p class="banner" style="margin-bottom: 1.5rem">Illustrative markets: sample profiles with made-up names, not real national law. The verdicts show how the requirements split by market, not whether a real market accepts the part.</p>
   <div id="content"></div>
+  <section class="sheet stack" id="rerun" hidden style="margin-top: 1.5rem">
+    <h2>Choose markets for this run</h2>
+    <p class="quiet">Runs only the market layer on this run's requirements; the requirements themselves do not change. The ship plan calls LLM once or twice.</p>
+    <div id="market-choices" class="stack"></div>
+    <div class="row"><button class="button" type="button" id="rerun-button">Run the market layer</button><span id="rerun-note" class="quiet"></span></div>
+  </section>
 </Base>
 
 <script>
@@ -21,7 +27,7 @@ import Base from "../layouts/Base.astro";
   function render(run: Run) {
     const m = run.markets_result?.markets;
     if (!m) {
-      return message($("#content"), "This run was started without markets. Start a new run and pick one or more markets to get a ship plan.");
+      return message($("#content"), "This run has no market selection yet. Choose markets below to compute the verdicts and the ship plan.");
     }
     const names = Object.fromEntries(m.profiles.map((p) => [p.market_id, p.name]));
     const verdicts = h("section", { class: "sheet stack" }, h("h2", {}, "Verdict per market"),
@@ -56,6 +62,35 @@ import Base from "../layouts/Base.astro";
     $("#content").replaceChildren(h("div", { class: "stack" }, verdicts, advice, matrix));
   }
 
+  async function offerRerun(run: Run) {
+    if (run.status !== "done") return;
+    try {
+      const markets = await api.markets();
+      $("#market-choices").replaceChildren(...markets.map((m) => h("label", { class: "choice" },
+        h("input", { type: "checkbox", name: "market", value: m.market_id, checked: run.markets.includes(m.market_id) }),
+        h("strong", {}, m.name), h("span", {}, m.illustrative ? "Illustrative sample" : "Built from cited sources"))));
+      $("#rerun").hidden = false;
+    } catch { /* the server has no market layer */ }
+  }
+
+  $("#rerun-button").addEventListener("click", async () => {
+    const chosen = [...document.querySelectorAll<HTMLInputElement>("input[name=market]:checked")].map((m) => m.value);
+    const note = $("#rerun-note");
+    if (!chosen.length) { note.textContent = "Pick at least one market."; return; }
+    $<HTMLButtonElement>("#rerun-button").disabled = true;
+    note.textContent = "Running the market layer…";
+    try {
+      const before = JSON.stringify((await api.run(id!)).markets_result);
+      await api.rerunMarkets(id!, chosen);
+      for (let i = 0; i < 120; i++) {
+        await new Promise((r) => setTimeout(r, 1500));
+        const run = await api.run(id!);
+        if (JSON.stringify(run.markets_result) !== before) { note.textContent = ""; render(run); break; }
+      }
+    } catch (e) { note.textContent = `The market layer did not run: ${(e as Error).message}`; }
+    $<HTMLButtonElement>("#rerun-button").disabled = false;
+  });
+
   async function load() {
     if (!id) return message($("#content"), "No run selected.", "error");
     try {
@@ -63,6 +98,7 @@ import Base from "../layouts/Base.astro";
       draftStamp(run.label);
       $("#subtitle").textContent = `${run.case_id}: ${run.markets.length ? run.markets.join(", ") : "no markets selected"}.`;
       render(run);
+      offerRerun(run);
     } catch (e) {
       message($("#content"), `This run could not be loaded: ${(e as Error).message}`, "error");
     }

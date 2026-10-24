@@ -49,6 +49,10 @@ class StopBody(BaseModel):
     reason: str = "stopped from the UI"
 
 
+class MarketsBody(BaseModel):
+    markets: list[str]
+
+
 class SignoffBody(BaseModel):
     reviewer: str
     statement: str = "I reviewed the requirements of this run and accept them."
@@ -267,8 +271,19 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 "pages": store.page_count(regulation, version), "highlight": _highlight(text, quote)}
 
     @app.get("/markets")
-    def markets() -> JSONResponse:
-        return JSONResponse({"detail": "markets arrive with the market layer"}, status_code=501)
+    def markets() -> list[dict]:
+        from app.pipeline.markets import available_profiles
+
+        regulations = sorted({v.regulation for v in manager().deps.versions})
+        return [p.model_dump() for p in available_profiles(settings, regulations)]
+
+    @app.post("/runs/{run_id}/markets", status_code=202)
+    async def rerun_markets(run_id: str, body: MarketsBody) -> dict:
+        state = state_or_404(run_id)
+        if state.status != "done":
+            raise HTTPException(409, f"the run is {state.status}; markets can be re-run on a finished run")
+        manager().rerun_markets(run_id, body.markets)
+        return {"status": "running markets"}
 
     if WEB_DIST.exists():
         app.mount("/", StaticFiles(directory=WEB_DIST, html=True), name="web")

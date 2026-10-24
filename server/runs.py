@@ -108,5 +108,34 @@ class RunManager:
         state.save()
         self._spawn(run_id, drive(state, self.deps))
 
+    def rerun_markets(self, run_id: str, markets: list[str]) -> None:
+        """Run only the market layer again for a finished run, with a new market selection."""
+        import json
+
+        from app.compliance.ledger import Ledger
+        from app.pipeline.calls import bind_call
+        from app.pipeline.main import make_run_llm
+        from app.pipeline.markets import available_profiles, run_markets
+
+        async def go() -> None:
+            state = self.state(run_id)
+            run_dir = self.run_dir(run_id)
+            llm = make_run_llm(self.settings, state, None)
+            ledger = Ledger(run_dir)
+            regulations = sorted({v.regulation for v in self.deps.versions})
+            result = await run_markets(state.requirements, markets, available_profiles(self.settings, regulations),
+                                       self.deps.store, self.settings, state.profile, bind_call(llm, ledger), ledger)
+            state = self.state(run_id)
+            state.markets, state.markets_result = markets, result.as_dict()
+            state.cost = llm.budget.report() if llm.budget is not None else state.cost
+            state.save()
+            (run_dir / "markets.json").write_text(json.dumps(state.markets_result["markets"], indent=1), encoding="utf-8")
+            (run_dir / "ship_plan.json").write_text(json.dumps(state.markets_result["ship_plan"], indent=1),
+                                                    encoding="utf-8")
+            ledger.append("export", "orchestrator", None, state.markets_result, {"files": ["markets.json", "ship_plan.json"],
+                                                                                 "markets": markets})
+
+        self._spawn(run_id + ":markets", go())
+
     def delete_upload(self, path: Path) -> None:
         shutil.rmtree(path, ignore_errors=True)

@@ -83,3 +83,16 @@ def test_upload_creates_a_run(client):
     files = [("files", ("spec.md", b"# spec: Side marker\n\n## Main Parts\n\n- Amber lamp\n", "text/markdown"))]
     run_id = client.post("/runs/upload", data={"case_id": "upload-test", "mode": "benchmark"}, files=files).json()["run_id"]
     assert wait(client, run_id)["status"] == "done"
+
+
+def test_markets_endpoints(client):
+    markets = client.get("/markets").json()
+    assert {m["market_id"] for m in markets} >= {"market_a", "market_b", "market_c"} and all(m["illustrative"] for m in markets)
+    run_id = client.post("/runs", json={"case_dir": REAR_LAMP, "markets": [], "mode": "benchmark"}).json()["run_id"]
+    assert wait(client, run_id)["markets_result"] is None
+    assert client.post(f"/runs/{run_id}/markets", json={"markets": ["market_a", "market_c"]}).status_code == 202
+    deadline = time.time() + 30
+    while time.time() < deadline and client.get(f"/runs/{run_id}").json()["markets_result"] is None:
+        time.sleep(0.2)
+    result = client.get(f"/runs/{run_id}").json()["markets_result"]
+    assert {v["market_id"]: v["verdict"] for v in result["markets"]["verdicts"]}["market_c"] == "not_covered"

@@ -125,6 +125,22 @@ def fake_matcher(prompt: str, req: FakeRequest) -> str:
         for oid in payload["obligation_ids"]]})
 
 
+def fake_synergy(prompt: str, req: FakeRequest) -> str:
+    payload = extract_payload(prompt)
+    open_markets = [v for v in payload["verdicts"] if v["verdict"] in ("blocked", "evidence_needed")]
+    if not open_markets:
+        return json.dumps({"envelope_summary": "fake: every market is ready.", "actions": [], "synergies": [],
+                           "caveats": ["fake plan"]})
+    ids = sorted(set(open_markets[0]["blocking"]) | set(open_markets[0]["missing_evidence"]))
+    unlocked = sorted(v["market_id"] for v in open_markets
+                      if set(v["blocking"]) | set(v["missing_evidence"]) <= set(ids))
+    return json.dumps({"envelope_summary": "fake: prove the shared requirements once.", "synergies": [],
+                       "caveats": ["Illustrative market data."],
+                       "actions": [{"title": "Produce the evidence for the shared requirements", "kind": "test_evidence",
+                                    "requirement_ids": ids, "markets_unlocked": unlocked,
+                                    "rationale": "One test campaign covers every market that asks for them."}]})
+
+
 def build_fake_responders(settings: Settings, store: CorpusStore) -> dict[str, Responder]:
     """Scripted outputs for a whole offline run. They read the prompt payload only."""
     return {
@@ -139,4 +155,5 @@ def build_fake_responders(settings: Settings, store: CorpusStore) -> dict[str, R
         "requirement_matcher": fake_matcher,
         "match_reviewer": fake_pass_review,
         "output_auditor": fake_pass_review,
+        "synergy_advisor": fake_synergy,
     }
