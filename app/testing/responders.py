@@ -161,6 +161,23 @@ def fake_onboarding(prompt: str, req: FakeRequest) -> str:
                        "outside_corpus": outside})
 
 
+def fake_change_analyst(prompt: str, req: FakeRequest) -> str:
+    changes = []
+    for pair in extract_payload(prompt)["pairs"]:
+        source = {"page": pair["new_page"] or pair["old_page"], "paragraph": pair["new_paragraph"] or pair["old_paragraph"]}
+        if pair["status"] == "removed":
+            changes += [{"requirement_id": r["id"], "change": "removed", "new_text": None,
+                         "reason": f"Paragraph {pair['paragraph']} was removed.", "source": source} for r in pair["linked"]]
+        elif pair["status"] == "modified" and pair["linked"]:
+            changes += [{"requirement_id": r["id"], "change": "modified", "new_text": pair["new_text"][:2000],
+                         "reason": f"Paragraph {pair['paragraph']} changed: {pair['edit']}"[:1000], "source": source}
+                        for r in pair["linked"]]
+        elif pair["status"] == "added" and pair["new_text"]:
+            changes.append({"requirement_id": None, "change": "added", "new_text": pair["new_text"][:2000],
+                            "reason": f"Paragraph {pair['paragraph']} was added.", "source": source})
+    return json.dumps({"changes": changes})
+
+
 def build_fake_responders(settings: Settings, store: CorpusStore) -> dict[str, Responder]:
     """Scripted outputs for a whole offline run. They read the prompt payload only."""
     return {
@@ -177,4 +194,5 @@ def build_fake_responders(settings: Settings, store: CorpusStore) -> dict[str, R
         "output_auditor": fake_pass_review,
         "synergy_advisor": fake_synergy,
         "market_onboarding": fake_onboarding,
+        "change_analyst": fake_change_analyst,
     }

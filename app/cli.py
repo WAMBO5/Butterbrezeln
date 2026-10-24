@@ -34,6 +34,8 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("bench", help="run + score on the rear-lamp case (paid)")
     verify = sub.add_parser("verify", help="check the ledger chain and replay a run (free)")
     verify.add_argument("run_dir")
+    subgoal = sub.add_parser("subgoal", help="which old requirements change in the new version (paid)")
+    subgoal.add_argument("subgoal_dir")
     markets = sub.add_parser("markets", help="market profiles")
     markets_sub = markets.add_subparsers(dest="markets_command", required=True)
     markets_sub.add_parser("list", help="list the market profiles (free)")
@@ -250,6 +252,20 @@ def cmd_markets(args, settings: Settings) -> int:
     return 0
 
 
+def cmd_subgoal(args, settings: Settings) -> int:
+    from app.pipeline.subgoal import run_subgoal
+
+    if settings.fake_llm:
+        _register_fakes(settings, _store(settings))
+    path = asyncio.run(run_subgoal(Path(args.subgoal_dir), settings))
+    data = json.loads(path.read_text(encoding="utf-8"))
+    problems = json.loads((path.parent / "validation.json").read_text(encoding="utf-8"))["problems"]
+    counts = {k: sum(1 for c in data["changes"] if c["change"] == k) for k in ("modified", "removed", "added")}
+    print(f"changes: {path} ({counts['modified']} modified, {counts['removed']} removed, {counts['added']} added)")
+    print("validate.py --requirements-old: no problems" if not problems else "validate.py problems:\n" + "\n".join(problems))
+    return 0 if not problems else 1
+
+
 def cmd_serve(args, settings: Settings) -> int:
     import uvicorn
 
@@ -261,7 +277,7 @@ def cmd_serve(args, settings: Settings) -> int:
 
 COMMANDS = {"doctor": cmd_doctor, "build-corpus": cmd_build_corpus, "run": cmd_run, "score": cmd_score,
             "bench": cmd_bench, "verify": cmd_verify, "signoff": cmd_signoff, "serve": cmd_serve,
-            "markets": cmd_markets}
+            "markets": cmd_markets, "subgoal": cmd_subgoal}
 
 
 def main(argv: list[str] | None = None) -> int:
