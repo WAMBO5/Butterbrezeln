@@ -79,29 +79,36 @@ def make_match_batches(cands: list[SectionCandidates], obligations_by_provision:
 
 
 def resolve(batch: MatchInput, result: LoopResult[GroupMatchBatch]) -> list[MatchDecision]:
-    """One decision per part and obligation. A disagreement left at the end becomes `uncertain` with
-    both reasons; an obligation the matcher never decided is `uncertain` ("no decision") for every
-    part of the group."""
-    wanted = {o.obligation_id for o in batch.obligations}
+    """One decision per part and obligation. A selected obligation is applicable (high confidence) or
+    uncertain (medium) for the parts named; everything else is not applicable. A selection the
+    reviewer still disputes at the end becomes uncertain with both reasons; a batch the matcher never
+    answered is uncertain ("no decision") for every part."""
     group = batch.part_ids
-    decided = {}
-    if result.output is not None:
-        for d in result.output.decisions:
-            if d.obligation_id in wanted and d.obligation_id not in decided:
-                decided[d.obligation_id] = d
+    if result.output is None:
+        return [MatchDecision(part_id=pid, obligation_id=o.obligation_id, state="uncertain", reason="no decision",
+                              fact_refs=[], evidence_status="evidence_needed", test_case="")
+                for o in batch.obligations for pid in group]
+    wanted = {o.obligation_id for o in batch.obligations}
+    selected = {}
+    for d in result.output.decisions:
+        if d.obligation_id in wanted and d.obligation_id not in selected:
+            selected[d.obligation_id] = d
     disputed = {i.target_id: i for i in result.open_issues} if not result.resolved else {}
     out: list[MatchDecision] = []
     for o in batch.obligations:
-        d = decided.get(o.obligation_id)
-        if d is None:
-            out += [MatchDecision(part_id=pid, obligation_id=o.obligation_id, state="uncertain", reason="no decision",
-                                  fact_refs=[], evidence_status="evidence_needed", test_case="") for pid in group]
-            continue
-        bound = [pid for pid in d.part_ids if pid in group] if d.state != "not_applicable" else []
+        d = selected.get(o.obligation_id)
         issue = disputed.get(o.obligation_id)
         for pid in group:
-            state = d.state if pid in bound else "not_applicable"
-            reason = d.reason if pid in bound or d.state == "not_applicable" else f"does not bind this part: {d.reason}"
+            if d is None or pid not in d.part_ids:
+                reason = "not selected: it does not bind this part as described"
+                state = "not_applicable"
+                if issue is not None and issue.proposed in ("add", "applicable"):
+                    state, reason = "uncertain", f"{reason} | reviewer: {issue.reason}"
+                out.append(MatchDecision(part_id=pid, obligation_id=o.obligation_id, state=state, reason=reason,
+                                         fact_refs=[], evidence_status="evidence_needed", test_case=""))
+                continue
+            state = "applicable" if d.confidence == "high" else "uncertain"
+            reason = d.reason
             if issue is not None:
                 state, reason = "uncertain", f"{d.reason} | reviewer: {issue.reason}"
             out.append(MatchDecision(part_id=pid, obligation_id=o.obligation_id, state=state, reason=reason,

@@ -212,10 +212,11 @@ class MatchBatch(_Model):
 
 
 class GroupDecision(_Model):
-    """The matcher's decision on one obligation for a group of parts that share a section: the
-    parts it binds (state applies to them); the group's other parts are not bound by it."""
+    """The matcher selects an obligation for the parts it binds, with its confidence: high for
+    requirements it is sure bind the parts as described, medium when it likely binds but depends on a
+    detail the inputs leave open. Obligations it does not select bind none of the parts."""
     obligation_id: str
-    state: DecisionState
+    confidence: Literal["high", "medium"]
     part_ids: list[str]
     reason: str
     fact_refs: list[str]

@@ -12,26 +12,33 @@ from app.models import GroupMatchBatch, Issue
 from app.tools.corpus_tools import read_provision
 
 INSTRUCTION = """\
-You decide which candidate obligations of one regulation section bind which parts of a product. You
-see the parts the scope plan assigned this section to; return exactly one decision per obligation id,
-ids copied exactly:
-- state "applicable" with part_ids: the parts the obligation binds as built or installed. This
-  includes the section's general requirements that bind every device the regulation covers,
-  installation rules for a part's function, markings, and the test procedures used to verify a part.
-- state "not_applicable" with part_ids []: it binds none of these parts, because it is about another
-  device type or function (a front position lamp rule for a rear lamp), a feature the inputs show the
-  parts do not have (filament light sources when the light source is LED modules), or it is not an
-  engineering requirement on the product at all: obligations on the approval authority, the
-  application documents, approval numbering or the communication of approvals.
-- state "uncertain" with part_ids: it may bind those parts but depends on a fact the inputs do not
-  give. The spec being silent is never enough for not_applicable.
-- reason: one sentence naming the fact or the device type it turns on.
-- fact_refs: ids of the parts' facts you relied on.
-- evidence_status: "met" when a fact shows it is fulfilled, "not_met" when a fact contradicts it
-  (cite that fact), otherwise "evidence_needed".
-- test_case: one line on how to verify it (test, measurement or document check).
-Use read_provision only to look up a referenced annex or definition (at most 3 calls). If the payload
-lists feedback, answer every issue.
+You select, from the candidate obligations of one regulation section, the ones that a homologation
+engineer would list as requirements for these parts of this product. Precision matters: list an
+obligation only when it binds the parts as the inputs describe them. Obligations you do not list bind
+none of the parts; there is no need to explain them.
+
+Select an obligation only when all of these hold:
+- It is about the device type or function of the parts (a rear position lamp rule for the rear
+  position lamp, not for the stop lamp; a front lamp rule for none of them).
+- It applies to the product as described. Leave out obligations that only apply to a variant or
+  optional feature the inputs do not show: variable luminous intensity, sequential activation,
+  manufacturer logos, interdependent lamp systems, movable components, replaceable light sources,
+  categories or classes the spec does not name, fail-safe or replacement functions, other vehicle
+  categories.
+- It is a requirement on the product: a design, performance, photometric, colour, marking or
+  installation requirement, or the pass/fail result a test must reach ("after the test the device
+  shall show no cracking", "the intensity shall be at least 4 cd"). Leave out instructions to the
+  test laboratory (apparatus, conditioning, test steps, how to measure or add up results), duties of
+  the approval authority, the application documents, approval numbering, communication forms and
+  conformity of production.
+
+For each selected obligation: part_ids (the parts it binds), confidence "high" when you are sure it
+binds those parts as described, "medium" when it most likely does but depends on a detail the inputs
+leave open; reason (one sentence naming the device or fact it turns on); fact_refs (ids of the
+parts' facts you used); evidence_status ("met" when a fact shows it is fulfilled, "not_met" when a
+fact contradicts it, otherwise "evidence_needed"); test_case (one line on how to verify it). Copy
+obligation ids exactly. Use read_provision only to look up a referenced annex or definition (at most 3
+calls). If the payload lists feedback, answer every issue.
 """
 
 
@@ -65,7 +72,7 @@ def match_context(batch: MatchInput) -> list[tuple[str, str]]:
 
 def build_match_prompt(batch: MatchInput, feedback: list[Issue]) -> str:
     return render_prompt(
-        task=f"Decide every candidate obligation for the parts {', '.join(batch.part_ids)}.",
+        task=f"Select the candidate obligations that bind the parts {', '.join(batch.part_ids)}.",
         context=match_context(batch), untrusted=[],
         payload={"part_ids": batch.part_ids, "obligation_ids": [o.obligation_id for o in batch.obligations],
                  "feedback": [i.model_dump() for i in feedback]},

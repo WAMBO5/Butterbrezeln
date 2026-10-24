@@ -24,16 +24,14 @@ def match_gate(batch: MatchInput, out: GroupMatchBatch) -> list[Issue]:
         for pid in d.part_ids:
             if pid not in group:
                 issues.append(_issue("unknown_part", d.obligation_id, f"{pid} is not one of this batch's parts"))
-        if d.state != "not_applicable" and not d.part_ids:
-            issues.append(_issue("no_parts", d.obligation_id, f"name the parts it binds when it is {d.state}"))
+        if not d.part_ids:
+            issues.append(_issue("no_parts", d.obligation_id, "name the parts it binds, or leave it out"))
         for ref in d.fact_refs:
             if ref not in facts:
                 issues.append(_issue("unknown_fact", d.obligation_id, f"{ref} is not a fact of these parts"))
         if d.evidence_status == "not_met" and not d.fact_refs:
             issues.append(_issue("not_met_without_fact", d.obligation_id, "not_met needs the contradicting fact in fact_refs"))
-    for oid in wanted:
-        if counts.get(oid, 0) == 0:
-            issues.append(_issue("missing_decision", oid, "decide every obligation"))
-        elif counts[oid] > 1:
-            issues.append(_issue("duplicate_decision", oid, "decide each obligation exactly once"))
+    for oid in wanted:  # obligations that are not selected bind none of the parts
+        if counts.get(oid, 0) > 1:
+            issues.append(_issue("duplicate_decision", oid, "select each obligation at most once"))
     return issues

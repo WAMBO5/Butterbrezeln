@@ -66,7 +66,7 @@ async def test_signoff_refused_while_items_are_open(tmp_settings, fake_responder
 
     def uncertain_matcher(prompt, req):
         out = json.loads(fake_matcher(prompt, req))
-        out["decisions"][0]["state"] = "uncertain"
+        out["decisions"][0]["confidence"] = "medium"
         return json.dumps(out)
 
     register_responders({"requirement_matcher": uncertain_matcher})

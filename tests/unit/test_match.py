@@ -39,8 +39,8 @@ def batch(obligations=None):
                       obligations=obligations or [ob(1), ob(2)], definitions=[])
 
 
-def decision(oid, state="applicable", parts=("p1", "p2"), facts=(), status="evidence_needed"):
-    return GroupDecision(obligation_id=oid, state=state, part_ids=list(parts), reason="matcher says so",
+def decision(oid, confidence="high", parts=("p1", "p2"), facts=(), status="evidence_needed"):
+    return GroupDecision(obligation_id=oid, confidence=confidence, part_ids=list(parts), reason="matcher says so",
                          fact_refs=list(facts), evidence_status=status, test_case="t")
 
 
@@ -70,36 +70,36 @@ def test_prompt_has_only_the_groups_facts():
 
 
 def test_gate_cases():
-    ok = GroupMatchBatch(decisions=[decision(ob(1).obligation_id), decision(ob(2).obligation_id, "not_applicable", ())])
-    assert match_gate(batch(), ok) == []
+    ok = GroupMatchBatch(decisions=[decision(ob(1).obligation_id)])  # obligation 2 not selected: that is fine
+    assert match_gate(batch(), ok) == [] and match_gate(batch(), GroupMatchBatch(decisions=[])) == []
     bad = GroupMatchBatch(decisions=[
         decision(ob(1).obligation_id), decision(ob(1).obligation_id), decision("UN R999@1.0.0#9/1"),
         decision(ob(2).obligation_id, status="not_met"), decision(ob(2).obligation_id, facts=["p3-f1"]),
         decision(ob(2).obligation_id, parts=("p3",)), decision(ob(2).obligation_id, parts=())])
     types = {i.type for i in match_gate(batch(), bad)}
     assert {"duplicate_decision", "unknown_id", "not_met_without_fact", "unknown_fact", "unknown_part",
-            "no_parts"} <= types
-    assert {i.type for i in match_gate(batch(), GroupMatchBatch(decisions=[decision(ob(1).obligation_id)]))} == {"missing_decision"}
+            "no_parts"} <= types and "missing_decision" not in types
 
 
-def test_resolve_expands_to_one_decision_per_part():
+def test_resolve_expands_selection_to_one_decision_per_part():
     out = GroupMatchBatch(decisions=[decision(ob(1).obligation_id, parts=("p1",)),
-                                     decision(ob(2).obligation_id, "not_applicable", ())])
-    decided = resolve(batch(), LoopResult(output=out, resolved=True, attempts=[Attempt(1)], open_issues=[]))
+                                     decision(ob(2).obligation_id, "medium")])
+    decided = resolve(batch(ob_list := [ob(1), ob(2), ob(3)]), LoopResult(output=out, resolved=True, attempts=[Attempt(1)],
+                                                                          open_issues=[]))
     states = {(d.part_id, d.obligation_id): d.state for d in decided}
-    assert states == {("p1", ob(1).obligation_id): "applicable", ("p2", ob(1).obligation_id): "not_applicable",
-                      ("p1", ob(2).obligation_id): "not_applicable", ("p2", ob(2).obligation_id): "not_applicable"}
+    assert states[("p1", ob(1).obligation_id)] == "applicable" and states[("p2", ob(1).obligation_id)] == "not_applicable"
+    assert states[("p1", ob(2).obligation_id)] == states[("p2", ob(2).obligation_id)] == "uncertain"
+    assert states[("p1", ob(3).obligation_id)] == "not_applicable" and len(decided) == 6
 
 
-def test_disagreement_becomes_uncertain_with_both_reasons():
-    out = GroupMatchBatch(decisions=[decision(ob(1).obligation_id, "not_applicable", ()), decision(ob(2).obligation_id)])
-    issue = Issue(type="silent_spec", target_id=ob(1).obligation_id, reason="spec is only silent", evidence=[],
-                  proposed="uncertain")
-    result = LoopResult(output=out, resolved=False, attempts=[Attempt(1)], open_issues=[issue])
-    decided = {(d.part_id, d.obligation_id): d for d in resolve(batch(), result)}
+def test_disputed_selection_becomes_uncertain_with_both_reasons():
+    out = GroupMatchBatch(decisions=[decision(ob(1).obligation_id), decision(ob(2).obligation_id)])
+    issue = Issue(type="conditional", target_id=ob(1).obligation_id, reason="depends on a feature not shown",
+                  evidence=[], proposed="remove")
+    decided = {(d.part_id, d.obligation_id): d for d in resolve(batch(), LoopResult(
+        output=out, resolved=False, attempts=[Attempt(1)], open_issues=[issue]))}
     first = decided[("p1", ob(1).obligation_id)]
-    assert first.state == "uncertain" and first.reason == "matcher says so | reviewer: spec is only silent"
-    assert decided[("p2", ob(1).obligation_id)].state == "uncertain"
+    assert first.state == "uncertain" and first.reason == "matcher says so | reviewer: depends on a feature not shown"
     assert decided[("p1", ob(2).obligation_id)].state == "applicable"
 
 
@@ -109,7 +109,7 @@ def test_missing_output_makes_every_obligation_uncertain():
     assert len(decided) == 4 and {d.state for d in decided} == {"uncertain"} and decided[0].reason == "no decision"
 
 
-def test_reduced_cost_mode_reviews_only_disputed_batches():
+def test_reviewer_runs_only_on_batches_with_a_selection():
     from app.config.settings import load_settings
     from app.pipeline.main import verify_extraction
     from app.pipeline.match import match_loop
@@ -117,10 +117,8 @@ def test_reduced_cost_mode_reviews_only_disputed_batches():
     reduced = load_settings({"CERTIVITY_COST_MODE": "reduced"}, fake_llm=True)
     loop = match_loop(reduced)
     assert loop.producer.effort == "low" and loop.producer.tools == ()
-    all_applicable = GroupMatchBatch(decisions=[decision(ob(1).obligation_id), decision(ob(2).obligation_id)])
-    disputed = GroupMatchBatch(decisions=[decision(ob(1).obligation_id, "not_applicable", ()),
-                                          decision(ob(2).obligation_id)])
-    assert not loop.needs_review(batch(), all_applicable) and loop.needs_review(batch(), disputed)
+    assert loop.needs_review(batch(), GroupMatchBatch(decisions=[decision(ob(1).obligation_id)]))
+    assert not loop.needs_review(batch(), GroupMatchBatch(decisions=[]))
     full = match_loop(load_settings({}, fake_llm=True))
-    assert full.needs_review is None and full.producer.effort == "medium" and len(full.producer.tools) == 1
+    assert full.needs_review is not None and full.producer.effort == "medium" and len(full.producer.tools) == 1
     assert not verify_extraction(reduced) and verify_extraction(load_settings({}, fake_llm=True))
