@@ -48,6 +48,7 @@ class LoopResult(Generic[T]):
     resolved: bool
     attempts: list[Attempt]
     open_issues: list[Issue]
+    last_output: T | None = None  # the last producer output, even if it failed the gate
 
     def summary(self) -> dict:
         return {"resolved": self.resolved, "attempts": len(self.attempts),
@@ -66,6 +67,7 @@ async def run_verified(spec: LoopSpec[T], payload: Any, call: AgentCall, ledger:
     attempts: list[Attempt] = []
     feedback: list[Issue] = []
     best: T | None = None
+    last: Any = None
     open_issues: list[Issue] = []
     resolved = False
 
@@ -90,6 +92,7 @@ async def run_verified(spec: LoopSpec[T], payload: Any, call: AgentCall, ledger:
             record("gate", "gate:" + spec.name, None, {"attempt": number, "issues": _issues(feedback)})
             continue
 
+        last = output
         attempt.gate_issues = spec.gate(payload, output)
         record("gate", "gate:" + spec.name, None, {"attempt": number, "issues": _issues(attempt.gate_issues)})
         if attempt.gate_issues:
@@ -113,6 +116,7 @@ async def run_verified(spec: LoopSpec[T], payload: Any, call: AgentCall, ledger:
         attempt.review_issues = list(review.issues)
         feedback = open_issues = attempt.review_issues
 
-    result = LoopResult(output=best, resolved=resolved, attempts=attempts, open_issues=open_issues)
+    result = LoopResult(output=best, resolved=resolved, attempts=attempts, open_issues=open_issues,
+                        last_output=last)
     record("loop_result", spec.name, None, result.summary())
     return result

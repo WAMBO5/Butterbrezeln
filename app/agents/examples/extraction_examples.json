@@ -1,0 +1,56 @@
+[
+  {
+    "source": "UN R43 1.12.0, paragraph 4.1",
+    "provision_text": "Every piece of safety glazing material, including the samples and test pieces submitted for approval, shall bear a trade name or mark of the manufacturer as listed under item 3 of Annex 1. Manufactured parts shall bear the ECE Regulation No. 43 number allocated to the prime manufacturer. The marking shall be clearly legible and indelible.",
+    "obligations": [
+      {
+        "subject": "Every piece of safety glazing material, including samples and test pieces submitted for approval",
+        "condition": null,
+        "constraint": "bear a trade name or mark of the manufacturer as listed under item 3 of Annex 1",
+        "quantities": [],
+        "text": "Every piece of safety glazing material, including the samples and test pieces submitted for approval, shall bear a trade name or mark of the manufacturer as listed under item 3 of Annex 1.",
+        "quote": "Every piece of safety glazing material, including the samples and test pieces submitted for approval, shall bear a trade name or mark of the manufacturer as listed under item 3 of Annex 1",
+        "kind": "marking"
+      },
+      {
+        "subject": "Manufactured safety glazing parts",
+        "condition": null,
+        "constraint": "bear the ECE Regulation No. 43 number allocated to the prime manufacturer",
+        "quantities": [],
+        "text": "Manufactured safety glazing parts shall bear the ECE Regulation No. 43 number allocated to the prime manufacturer.",
+        "quote": "Manufactured parts shall bear the ECE Regulation No. 43 number allocated to the prime manufacturer",
+        "kind": "marking"
+      },
+      {
+        "subject": "The marking on the safety glazing material",
+        "condition": null,
+        "constraint": "be clearly legible and indelible",
+        "quantities": [],
+        "text": "The marking on the safety glazing material shall be clearly legible and indelible.",
+        "quote": "The marking shall be clearly legible and indelible.",
+        "kind": "marking"
+      }
+    ]
+  },
+  {
+    "source": "UN R43 1.12.0, Annex 3 paragraph 2.1.1.2",
+    "provision_text": "Means for dropping the ball freely from a height to be specified, or a means for giving the ball a velocity equivalent to that obtained by the free fall. When a device to project the ball is used, the tolerance on velocity shall be ±1 per cent of the velocity equivalent to that obtained by the free fall.",
+    "obligations": [
+      {
+        "subject": "The device used to project the ball in the ball test",
+        "condition": "When a device to project the ball is used instead of a free drop",
+        "constraint": "the tolerance on velocity is ±1 per cent of the velocity equivalent to that obtained by the free fall",
+        "quantities": [{"value": "1", "unit": "per cent", "comparator": "±"}],
+        "text": "When a device to project the ball is used in the ball test, the tolerance on velocity shall be ±1 per cent of the velocity equivalent to that obtained by the free fall.",
+        "quote": "When a device to project the ball is used, the tolerance on velocity shall be ±1 per cent of the velocity equivalent to that obtained by the free fall.",
+        "kind": "test"
+      }
+    ]
+  },
+  {
+    "source": "UN R43 1.12.0, paragraph 5.1",
+    "provision_text": "Approval for a type of glazing. If the samples submitted for approval meet the requirements of paragraphs 6. to 8. of this Regulation, approval of the pertinent type of safety glazing material shall be granted.",
+    "obligations": [],
+    "no_obligation_reason": "States when the authority grants approval; it sets no obligation on the product."
+  }
+]
