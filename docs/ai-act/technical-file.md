@@ -21,17 +21,14 @@ The design is specified in `Product_Vision/compliance-pipeline/2026-10-24-compli
 ## 3. Models and prompt versions
 
 <!-- models:start -->
-From the manifest of `20261024T170226656653Z-dev-rear-lamp` (git commit a4b1bcaa48bc426da5c7f65555832ffd8c0e597a).
+From the manifest of `20261024T203834954858Z-dev-rear-lamp` (git commit 6e77ddf28531de431dc39074c1cd8cc2e2c82fd5).
 
 | agent | model | prompt version |
 |---|---|---|
-| match_reviewer | claude-sonnet-5-5 | 38d75dea8f9a |
-| obligation_extractor | claude-haiku-5-5 | f242f89a9505 |
-| product_analyst | claude-sonnet-5-5 | a9250d61b69f |
-| profile_verifier | claude-haiku-5-5 | e3f75bcb8123 |
-| recall_auditor | claude-sonnet-5-5 | c2f2924ea525 |
-| requirement_matcher | claude-sonnet-5-5 | d2f6207ad74f |
-| scope_narrower | claude-sonnet-5-5 | 237828111f29 |
+| match_reviewer | claude-opus-5-5 | a753b8f43643 |
+| obligation_extractor | claude-haiku-5-5 | 225d4f87ea90 |
+| output_auditor | claude-opus-5-5 | 122a1bd42c45 |
+| requirement_matcher | claude-opus-5-5 | 1f1470145ccc |
 <!-- models:end -->
 
 ## 4. Data
@@ -44,18 +41,18 @@ From the manifest of `20261024T170226656653Z-dev-rear-lamp` (git commit a4b1bcaa
 ## 5. Performance (declared accuracy)
 
 <!-- metrics:start -->
-Latest bench run `20261024T170226656653Z-dev-rear-lamp` (benchmark mode, 2026-10-24T17:10:47.701493+00:00).
+Latest bench run `20261024T203834954858Z-dev-rear-lamp` (benchmark mode, 2026-10-24T20:43:04.420658+00:00).
 
 | level | precision | recall | F1 |
 |---|---|---|---|
 | regulation level | 0.800 | 1.000 | 0.889 |
-| page level | 0.474 | 0.981 | 0.639 |
+| page level | 0.818 | 0.962 | 0.884 |
 
 - Golden regulations kept by the scope plan: 4/4.
-- Golden pages inside the chosen sections: 100.0%.
-- Golden requirements with a similar extracted obligation: 74.7%.
-- Requirements: 695 (654 applicable and 816 uncertain part decisions).
-- Cost: $4.92 (partial run: the budget was reached).
+- Golden pages inside the chosen sections: 96.2%.
+- Golden requirements with a similar extracted obligation: 76.8%.
+- Requirements: 371 (504 applicable and 264 uncertain part decisions).
+- Cost: $5.66.
 - Validation with `tools/validate.py`: no problems.
 <!-- metrics:end -->
 
@@ -64,7 +61,7 @@ Latest bench run `20261024T170226656653Z-dev-rear-lamp` (benchmark mode, 2026-10
 Assisted mode (checkpoints C1–C3, stop at any time, named sign-off C4), described in `instructions-for-use.md`. Human overrides are counted per checkpoint across all runs as a post-market signal (Art. 72):
 
 <!-- oversight:start -->
-No human actions in 2 runs yet.
+No human actions in 9 runs yet.
 <!-- oversight:end -->
 
 ## 7. Record-keeping

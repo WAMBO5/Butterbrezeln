@@ -36,17 +36,17 @@ Homologation, compliance and design engineers who can read UN Regulations. No pe
 Measured on the worked example (the rear lamp) with the latest `bench` run. The requirement-level score is judged on the challenge platform and is not included here.
 
 <!-- metrics:start -->
-Latest bench run `20261024T170226656653Z-dev-rear-lamp` (benchmark mode, 2026-10-24T17:10:47.701493+00:00).
+Latest bench run `20261024T203834954858Z-dev-rear-lamp` (benchmark mode, 2026-10-24T20:43:04.420658+00:00).
 
 | level | precision | recall | F1 |
 |---|---|---|---|
 | regulation level | 0.800 | 1.000 | 0.889 |
-| page level | 0.474 | 0.981 | 0.639 |
+| page level | 0.818 | 0.962 | 0.884 |
 
 - Golden regulations kept by the scope plan: 4/4.
-- Golden pages inside the chosen sections: 100.0%.
-- Golden requirements with a similar extracted obligation: 74.7%.
-- Requirements: 695 (654 applicable and 816 uncertain part decisions).
-- Cost: $4.92 (partial run: the budget was reached).
+- Golden pages inside the chosen sections: 96.2%.
+- Golden requirements with a similar extracted obligation: 76.8%.
+- Requirements: 371 (504 applicable and 264 uncertain part decisions).
+- Cost: $5.66.
 - Validation with `tools/validate.py`: no problems.
 <!-- metrics:end -->
