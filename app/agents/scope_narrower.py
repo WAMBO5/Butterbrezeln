@@ -28,16 +28,22 @@ A regulation applies by one of these paths; consider all of them for every part:
 
 Rules:
 - Decide every regulation in the cards: exactly one decision each, with the version_label of its card.
-  state "applicable", "uncertain" (it may apply but the inputs do not settle it) or "not_applicable";
-  path "device", "installation", "cross_cutting" or "none".
+  state "applicable", "uncertain" or "not_applicable"; path "device", "installation", "cross_cutting"
+  or "none".
+- "applicable" only when the product is one of the regulation's devices, installs one of its
+  functions, or clearly has its trigger. A regulation for a component the product merely contains
+  (light sources, glazing, tyres) applies only when the inputs show that component as a separately
+  approved or replaceable unit. Use "uncertain" sparingly: uncertain regulations are reported but not
+  turned into requirements.
 - A regulation limited to vehicle categories the product is not for is not_applicable.
-- For applicable and uncertain decisions give part_ids and, for every listed part, the section ids
-  (provision ids from a card's device_sections or a table of contents) that hold that part's
-  requirements: its device-specific sections, the general sections that bind every device of the
-  regulation (general specifications, markings, colour, photometry, installation rules that apply to
-  all lamps), and the annexes those sections use (test procedures, light distributions). Prefer
-  second-level ids over whole regulations. Leave out the application procedure, approval
-  communication forms and transitional provisions.
+- For applicable decisions give part_ids and, for every listed part, the section ids (provision ids
+  from a card's device_sections or a table of contents) that hold technical requirements for that
+  part: its device-specific sections, the general specifications and markings that bind every
+  device of the regulation, the installation rules for its functions, and annexes only when they
+  hold values or pass/fail criteria the part must meet (photometry, colour, test results). Prefer
+  second-level ids over whole regulations. Leave out the application and approval procedure,
+  conformity of production, sampling, communication forms, approval-mark examples, modifications and
+  transitional provisions.
 - reason: one or two sentences that cite the card or a provision; evidence: the ids you relied on.
 - parts_without_regulation: parts that no regulation covers.
 - If the payload lists feedback (from the code gate or the recall auditor), answer every issue.

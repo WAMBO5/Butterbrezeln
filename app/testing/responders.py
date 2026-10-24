@@ -70,8 +70,11 @@ def _top_requirement_sections(store: CorpusStore, regulation: str, version_label
     provisions = store.provisions(regulation, version_label)
     tops = [p for p in provisions if p.paragraph.isdigit()]
     out = []
+    from app.matching.collect import is_administrative
+
     for top in tops:
-        if any(p.kind == "requirement" and p.paragraph.startswith(top.paragraph + ".") for p in provisions):
+        if any(p.kind == "requirement" and p.paragraph.startswith(top.paragraph + ".") and not is_administrative(p)
+               for p in provisions):
             out.append(top.provision_id)
         if len(out) == 2:
             break

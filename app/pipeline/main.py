@@ -153,8 +153,14 @@ async def step_scope(rc: RunContext) -> None:
         rc.state.error = "no scope plan could be produced"
 
 
+def submit_uncertain(rc: RunContext) -> bool:
+    """Benchmark runs follow the submit policy; assisted runs keep uncertain items for the reviewer to decide."""
+    return rc.settings.submit_uncertain or rc.state.mode == "assisted"
+
+
 def candidates(rc: RunContext) -> list[SectionCandidates]:
-    return collect_candidates(rc.deps.store, rc.state.plan)
+    states = ("applicable", "uncertain") if submit_uncertain(rc) else ("applicable",)
+    return collect_candidates(rc.deps.store, rc.state.plan, states)
 
 
 async def step_collect(rc: RunContext) -> None:
@@ -205,7 +211,7 @@ async def step_match(rc: RunContext) -> None:
 
 def _gate(rc: RunContext, dropped: set[str]):
     decisions = [d for d in rc.state.decisions if d.obligation_id not in dropped]
-    reqs = assemble(decisions, rc.state.obligations, rc.deps.store, rc.settings.submit_uncertain)
+    reqs = assemble(decisions, rc.state.obligations, rc.deps.store, submit_uncertain(rc))
     ctx = OutputContext(store=rc.deps.store, versions=rc.deps.versions, profile=rc.state.profile,
                         plan=rc.state.plan, obligations=rc.state.obligations, decisions=decisions,
                         human_actions=rc.state.human_actions)
@@ -240,13 +246,13 @@ async def step_assemble(rc: RunContext) -> None:
     rc.state.requirements, rc.state.lineage = apply_requirement_pins(kept, lineages, rc.state.human_actions)
     rc.state.output_issues = issues
     rc.state.held_back = held_back(rc, dropped)
-    rc.ledger.append("note", "orchestrator", None, assembly_snapshot(rc.state, rc.settings, dropped),
+    rc.ledger.append("note", "orchestrator", None, assembly_snapshot(rc.state, submit_uncertain(rc), rc.settings, dropped),
                      {"step": "assemble", "snapshot": True})
 
 
 def held_back(rc: RunContext, dropped: set[str]) -> list:
     """Uncertain requirements the strict policy leaves out of the submission, numbered H-001, ..."""
-    if rc.settings.submit_uncertain:
+    if submit_uncertain(rc):
         return []
     submitted = {oid for r in rc.state.requirements for oid in r.obligation_ids}
     decisions = [d for d in rc.state.decisions if d.obligation_id not in dropped and d.obligation_id not in submitted
@@ -255,10 +261,10 @@ def held_back(rc: RunContext, dropped: set[str]) -> list:
     return [r.model_copy(update={"id": f"H-{n:03d}"}) for n, r in enumerate(reqs, start=1)]
 
 
-def assembly_snapshot(state: RunState, settings: Settings, dropped: set[str]) -> dict:
+def assembly_snapshot(state: RunState, include_uncertain: bool, settings: Settings, dropped: set[str]) -> dict:
     """Everything code needs to rebuild requirements, lineage and submission (`certivity verify`)."""
     return {"profile": state.profile, "plan": state.plan, "obligations": state.obligations,
-            "decisions": state.decisions, "dropped": sorted(dropped), "include_uncertain": settings.submit_uncertain,
+            "decisions": state.decisions, "dropped": sorted(dropped), "include_uncertain": include_uncertain,
             "human_actions": state.human_actions, "team_id": settings.team_id, "case_id": state.case_id}
 
 

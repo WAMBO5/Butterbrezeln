@@ -3,12 +3,33 @@ reference (one level deep), each counted once per part (design spec section 7)."
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 
 from app.corpus.store import CorpusStore
 from app.gates.scope_gate import KEPT
 from app.matching.extraction import extractable
 from app.models import Provision, ScopePlan
+
+
+ADMIN_RE = re.compile(
+    r"application for (?:type[- ])?approval|conformity of production|sampling by an inspector|communication"
+    r"|examples? of (?:the )?(?:arrangements? of )?(?:the )?approval marks?|arrangements? of (?:the )?approval mark"
+    r"|modifications? (?:of|and extension)|extension of (?:the )?approval|penalties for non-conformity"
+    r"|production definitively discontinued|names and addresses|transitional provisions|information document"
+    r"|^(?:[\d.]+ )?approval$|^(?:annex \w+ )?approval$", re.I)
+HEADING_CHARS = 150
+
+
+def is_administrative(p: Provision) -> bool:
+    """A provision under an administrative heading (approval procedure, conformity of production,
+    sampling, communication, approval-mark examples, modifications, transitional provisions): not an
+    engineering requirement on the product. A provision's own text counts only when it is a heading."""
+    headings = [h.strip() for h in p.heading_path]
+    own = " ".join(p.text.split())
+    if len(own) <= HEADING_CHARS and not re.search(r"\b(?:shall|must)\b", own, re.I):  # the provision is a heading
+        headings += [own, f"{p.paragraph} {own}"]
+    return any(ADMIN_RE.search(h) for h in headings)
 
 
 @dataclass
@@ -26,11 +47,14 @@ def _is_annex_heading(p: Provision) -> bool:
     return words[0] == "Annex" and len(words) == 2
 
 
-def collect_candidates(store: CorpusStore, plan: ScopePlan) -> list[SectionCandidates]:
+def collect_candidates(store: CorpusStore, plan: ScopePlan,
+                       states: tuple[str, ...] = KEPT) -> list[SectionCandidates]:
+    """Candidates of the regulations whose decision state is in `states` (the strict policy matches
+    applicable regulations only), without administrative provisions."""
     out: list[SectionCandidates] = []
     seen: dict[str, set[str]] = {}
     for d in plan.decisions:
-        if d.state not in KEPT:
+        if d.state not in states:
             continue
         prefix = f"{d.regulation}@{d.version_label}#"
         for ps in d.sections:
@@ -42,7 +66,7 @@ def collect_candidates(store: CorpusStore, plan: ScopePlan) -> list[SectionCandi
                 chosen: list[Provision] = []
 
                 def take(p: Provision) -> None:
-                    if extractable(p) and p.provision_id not in part_seen:
+                    if extractable(p) and not is_administrative(p) and p.provision_id not in part_seen:
                         part_seen.add(p.provision_id)
                         chosen.append(p)
 

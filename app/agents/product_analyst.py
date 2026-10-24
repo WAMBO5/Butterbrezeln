@@ -32,10 +32,12 @@ regulations apply to it.
 Return a product profile:
 - product_type: a short name for the product.
 - vehicle_categories: the categories the inputs state (M1, N1, ...); none if not stated.
-- parts: one per main part or function module the spec lists or the drawing shows (for example each
-  light function of a combined lamp, the lens, a reflector, the housing). Do not split a part into
-  screws or gaskets unless they have their own function or property. part_id: a short unique id
-  such as "p_stop_lamp".
+- parts: one per main part the spec lists (for example in a "Main parts" list) or, without such a
+  list, per separate functional unit the drawing shows (each light function of a combined lamp, the
+  lens, a retro-reflector). Housing, seals, fasteners, circuit boards and the other entries of a
+  materials table are not parts: record them as materials or properties of the parts they belong to
+  (the LED modules of a lamp are a property of each lamp function). part_id: a short unique id such
+  as "p_stop_lamp".
   - functions: what the part does.
   - properties: every applicable item of the property checklist, stated concretely ("contains
     electronics: LED modules on PCB", "emits red light", "retro-reflective", "transparent outer lens",
