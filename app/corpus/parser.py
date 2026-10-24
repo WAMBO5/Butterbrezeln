@@ -23,6 +23,11 @@ PART_RE = re.compile(r"^Part (\d+|[A-Z])\b\s*[:.\-–]?\s*(.*)$")
 # words that start a wrapped line such as "7. of this Regulation", which is not a new paragraph
 CONTINUATION = {"of", "and", "or", "to", "above", "below", "in", "shall", "is", "are", "be", "for", "with",
                 "apply", "applies", "this", "these", "which", "as", "has", "have", "must", "may", "at", "on"}
+# A GTR opens with a numbered "Statement of technical rationale and justification" (Part I) and only then
+# gives "II. Text of the Regulation", whose numbering starts again at 1: Part I goes into the Introduction.
+RATIONALE_RE = re.compile(r"^I\.\s+Statement of technical rationale and justification\b", re.I)
+REGULATION_TEXT_RE = re.compile(r"^II\.\s+Text of the (?:global technical )?regulation\b", re.I)
+PARSER_VERSION = "p2"  # part of the corpus store's file key: a new version re-parses every file once
 REF_PARA_RE = re.compile(r"paragraphs? (\d+(?:\.\d+)*)")
 REF_ANNEX_RE = re.compile(r"Annex (\d+)")
 REF_REG_RE = re.compile(r"(?:UN )?Regulation No\. ?(\d+)")
@@ -103,6 +108,7 @@ class _Open:
     lines: list[str] = field(default_factory=list)
     annex_heading: str | None = None
     top_heading: str | None = None
+    kind: str | None = None  # set for a GTR rationale, which holds no obligations
 
 
 def _kind(text: str, heading_path: list[str], annex_heading: str | None, top_heading: str | None) -> str:
@@ -155,6 +161,7 @@ def parse_regulation(
     annex_heading: str | None = None
     prev: tuple[int, ...] | None = None
     current: _Open | None = None
+    rationale = False  # inside a GTR's Part I, until "II. Text of the Regulation"
 
     def close() -> None:
         nonlocal current
@@ -178,7 +185,7 @@ def parse_regulation(
                 page_start=current.page_start,
                 page_end=current.page_end,
                 text=body,
-                kind=_kind(body, current.heading_path, current.annex_heading, current.top_heading),  # type: ignore[arg-type]
+                kind=current.kind or _kind(body, current.heading_path, current.annex_heading, current.top_heading),  # type: ignore[arg-type]
                 refs=_refs(body),
             )
         )
@@ -194,6 +201,24 @@ def parse_regulation(
         for raw in page_text.split("\n"):
             line = raw.strip()
             if not line:
+                continue
+            plain = unicodedata.normalize("NFKC", line)
+            if rationale and current is not None:
+                if REGULATION_TEXT_RE.match(plain):
+                    close()
+                    rationale, prev, headings = False, None, {}
+                    continue
+                current.lines.append(line)
+                current.page_end = page
+                continue
+            if prev is None and annex is None and RATIONALE_RE.match(plain):
+                if current is None or current.label != "Introduction":
+                    close()
+                    current = _Open(label="Introduction", numeric=None, heading_path=[], page_start=page,
+                                    page_end=page)
+                current.kind, rationale = "other", True
+                current.lines.append(line)
+                current.page_end = page
                 continue
             m_annex = ANNEX_RE.match(line)
             if m_annex and (m_annex.group(4) is None or m_annex.group(4)[0].isupper()):

@@ -9,11 +9,14 @@ from app.models import Provision
 
 EXTRACT_KINDS = {"requirement", "test_procedure", "conformity"}
 OTHER_MIN_CHARS = 25
+MAX_CHARS = 8000  # longer "provisions" are parse artefacts: annexes or appendices swallowed by one paragraph
 
 
 def extractable(p: Provision) -> bool:
     """Provisions that can hold an obligation: modal text, and table-style text such as
     "In height: not less than 250 mm" (kind `other`) that is longer than a bare heading."""
+    if len(p.text) > MAX_CHARS:
+        return False
     return p.kind in EXTRACT_KINDS or (p.kind == "other" and len(" ".join(p.text.split())) >= OTHER_MIN_CHARS
                                        and p.paragraph != "Introduction")
 

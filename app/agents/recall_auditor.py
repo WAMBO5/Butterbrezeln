@@ -22,7 +22,12 @@ Report only well-founded problems:
 - "missed_regulation": an excluded regulation that applies to a part as its device, through the
   installation of its function, or through a property of the part that triggers it.
 - "missed_section": a kept regulation whose kept sections leave out a section that binds a part, such
-  as its markings section, general specifications, or an annex test procedure that a kept section uses.
+  as its markings section, general specifications, the section for one of the part's functions, or an
+  annex that sets limits, pass/fail criteria, or test levels and exposure conditions the part itself
+  must meet. Do not ask for annexes that only describe how to set up and perform a measurement, give
+  examples, diagrams or illustrations, measuring grids, sampling plans, approval-mark layouts or
+  forms, nor for sections on the approval procedure or conformity-of-production sampling, nor for
+  the sections of functions the vehicle performs by operating the part.
 - "wrong_inclusion": a kept regulation that a kept regulation consolidates, or that only covers vehicle
   categories the product is not for.
 

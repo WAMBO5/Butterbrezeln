@@ -40,10 +40,76 @@
         "subject": "The device used to project the ball in the ball test",
         "condition": "When a device to project the ball is used instead of a free drop",
         "constraint": "the tolerance on velocity is ±1 per cent of the velocity equivalent to that obtained by the free fall",
-        "quantities": [{"value": "1", "unit": "per cent", "comparator": "±"}],
+        "quantities": [
+          {
+            "value": "1",
+            "unit": "per cent",
+            "comparator": "±"
+          }
+        ],
         "text": "When a device to project the ball is used in the ball test, the tolerance on velocity shall be ±1 per cent of the velocity equivalent to that obtained by the free fall.",
         "quote": "When a device to project the ball is used, the tolerance on velocity shall be ±1 per cent of the velocity equivalent to that obtained by the free fall.",
         "kind": "test"
+      }
+    ]
+  },
+  {
+    "source": "UN R161 0.5.0, Annex 6 paragraph 1.2",
+    "provision_text": "Degree of protection for installation\nThe following degrees of protection in accordance with IEC Publication 529 1989 shall be provided:\n(a) IP 40 for parts to be fitted in the passenger compartment,\n(b) IP 42 for parts to be fitted in the passenger compartment of roadsters/convertibles and cars with moveable\nroof-panels if the installation location requires a higher degree of protection than IP 40,\n(c) IP 54 for all other parts.\nThe locking system manufacturer shall specify in the installation instructions any restrictions on the positioning of\nany part of the installation with respect to dust, water and temperature.",
+    "obligations": [
+      {
+        "subject": "Parts of the locking system fitted in the passenger compartment",
+        "condition": null,
+        "constraint": "provide the degree of protection IP 40 in accordance with IEC Publication 529 1989",
+        "quantities": [
+          {
+            "value": "IP 40",
+            "unit": null,
+            "comparator": null
+          }
+        ],
+        "text": "Parts of the locking system to be fitted in the passenger compartment shall provide the degree of protection IP 40 in accordance with IEC Publication 529 1989.",
+        "quote": "IP 40 for parts to be fitted in the passenger compartment",
+        "kind": "design"
+      },
+      {
+        "subject": "Parts of the locking system fitted in the passenger compartment of roadsters/convertibles and cars with moveable roof-panels",
+        "condition": "if the installation location requires a higher degree of protection than IP 40",
+        "constraint": "provide the degree of protection IP 42 in accordance with IEC Publication 529 1989",
+        "quantities": [
+          {
+            "value": "IP 42",
+            "unit": null,
+            "comparator": null
+          }
+        ],
+        "text": "Parts of the locking system to be fitted in the passenger compartment of roadsters/convertibles and cars with moveable roof-panels shall provide the degree of protection IP 42 in accordance with IEC Publication 529 1989 if the installation location requires a higher degree of protection than IP 40.",
+        "quote": "IP 42 for parts to be fitted in the passenger compartment of roadsters/convertibles and cars with moveable roof-panels if the installation location requires a higher degree of protection than IP 40",
+        "kind": "design"
+      },
+      {
+        "subject": "All other parts of the locking system",
+        "condition": null,
+        "constraint": "provide the degree of protection IP 54 in accordance with IEC Publication 529 1989",
+        "quantities": [
+          {
+            "value": "IP 54",
+            "unit": null,
+            "comparator": null
+          }
+        ],
+        "text": "All other parts of the locking system shall provide the degree of protection IP 54 in accordance with IEC Publication 529 1989.",
+        "quote": "IP 54 for all other parts",
+        "kind": "design"
+      },
+      {
+        "subject": "The locking system manufacturer",
+        "condition": null,
+        "constraint": "specify in the installation instructions any restrictions on the positioning of any part of the installation with respect to dust, water and temperature",
+        "quantities": [],
+        "text": "The locking system manufacturer shall specify in the installation instructions any restrictions on the positioning of any part of the installation with respect to dust, water and temperature.",
+        "quote": "The locking system manufacturer shall specify in the installation instructions any restrictions on the positioning of any part of the installation with respect to dust, water and temperature.",
+        "kind": "documentation"
       }
     ]
   },

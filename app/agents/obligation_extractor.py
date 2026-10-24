@@ -23,6 +23,26 @@ Rules for an obligation:
 - One obligation per requirement: one shall/must clause, or one requirement written in table style
   under a heading (for example "In height: not less than 250 mm" under "Position" of a lamp), which
   you state as a shall sentence.
+- Split lists. When one shall governs a list of items ((a), (b), (c) ... or (i), (ii) ...) and each
+  item binds on its own, write one obligation per item, repeating the subject and the shared
+  condition, and quote the item's own words. Keep an "either ... or ..." or "at least one of the
+  following" list in one obligation, since no single item binds.
+- Tables. A sentence that names a test method or standard or points to a table ("shall be tested
+  according to ... with the levels of Table 3", "shall meet the values in Table 4") is always an
+  obligation of its own that names the table. For a table of test levels or limits per pulse, test,
+  class or system voltage, also write one obligation per row. A light distribution or
+  measuring-point table stays the single obligation that names it.
+- Split a clause that sets independent constraints on different properties or subjects (for example
+  a mounting height and, separately, a minimum distance to another device, or a rule for the main
+  device and another for an optional one) into one obligation each; keep a range (minimum and
+  maximum of the same quantity) in one obligation.
+- Keep an exception or derogation in the same obligation as the rule it modifies ("..., except
+  that ...", "however, ... may be reduced to ...", "(2,100 mm if ...)").
+- Permissions on the product's design or installation are obligations too, when they stand on their
+  own rather than as an exception to a rule of the same provision: a "may", "is permitted" or "is
+  allowed" about what the product may have or do ("may be installed ... only if ...", "may have
+  parts in common with ..."). Word it "... shall be permitted to ...", keeping every condition.
+  A permission to choose a test method, an alternative test or a procedure is not an obligation.
 - text: one self-contained sentence close to the source wording. Name the subject explicitly as the
   provision means it ("The rear position lamp shall ...", not "It shall ..."); keep every condition,
   exception, value, unit, tolerance and cross-reference ("as defined in paragraph 3.3.4.2."). Do not
@@ -33,8 +53,8 @@ Rules for an obligation:
 - kind: design, performance, marking, test, documentation or conformity.
 
 No obligation (give no_obligation_reason): headings without requirements, definitions, statements
-of when the authority grants or refuses approval, lists of form fields, and permissions ("may") that
-do not constrain anything.
+of when the authority grants or refuses approval, lists of form fields, and permissions that concern
+the approval authority or the approval procedure rather than the product.
 
 Use the referenced definitions only to name subjects correctly. If the payload lists feedback, fix
 every issue it names.
@@ -43,7 +63,7 @@ every issue it names.
 
 def create_obligation_extractor(settings: Settings) -> AgentSpec:
     return make_agent(name="obligation_extractor", description="Splits provisions into atomic obligations",
-                      instruction=INSTRUCTION, output_schema=ExtractionOutput, tier="fast", effort="low",
+                      instruction=INSTRUCTION, output_schema=ExtractionOutput, tier="fast", effort="medium",
                       settings=settings)
 
 

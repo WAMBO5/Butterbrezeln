@@ -16,7 +16,13 @@ a product. You see the matcher's full context and its decisions. Flag only real 
 - "wrong_device": applicable for an obligation about another device type or function, or for a part
   it does not bind; proposed "not_applicable".
 - "missed": not_applicable, or a part left out, for an obligation that does bind it; proposed
-  "applicable".
+  "applicable". These are correctly not_applicable, so do not flag them: the mechanics of how a
+  laboratory carries out a test (preparing, mounting, positioning or rotating the sample, masking,
+  instrument set-up, recording, calculation); alternative test methods and tests that apply only at
+  the manufacturer's request; the approval and conformity-of-production procedure; entries that only
+  say whether the vehicle must carry the device; and categories or classes of a device the part
+  cannot belong to. Do flag as "missed" a not_applicable test condition (test voltage, measuring
+  field, illuminant, frequency range, test solution) or a feature the inputs do not exclude.
 - "unbacked_evidence": evidence_status met or not_met that no cited fact supports; proposed
   "evidence_needed".
 Each issue: target_id the obligation id, reason, evidence (fact or provision ids), proposed the

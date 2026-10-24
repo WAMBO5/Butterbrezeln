@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from app.corpus.index import text_path, version_key
-from app.corpus.parser import iter_pages, paragraph_key, parse_regulation
+from app.corpus.parser import PARSER_VERSION, iter_pages, paragraph_key, parse_regulation
 from app.models import Provision, RegulationVersion, SearchHit, TocEntry
 
 SCHEMA = """
@@ -81,7 +81,7 @@ class CorpusStore:
                     stats.missing.append(key)
                     continue
                 raw = path.read_text(encoding="utf-8")
-                digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+                digest = hashlib.sha256((PARSER_VERSION + raw).encode("utf-8")).hexdigest()
                 row = self._db.execute("SELECT sha256 FROM files WHERE version_key=?", (key,)).fetchone()
                 if row and row["sha256"] == digest:
                     stats.unchanged.append(key)

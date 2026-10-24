@@ -1,5 +1,6 @@
 """Candidate provisions per part and section: the scope plan's sections, plus the provisions they
-reference (one level deep), each counted once per part (design spec section 7)."""
+reference (one level deep), each counted once per part (design spec section 7). A reference to a
+whole annex adds nothing: which annexes matter is the scope plan's decision."""
 
 from __future__ import annotations
 
@@ -53,10 +54,9 @@ def collect_candidates(store: CorpusStore, plan: ScopePlan) -> list[SectionCandi
                         if not ref.startswith(prefix):
                             continue
                         target = store.get(ref)
-                        if target is None or target.kind == "definition":
+                        if target is None or target.kind == "definition" or _is_annex_heading(target):
                             continue
-                        for t in store.provisions_under([ref]) if _is_annex_heading(target) else [target]:
-                            take(t)
+                        take(target)
                 if chosen:
                     heading = root.text.split("\n", 1)[0][:120]
                     out.append(SectionCandidates(part_id=ps.part_id, regulation=d.regulation,

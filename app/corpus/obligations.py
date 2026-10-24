@@ -12,7 +12,7 @@ from pathlib import Path
 from app.corpus.parser import normalize
 from app.models import Obligation, Provision, ProvisionObligations
 
-EXTRACTOR_VERSION = "x1"
+EXTRACTOR_VERSION = "x4"
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS obligations (

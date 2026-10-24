@@ -33,9 +33,11 @@ Return a product profile:
 - product_type: a short name for the product.
 - vehicle_categories: the categories the inputs state (M1, N1, ...); none if not stated.
 - parts: one per main part or function module the spec lists or the drawing shows (for example each
-  light function of a combined lamp, the lens, a reflector, the housing). Do not split a part into
-  screws or gaskets unless they have their own function or property. part_id: a short unique id
-  such as "p_stop_lamp".
+  light function of a combined lamp, the lens, a reflector, the housing). When the spec lists the
+  main parts or functions, those are the parts: add a part from the drawing only when the drawing
+  labels it or the spec names its function, and put unlabelled drawing elements under unknowns
+  instead of guessing what they do. Do not split a part into screws or gaskets unless they have
+  their own function or property. part_id: a short unique id such as "p_stop_lamp".
   - functions: what the part does.
   - properties: every applicable item of the property checklist, stated concretely ("contains
     electronics: LED modules on PCB", "emits red light", "retro-reflective", "transparent outer lens",

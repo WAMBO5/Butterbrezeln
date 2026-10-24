@@ -32,12 +32,28 @@ Rules:
   path "device", "installation", "cross_cutting" or "none".
 - A regulation limited to vehicle categories the product is not for is not_applicable.
 - For applicable and uncertain decisions give part_ids and, for every listed part, the section ids
-  (provision ids from a card's device_sections or a table of contents) that hold that part's
-  requirements: its device-specific sections, the general sections that bind every device of the
-  regulation (general specifications, markings, colour, photometry, installation rules that apply to
-  all lamps), and the annexes those sections use (test procedures, light distributions). Prefer
-  second-level ids over whole regulations. Leave out the application procedure, approval
-  communication forms and transitional provisions.
+  (provision ids from a card's device_sections or a table of contents) that hold the requirements an
+  engineer designs and tests that part to:
+  - the markings section and the general requirements that bind every device of the regulation
+    (general specifications, construction, colour, photometry, light sources, failure provisions),
+    the conformity-of-production clause that sets the tolerances the product must hold (not its
+    sampling procedure), and in an installation regulation its general installation provisions;
+  - the device-specific sections only for the device types, classes or functions the part has (the
+    stop lamp section for a stop lamp, not the direction-indicator section); a signal the vehicle
+    produces by operating the part (an emergency stop or answer-back signal using its lamps) is not
+    one of the part's own functions;
+  - where the regulation has separate provisions for a vehicle and for a component (ESA, separate
+    technical unit, device), the ones for the product's level; for a product that is a vehicle
+    component approved with the vehicle (such as a bumper), the vehicle provisions that concern it;
+  - an annex only when it sets limits, pass/fail criteria, or the test levels and exposure
+    conditions the part must withstand (for example environmental resistance tests); leave out
+    annexes that only describe how to set up and perform a measurement, give examples, diagrams or
+    illustrations, measuring grids, sampling plans, approval-mark layouts or forms, even when a kept
+    section refers to them.
+  Prefer second-level ids (such as "5.2" or "Annex 6 Part 4") over whole chapters. Leave out the
+  application and approval procedure, modifications and extensions, conformity-of-production
+  sampling, penalties, transitional provisions, and sections for vehicle categories or device types
+  the product is not.
 - reason: one or two sentences that cite the card or a provision; evidence: the ids you relied on.
 - parts_without_regulation: parts that no regulation covers.
 - If the payload lists feedback (from the code gate or the recall auditor), answer every issue.

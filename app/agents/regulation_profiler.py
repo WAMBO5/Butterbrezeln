@@ -47,6 +47,7 @@ def create_regulation_profiler(settings: Settings) -> AgentSpec:
 
 
 DEFINITIONS_LIMIT = 12000
+INTRO_LIMIT = 4000  # a GTR's Introduction holds its whole rationale
 PER_DEFINITION = 400
 
 
@@ -65,7 +66,7 @@ def build_profiler_prompt(payload: CardPayload, feedback: list[Issue]) -> str:
     toc = [f"{e.provision_id} | page {e.page} | {e.kind} | {e.heading[:90]}"
            for e in store.toc(v.regulation, v.version_label, 3) if e.kind != "form"]
     context = [
-        ("Introduction", f"[{intro.provision_id}]\n{intro.text}" if intro else "(none)"),
+        ("Introduction", f"[{intro.provision_id}]\n{intro.text[:INTRO_LIMIT]}" if intro else "(none)"),
         ("Scope (exact text)", "\n\n".join(f"[{p.provision_id}]\n{p.text}" for p in scope) or "(none)"),
         ("Definitions (start of each)", "\n".join(definitions) or "(none)"),
         ("Table of contents (depth 3: provision id | page | kind | heading)", "\n".join(toc)),

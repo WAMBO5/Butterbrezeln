@@ -33,7 +33,7 @@ Every command takes `--fake-llm`, a scripted stand-in model, for offline demos a
 
 The UI is an Astro app in `web/`; `certivity serve` serves its build. Build it once with `cd web && npm ci && npm run build`. For UI work, run `npm run dev` there (it talks to the API on port 8000).
 
-`CERTIVITY_COST_MODE=reduced` runs the match reviewer only on disputed decisions and skips the extraction verifier. A budget guard (`CERTIVITY_MAX_COST_USD`, default $5) stops a run; a stopped run is marked partial in its report.
+`CERTIVITY_COST_MODE=reduced` runs the match reviewer only on disputed decisions, gives the matcher no tools and skips the extraction verifier. A budget guard (`CERTIVITY_MAX_COST_USD`, default $5) stops a run; a stopped run is marked partial in its report.
 
 ## Modes
 

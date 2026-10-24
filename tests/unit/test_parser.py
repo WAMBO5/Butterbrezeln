@@ -38,6 +38,17 @@ def test_false_annex_lines_are_text():
     assert set(by) == {"1", "1.1"} and "Annex 5 of this" in by["1.1"].text
 
 
+def test_gtr_rationale_goes_to_introduction_and_numbering_restarts():
+    text = ("=== PDF page 1 ===\nUN GTR 1 (version 1.0.0)\nI. Statement of technical rationale and justiﬁcation\n"
+            "1. Safety need\n12. The group agreed that bumpers shall be tested.\n304. Further notes.\n"
+            "=== PDF page 2 ===\nII. Text of the Regulation\n1. PURPOSE\n1.1. The purpose is safety.\n"
+            "2. PERFORMANCE REQUIREMENTS\n2.1. The bending moment shall not exceed 340 Nm.\n")
+    by = {p.paragraph: p for p in parse_regulation(text, "UN GTR 1", "1.0.0", "base")}
+    assert set(by) == {"Introduction", "1", "1.1", "2", "2.1"}
+    assert by["Introduction"].kind == "other" and "304. Further notes." in by["Introduction"].text
+    assert by["2.1"].kind == "requirement" and by["2.1"].page_start == 2
+
+
 def test_iter_pages_drops_header():
     pages = iter_pages(MINI)
     assert [n for n, _ in pages] == [1, 2, 3]

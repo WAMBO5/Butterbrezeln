@@ -66,7 +66,7 @@ def test_cache_round_trip_and_invalidation(tmp_path, monkeypatch):
     cache.mark_verified(["UN R1@1#5.1/1"])
     assert cache.unverified(["UN R1@1#5.1/1"]) == [] and cache.get(p)[0].verified
     assert cache.get(prov(text="Changed text shall apply.")) is None
-    monkeypatch.setattr(ob, "EXTRACTOR_VERSION", "x2")
+    monkeypatch.setattr(ob, "EXTRACTOR_VERSION", ob.EXTRACTOR_VERSION + "-next")
     assert cache.get(p) is None
 
 

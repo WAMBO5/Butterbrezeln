@@ -48,8 +48,11 @@ def test_collect_adds_referenced_provision_once(mini_store):
     cands = collect_candidates(mini_store, plan(sections=("UN R999@1.0.0#5", "UN R999@1.0.0#5.1"), parts=("p1",)))
     ids = [p.provision_id for c in cands for p in c.provisions]
     assert ids.count("UN R999@1.0.0#5.1") == 1
-    assert "UN R999@1.0.0#Annex 3 Part 1 1.2" in ids and ids.count("UN R999@1.0.0#Annex 3 Part 1 1.2") == 1
+    assert "UN R999@1.0.0#Annex 3 Part 1 1.2" not in ids  # a reference to a whole annex does not pull it in
     assert all(c.part_id == "p1" for c in cands)
+    with_annex = collect_candidates(mini_store, plan(sections=("UN R999@1.0.0#5", "UN R999@1.0.0#Annex 3"), parts=("p1",)))
+    ids = [p.provision_id for c in with_annex for p in c.provisions]
+    assert ids.count("UN R999@1.0.0#Annex 3 Part 1 1.2") == 1
 
 
 def test_parts_sharing_a_section_are_matched_together(mini_store):
@@ -116,7 +119,7 @@ def test_reduced_cost_mode_reviews_only_disputed_batches():
 
     reduced = load_settings({"CERTIVITY_COST_MODE": "reduced"}, fake_llm=True)
     loop = match_loop(reduced)
-    assert loop.producer.effort == "low" and loop.producer.tools == ()
+    assert loop.producer.effort == "medium" and loop.producer.tools == ()
     all_applicable = GroupMatchBatch(decisions=[decision(ob(1).obligation_id), decision(ob(2).obligation_id)])
     disputed = GroupMatchBatch(decisions=[decision(ob(1).obligation_id, "not_applicable", ()),
                                           decision(ob(2).obligation_id)])
