@@ -15,7 +15,7 @@ from app.corpus.cards import CardPayload, CardStore
 from app.corpus.index import load_index, version_key
 from app.corpus.store import BuildStats, CorpusStore
 from app.gates.card_gate import card_claims, card_gate
-from app.llm import LLM
+from app.llm import LLM, Budget, load_prices
 from app.models import RegulationCard
 from app.pipeline.calls import bind_call, gather_limited
 from app.pipeline.loop import LoopSpec, run_verified
@@ -42,7 +42,7 @@ def card_loop(settings: Settings) -> LoopSpec[RegulationCard]:
 
 
 def make_llm(settings: Settings) -> LLM:
-    return LLM(settings)
+    return LLM(settings, budget=Budget(settings.max_cost_usd, load_prices(settings.prices_path)))
 
 
 async def build_corpus(settings: Settings, *, cards: bool, prefill: bool, force: bool, extract_missing: bool,
@@ -84,6 +84,7 @@ async def build_corpus(settings: Settings, *, cards: bool, prefill: bool, force:
         from app.pipeline.extraction import prefill_obligations
 
         report.prefilled = await prefill_obligations(store, settings, call, ledger)
+    report.cost_usd = round(llm.budget.spent_usd, 4) if isinstance(llm.budget, Budget) else 0.0
     report.cards_written.sort()
     report.cards_failed.sort()
     return report

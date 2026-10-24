@@ -11,11 +11,14 @@ from __future__ import annotations
 import functools
 import json
 import logging
+import threading
 import time
+from pathlib import Path
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
+import yaml
 from pydantic import BaseModel, ValidationError
 
 from app.agents.factory import AgentSpec
@@ -68,6 +71,78 @@ class BudgetLike(Protocol):
     def check(self, agent_name: str) -> None: ...
 
     def charge(self, agent_name: str, model: str, usage: Usage) -> float: ...
+
+
+@dataclass(frozen=True)
+class ModelPrice:
+    input: float
+    output: float
+    cache_read: float | None
+
+
+def load_prices(path: Path) -> dict[str, ModelPrice]:
+    """USD per million tokens per model id, from `app/config/prices.yaml` (no prices in code)."""
+    data = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
+    return {model: ModelPrice(input=float(v["input"]), output=float(v["output"]),
+                              cache_read=None if v.get("cache_read") is None else float(v["cache_read"]))
+            for model, v in data.items()}
+
+
+def cost_usd(price: ModelPrice, prompt_tokens: int, cached_tokens: int, output_tokens: int,
+             cache_write_tokens: int = 0) -> float:
+    """Prompt tokens include cached and cache-written tokens; cache writes cost 1.25 x input."""
+    fresh = prompt_tokens - cached_tokens - cache_write_tokens
+    read = price.cache_read if price.cache_read is not None else price.input
+    return (fresh * price.input + cached_tokens * read + cache_write_tokens * price.input * 1.25
+            + output_tokens * price.output) / 1e6
+
+
+class Budget:
+    """Tokens and cost per agent for one run; blocks further calls once `max_cost_usd` is spent."""
+
+    def __init__(self, max_cost_usd: float, prices: dict[str, ModelPrice]):
+        self.max_cost_usd = max_cost_usd
+        self.prices = prices
+        self.spent_usd = 0.0
+        self.per_agent: dict[str, dict] = {}
+        self._warned: set[str] = set()
+        self._lock = threading.Lock()
+
+    @property
+    def exceeded(self) -> bool:
+        return self.spent_usd >= self.max_cost_usd
+
+    def _price(self, model: str) -> ModelPrice | None:
+        if model in self.prices:
+            return self.prices[model]
+        if model.startswith("fake/") and "fake" in self.prices:
+            return self.prices["fake"]
+        if model not in self._warned:
+            self._warned.add(model)
+            log.warning("no price for model %s; its cost is counted as 0", model)
+        return None
+
+    def check(self, agent_name: str) -> None:
+        if self.exceeded:
+            raise BudgetExceeded(agent_name, f"run budget of ${self.max_cost_usd:.2f} reached")
+
+    def charge(self, agent_name: str, model: str, usage: Usage) -> float:
+        price = self._price(model)
+        prompt = usage.input_tokens + usage.cache_read + usage.cache_write
+        cost = cost_usd(price, prompt, usage.cache_read, usage.output_tokens, usage.cache_write) if price else 0.0
+        with self._lock:
+            self.spent_usd += cost
+            row = self.per_agent.setdefault(agent_name, {"model": model, "calls": 0, "input": 0, "output": 0,
+                                                         "cache_read": 0, "cache_write": 0, "cost_usd": 0.0})
+            row["calls"] += 1
+            for key, value in usage.as_dict().items():
+                row[key] += value
+            row["cost_usd"] = round(row["cost_usd"] + cost, 6)
+        return cost
+
+    def report(self) -> dict:
+        return {"max_cost_usd": self.max_cost_usd, "spent_usd": round(self.spent_usd, 6), "exceeded": self.exceeded,
+                "per_agent": self.per_agent}
 
 
 @dataclass
