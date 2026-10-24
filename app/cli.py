@@ -34,6 +34,7 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("bench", help="run + score on the rear-lamp case (paid)")
     verify = sub.add_parser("verify", help="check the ledger chain and replay a run (free)")
     verify.add_argument("run_dir")
+    sub.add_parser("technical-file", help="regenerate the measured parts of docs/ai-act (free)")
     subgoal = sub.add_parser("subgoal", help="which old requirements change in the new version (paid)")
     subgoal.add_argument("subgoal_dir")
     markets = sub.add_parser("markets", help="market profiles")
@@ -266,6 +267,18 @@ def cmd_subgoal(args, settings: Settings) -> int:
     return 0 if not problems else 1
 
 
+def cmd_technical_file(args, settings: Settings) -> int:
+    from app.compliance.technical_file import bench_runs, update_technical_file
+
+    runs = bench_runs(settings)
+    if not runs:
+        print("no finished benchmark run of the rear lamp yet: run `certivity bench` first", file=sys.stderr)
+        return 1
+    for path in update_technical_file(settings, runs):
+        print(f"updated {path}")
+    return 0
+
+
 def cmd_serve(args, settings: Settings) -> int:
     import uvicorn
 
@@ -277,7 +290,7 @@ def cmd_serve(args, settings: Settings) -> int:
 
 COMMANDS = {"doctor": cmd_doctor, "build-corpus": cmd_build_corpus, "run": cmd_run, "score": cmd_score,
             "bench": cmd_bench, "verify": cmd_verify, "signoff": cmd_signoff, "serve": cmd_serve,
-            "markets": cmd_markets, "subgoal": cmd_subgoal}
+            "markets": cmd_markets, "subgoal": cmd_subgoal, "technical-file": cmd_technical_file}
 
 
 def main(argv: list[str] | None = None) -> int:

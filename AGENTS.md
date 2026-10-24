@@ -122,10 +122,14 @@ Change it deliberately, and note the change here. 2026-10-24: added `config/`, `
 
 ```bash
 uv sync
-uv run pytest            # offline
+uv run pytest                          # offline
+uv run certivity --fake-llm bench      # whole pipeline, offline
+uv run certivity doctor                # free setup check
+uv run certivity bench                 # paid: ask first
+uv run certivity serve                 # API + UI (build the UI with: cd web && npm ci && npm run build)
 ```
 
-Add the CLI and server commands here once they exist. Use `uv` for everything; never `pip` directly.
+The full command list is in `README.md`. Use `uv` for everything; never `pip` directly.
 
 ## When unsure
 

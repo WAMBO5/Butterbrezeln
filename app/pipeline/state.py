@@ -32,6 +32,7 @@ class RunState(BaseModel):
     checkpoint_errors: list[str] = Field(default_factory=list)
     started_at: str
     finished_at: str | None = None
+    git_commit: str | None = None
     error: str | None = None
 
     profile: ProductProfile | None = None

@@ -89,3 +89,16 @@ async def test_missing_text_is_reported(tmp_path, tmp_settings):
                          run_dir=None)
     assert res.missing_texts == ["UN R40@1.1.0"] and res.validation_problems == []
     assert "UN R40@1.1.0" in Path(res.run_dir, "report.md").read_text()
+
+
+async def test_manifest_records_the_commit_at_start(tmp_settings, fake_responders, monkeypatch):
+    import app.pipeline.main as main_mod
+
+    monkeypatch.setattr(main_mod, "git_commit", lambda: "commit-at-start")
+    from app.pipeline.main import RunDeps, create_run, drive
+
+    deps = RunDeps.load(tmp_settings)
+    state = create_run(REAR_LAMP, markets=[], mode="benchmark", settings=tmp_settings, run_dir=None, deps=deps)
+    monkeypatch.setattr(main_mod, "git_commit", lambda: "commit-later")
+    res = await drive(state, deps)
+    assert json.loads(Path(res.run_dir, "manifest.json").read_text())["git_commit"] == "commit-at-start"

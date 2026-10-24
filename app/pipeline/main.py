@@ -343,7 +343,7 @@ def build_manifest(state: RunState, deps: RunDeps, models: dict[str, str], revie
             corpus_files[version_key(v.regulation, v.version_label)] = hashlib.sha256(path.read_bytes()).hexdigest()
     return Manifest(
         run_id=state.run_id, mode=state.mode, started_at=state.started_at, finished_at=state.finished_at,
-        git_commit=git_commit(),
+        git_commit=state.git_commit or git_commit(),
         settings={"models": {"judgment": settings.model_judgment, "fast": settings.model_fast,
                              "review": settings.model_review},
                   "max_retries": settings.max_retries, "max_cost_usd": settings.max_cost_usd,
@@ -436,7 +436,8 @@ def create_run(case_dir: Path, *, markets: list[str], mode: str, settings: Setti
     run_id = new_run_id(case.case_id)
     target = Path(run_dir) if run_dir else settings.runs_dir / run_id
     state = RunState(run_id=run_id, run_dir=str(target), case_dir=str(Path(case_dir)), case_id=case.case_id,
-                     markets=list(markets), mode=mode, started_at=_now(), missing_texts=deps.missing_texts)
+                     markets=list(markets), mode=mode, started_at=_now(), missing_texts=deps.missing_texts,
+                     git_commit=git_commit())
     state.save()
     return state
 
