@@ -1,0 +1,11 @@
+.venv
+data
+.env
+.env.*
+web/node_modules
+web/dist
+.superpowers
+.idea
+.pytest_cache
+**/__pycache__
+industrial-ai-hackathon/regulations/pdf

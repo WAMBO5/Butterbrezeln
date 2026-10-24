@@ -34,6 +34,9 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("bench", help="run + score on the rear-lamp case (paid)")
     verify = sub.add_parser("verify", help="check the ledger chain and replay a run (free)")
     verify.add_argument("run_dir")
+    serve = sub.add_parser("serve", help="FastAPI service and UI on localhost (paid when runs are started)")
+    serve.add_argument("--port", type=int, default=8000)
+    serve.add_argument("--host", default="127.0.0.1")
     signoff = sub.add_parser("signoff", help="record a named sign-off for a reviewed run (free)")
     signoff.add_argument("run_dir")
     signoff.add_argument("--reviewer", required=True)
@@ -209,8 +212,17 @@ def cmd_signoff(args, settings: Settings) -> int:
     return 0
 
 
+def cmd_serve(args, settings: Settings) -> int:
+    import uvicorn
+
+    from server.main import create_app
+
+    uvicorn.run(create_app(settings), host=args.host, port=args.port, log_level="info")
+    return 0
+
+
 COMMANDS = {"doctor": cmd_doctor, "build-corpus": cmd_build_corpus, "run": cmd_run, "score": cmd_score,
-            "bench": cmd_bench, "verify": cmd_verify, "signoff": cmd_signoff}
+            "bench": cmd_bench, "verify": cmd_verify, "signoff": cmd_signoff, "serve": cmd_serve}
 
 
 def main(argv: list[str] | None = None) -> int:
