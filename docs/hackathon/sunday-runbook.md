@@ -56,8 +56,8 @@ uv run certivity doctor
 
 Then, for each output:
 ```bash
-python3 industrial-ai-hackathon/tools/validate.py <submission.json>          # must pass
-python3 tools/evalkit/check_heldout.py <submission.json>   # brezel-78: case_id, team_id, base versions, allowlist, duplicates
+uv run python industrial-ai-hackathon/tools/validate.py <submission.json>          # must pass
+uv run python tools/evalkit/check_heldout.py <submission.json>   # brezel-78: case_id, team_id, base versions, allowlist, duplicates
 ```
 - [ ] `case_id` is `heldout-front-bumper`, `team_id` is `team-04`, every `source.version` is the **base** `version_label`, and every requirement has a page and a paragraph.
 

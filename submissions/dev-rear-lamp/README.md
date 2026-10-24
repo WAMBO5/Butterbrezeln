@@ -32,8 +32,8 @@ No generating step reads `expected.json`: only scoring code does (`score_submiss
 ```bash
 uv sync && uv run certivity build-corpus                        # free; needs data/cards for runs (build-corpus --cards ≈ $5)
 CERTIVITY_COST_MODE=reduced CERTIVITY_MAX_COST_USD=20 uv run certivity bench
-python3 tools/evalkit/ensemble.py out.json data/runs/<id>/submission.json <lane submission.json>
-python3 tools/evalkit/check_heldout.py out.json --case <case_id>  # blocks wrong ids, versions, pages
+uv run python tools/evalkit/ensemble.py out.json data/runs/<id>/submission.json <lane submission.json>
+uv run python tools/evalkit/check_heldout.py out.json --case <case_id>  # blocks wrong ids, versions, pages
 ```
 
 The Sunday plan for the held-out case is in `docs/hackathon/sunday-runbook.md`. **For the held-out case the last valid upload counts, not the best.**
