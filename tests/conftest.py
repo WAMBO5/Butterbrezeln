@@ -50,3 +50,27 @@ def real_store(tmp_path_factory):
     store = CorpusStore(tmp_path_factory.mktemp("corpus") / "catalog.sqlite")
     store.build(load_index(INDEX), TEXT_ROOT)
     return store
+
+
+@pytest.fixture
+def tmp_settings(tmp_path):
+    """Fake-model settings with a tmp data dir and a price for the fake model."""
+    from app.config.settings import load_settings
+
+    prices = tmp_path / "prices.yaml"
+    prices.write_text("fake: {input: 1, output: 1, cache_read: null}\n")
+    return load_settings({"CERTIVITY_DATA_DIR": str(tmp_path / "data"), "CERTIVITY_PRICES": str(prices),
+                          "CERTIVITY_TEAM_ID": "team-test"}, fake_llm=True)
+
+
+@pytest.fixture
+def fake_responders(tmp_settings):
+    from app.corpus.store import CorpusStore
+    from app.corpus.index import load_index
+    from app.testing.fake_llm import register_responders
+    from app.testing.responders import build_fake_responders
+
+    store = CorpusStore(tmp_settings.catalog_path)
+    store.build(load_index(tmp_settings.index_path), tmp_settings.text_root)
+    register_responders(build_fake_responders(tmp_settings, store))
+    return store

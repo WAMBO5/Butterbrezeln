@@ -94,3 +94,9 @@ async def prefill_obligations(store: CorpusStore, settings: Settings, call: Agen
     results = await gather_limited(
         [extract_verified(b, cache, settings, call, ledger, verify=False) for b in batches], settings.concurrency)
     return sum(len(r) for r in results)
+
+
+async def reextract(batch: ExtractionBatch, cache: ObligationCache, settings: Settings, call: AgentCall,
+                    ledger: Ledger | None, feedback: list[Issue]) -> list[str]:
+    """Extract `batch` again with `feedback` (the output auditor's issues); returns ids given up."""
+    return await _extract(batch, cache, settings, call, ledger, feedback)
