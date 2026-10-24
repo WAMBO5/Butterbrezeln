@@ -128,7 +128,7 @@ class LLM:
         if self._client is None:
             from anthropic import AsyncAnthropic
 
-            self._client = AsyncAnthropic(max_retries=4, timeout=600.0)
+            self._client = AsyncAnthropic(max_retries=4, timeout=900.0)
         return self._client
 
     def _emit(self, event: dict) -> None:
