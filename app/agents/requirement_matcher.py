@@ -33,9 +33,11 @@ lists feedback, answer every issue.
 
 
 def create_requirement_matcher(settings: Settings) -> AgentSpec:
+    effort = "low" if settings.cost_mode == "reduced" else "medium"
     return make_agent(name="requirement_matcher", description="Decides which obligations apply to a part",
-                      instruction=INSTRUCTION, output_schema=MatchBatch, tier="judgment", effort="medium",
-                      settings=settings, tools=[read_provision], tool_call_limit=3)
+                      instruction=INSTRUCTION, output_schema=MatchBatch, tier="judgment", effort=effort,
+                      settings=settings, tools=None if settings.cost_mode == "reduced" else [read_provision],
+                      tool_call_limit=3)
 
 
 def match_context(batch: MatchInput) -> list[tuple[str, str]]:

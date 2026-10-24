@@ -41,6 +41,7 @@ class Settings:
     challenge_dir: Path
     prices_path: Path
     fake_llm: bool
+    cost_mode: str = "full"  # "reduced": match_reviewer only on disputed batches, matcher at low effort
 
     @property
     def catalog_path(self) -> Path:
@@ -98,4 +99,5 @@ def load_settings(env: Mapping[str, str] | None = None, *, fake_llm: bool = Fals
         challenge_dir=Path(env.get("CERTIVITY_CHALLENGE_DIR") or "industrial-ai-hackathon"),
         prices_path=Path(env.get("CERTIVITY_PRICES") or _DEFAULT_PRICES),
         fake_llm=fake_llm,
+        cost_mode=(_str(env, "CERTIVITY_COST_MODE") or "full").lower(),
     )

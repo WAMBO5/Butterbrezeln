@@ -162,11 +162,17 @@ async def step_collect(rc: RunContext) -> None:
                             "provision_ids": [p.provision_id for p in c.provisions]} for c in candidates(rc)]
 
 
+def verify_extraction(settings: Settings) -> bool:
+    """`extraction_verifier` runs on candidates, except in reduced cost mode (the quote gate still runs)."""
+    return settings.cost_mode != "reduced"
+
+
 async def step_extract(rc: RunContext) -> None:
     unique = {p.provision_id: p for c in candidates(rc) for p in c.provisions}
     batches = make_extraction_batches(list(unique.values()), rc.deps.store, BATCH_SIZE)
     results = await gather_limited(
-        [extract_verified(b, rc.deps.cache, rc.settings, rc.call, rc.ledger, verify=True) for b in batches],
+        [extract_verified(b, rc.deps.cache, rc.settings, rc.call, rc.ledger, verify=verify_extraction(rc.settings))
+         for b in batches],
         rc.settings.concurrency)
     rc.state.obligations = {o.obligation_id: o for r in results for o in r}
     missed = [pid for pid, p in unique.items() if rc.deps.cache.get(p) is None]
@@ -342,7 +348,8 @@ def build_manifest(state: RunState, deps: RunDeps, models: dict[str, str], revie
                              "review": settings.model_review},
                   "max_retries": settings.max_retries, "max_cost_usd": settings.max_cost_usd,
                   "include_uncertain": settings.include_uncertain, "concurrency": settings.concurrency,
-                  "fake_llm": settings.fake_llm, "retention_days": settings.retention_days},
+                  "fake_llm": settings.fake_llm, "retention_days": settings.retention_days,
+                  "cost_mode": settings.cost_mode},
         inputs=inputs,
         corpus={"index_sha256": file_sha256(settings.index_path), "text_sha256": corpus_files,
                 "cards": sorted(c.regulation for c in deps.cards if c.evidence[:1] != ["no card: decide from the title and the tools"]),

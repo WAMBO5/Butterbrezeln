@@ -32,6 +32,7 @@ class LoopSpec(Generic[T]):
     verifier: AgentSpec | None
     build_review_prompt: Callable[[Any, T], Prompt] | None
     max_retries: int
+    needs_review: Callable[[Any, T], bool] | None = None  # None = always review
 
 
 @dataclass
@@ -99,7 +100,8 @@ async def run_verified(spec: LoopSpec[T], payload: Any, call: AgentCall, ledger:
             feedback = open_issues = attempt.gate_issues
             continue
         best = output  # type: ignore[assignment]
-        if spec.verifier is None or spec.build_review_prompt is None:
+        if spec.verifier is None or spec.build_review_prompt is None or (
+                spec.needs_review is not None and not spec.needs_review(payload, output)):
             resolved, open_issues = True, []
             break
         try:

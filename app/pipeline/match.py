@@ -13,10 +13,16 @@ from app.pipeline.calls import AgentCall
 from app.pipeline.loop import LoopSpec, run_verified
 
 
+def disputed(batch: MatchInput, out: MatchBatch) -> bool:
+    """A batch with a not_applicable or uncertain decision: the decisions that can lose recall."""
+    return any(d.state != "applicable" for d in out.decisions)
+
+
 def match_loop(settings: Settings) -> LoopSpec[MatchBatch]:
     return LoopSpec(name="requirement_match", producer=create_requirement_matcher(settings), output_schema=MatchBatch,
                     build_prompt=build_match_prompt, gate=match_gate, verifier=create_match_reviewer(settings),
-                    build_review_prompt=build_match_review_prompt, max_retries=settings.max_retries)
+                    build_review_prompt=build_match_review_prompt, max_retries=settings.max_retries,
+                    needs_review=disputed if settings.cost_mode == "reduced" else None)
 
 
 async def match_verified(batch: MatchInput, settings: Settings, call: AgentCall,

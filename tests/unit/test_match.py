@@ -93,3 +93,19 @@ def test_missing_output_makes_every_obligation_uncertain():
     result = LoopResult(output=None, resolved=False, attempts=[Attempt(1)], open_issues=[])
     decided = resolve(batch(), result)
     assert [d.state for d in decided] == ["uncertain", "uncertain"] and decided[0].reason == "no decision"
+
+
+def test_reduced_cost_mode_reviews_only_disputed_batches():
+    from app.config.settings import load_settings
+    from app.pipeline.match import match_loop
+
+    reduced = load_settings({"CERTIVITY_COST_MODE": "reduced"}, fake_llm=True)
+    loop = match_loop(reduced)
+    assert loop.producer.effort == "low" and loop.producer.tools == ()
+    all_applicable = MatchBatch(decisions=[decision(ob(1).obligation_id), decision(ob(2).obligation_id)])
+    disputed = MatchBatch(decisions=[decision(ob(1).obligation_id, "not_applicable"), decision(ob(2).obligation_id)])
+    assert not loop.needs_review(batch(), all_applicable) and loop.needs_review(batch(), disputed)
+    full = match_loop(load_settings({}, fake_llm=True))
+    assert full.needs_review is None and full.producer.effort == "medium" and len(full.producer.tools) == 1
+    from app.pipeline.main import verify_extraction
+    assert not verify_extraction(reduced) and verify_extraction(load_settings({}, fake_llm=True))

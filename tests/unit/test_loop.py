@@ -84,3 +84,12 @@ async def test_budget_stops_retrying():
     script = Script([BudgetExceeded("producer", "budget")] * 3, [])
     res = await run_verified(loop(), {}, script, None)
     assert len(res.attempts) == 1 and res.open_issues[0].type == "budget"
+
+
+async def test_review_skipped_when_not_needed():
+    from dataclasses import replace
+
+    script = Script([GOOD], [])
+    spec = replace(loop(), needs_review=lambda payload, out: False)
+    res = await run_verified(spec, {}, script, None)
+    assert res.resolved and script.prompts["verifier"] == []
