@@ -233,6 +233,15 @@ async def step_assemble(rc: RunContext) -> None:
             issues = issues + issues2
     rc.state.requirements, rc.state.lineage = apply_requirement_pins(kept, lineages, rc.state.human_actions)
     rc.state.output_issues = issues
+    rc.ledger.append("note", "orchestrator", None, assembly_snapshot(rc.state, rc.settings, dropped),
+                     {"step": "assemble", "snapshot": True})
+
+
+def assembly_snapshot(state: RunState, settings: Settings, dropped: set[str]) -> dict:
+    """Everything code needs to rebuild requirements, lineage and submission (`certivity verify`)."""
+    return {"profile": state.profile, "plan": state.plan, "obligations": state.obligations,
+            "decisions": state.decisions, "dropped": sorted(dropped), "include_uncertain": settings.include_uncertain,
+            "human_actions": state.human_actions, "team_id": settings.team_id, "case_id": state.case_id}
 
 
 async def _repair(rc: RunContext, provision_ids: list[str], review: Review, kept: list) -> None:
