@@ -65,6 +65,8 @@ def _summary(state, manager: RunManager) -> dict:
         "profile": state.profile.model_dump() if state.profile else None,
         "plan": state.plan.model_dump() if state.plan else None, "safety_hits": state.safety_hits,
         "requirements": [r.model_dump() for r in state.requirements], "stage_counts": state.stage_counts,
+        "quotes": {r.id: state.obligations[r.obligation_ids[0]].quote for r in state.requirements
+                   if r.obligation_ids and r.obligation_ids[0] in state.obligations},
         "cost": state.cost, "validation_problems": state.validation_problems, "score": state.score,
         "give_ups": state.give_ups, "markets_result": state.markets_result,
         "open_items": open_items(state.requirements, state.give_ups, state.human_actions),

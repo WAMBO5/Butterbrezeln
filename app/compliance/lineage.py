@@ -54,7 +54,7 @@ def build_lineage(req: Requirement, profile: ProductProfile, plan: ScopePlan, ob
                                          f"{'verified' if ob.verified else 'unverified'})"))
     for d in mine:
         links.append(LineageLink(step="match_decision", ref=f"{d.part_id}:{d.obligation_id}",
-                                 summary=f"{d.state}, evidence {d.evidence_status}: {d.reason}"))
+                                 summary=f"{d.state.replace('_', ' ')}; {d.evidence_status.replace('_', ' ')}: {d.reason}"))
     for a in human_actions:
         targets = {a.get("target_id"), *((a.get("payload") or {}).get("obligation_ids") or [])}
         if a.get("checkpoint") != "C3_requirements" and targets & {req.id, req.source.regulation, *req.obligation_ids}:

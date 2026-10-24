@@ -1,0 +1,71 @@
+---
+import Base from "../layouts/Base.astro";
+---
+<Base title="Ship plan" current="ship-plan">
+  <div class="page-head">
+    <div>
+      <h1>Where can this part ship?</h1>
+      <p id="subtitle">Loading…</p>
+    </div>
+  </div>
+  <p class="banner" style="margin-bottom: 1.5rem">Illustrative markets: sample profiles with made-up names, not real national law. The verdicts show how the requirements split by market, not whether a real market accepts the part.</p>
+  <div id="content"></div>
+</Base>
+
+<script>
+  import { api, runId, type Run } from "../lib/api";
+  import { $, chip, draftStamp, h, message } from "../lib/ui";
+
+  const id = runId();
+
+  function render(run: Run) {
+    const m = run.markets_result?.markets;
+    if (!m) {
+      return message($("#content"), "This run was started without markets. Start a new run and pick one or more markets to get a ship plan.");
+    }
+    const names = Object.fromEntries(m.profiles.map((p) => [p.market_id, p.name]));
+    const verdicts = h("section", { class: "sheet stack" }, h("h2", {}, "Verdict per market"),
+      h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "Market"), h("th", {}, "Verdict"), h("th", { class: "num" }, "Requirements"),
+        h("th", { class: "num" }, "Blocking"), h("th", { class: "num" }, "Missing evidence"), h("th", { class: "num" }, "Extras"))),
+        h("tbody", {}, ...m.verdicts.map((v) => h("tr", {}, h("td", {}, names[v.market_id] ?? v.market_id), h("td", {}, chip(v.verdict)),
+          h("td", { class: "num" }, (m.sets[v.market_id] ?? []).length), h("td", { class: "num" }, v.blocking.length),
+          h("td", { class: "num" }, v.missing_evidence.length), h("td", { class: "num" }, v.extras.length))))),
+      h("p", { class: "quiet" }, `${m.core_extras.core.length} requirements apply in every selected market (the shared core); designing to all ${m.core_extras.envelope.length} together ships everywhere covered.`));
+
+    const plan = run.markets_result?.ship_plan;
+    const advice = plan ? h("section", { class: "sheet stack" }, h("h2", {}, "What to do first"), h("p", {}, plan.envelope_summary),
+      h("ol", { class: "chain" }, ...plan.actions.map((a) => h("li", {},
+        h("div", { class: "step-name" }, a.title, " ", h("span", { class: "quiet" }, `(${a.kind.replace("_", " ")})`)),
+        h("div", {}, a.rationale),
+        h("div", { class: "ref" }, `Opens ${a.markets_unlocked.map((x) => names[x] ?? x).join(", ") || "no market on its own"}. Requirements ${a.requirement_ids.join(", ")}.`)))),
+      plan.synergies.length ? h("div", {}, h("h3", {}, "Work that serves several markets"), h("ul", {}, ...plan.synergies.map((s) => h("li", {}, s)))) : null,
+      plan.caveats.length ? h("div", {}, h("h3", {}, "Caveats"), h("ul", {}, ...plan.caveats.map((s) => h("li", {}, s)))) : null)
+      : h("section", { class: "sheet" }, h("p", {}, "No ship plan was produced for this selection."));
+
+    const ids = run.requirements.map((r) => r.id);
+    const markets = m.profiles.map((p) => p.market_id);
+    const cell = (mid: string, rid: string) => {
+      const entry = (m.sets[mid] ?? []).find((x) => x.requirement_id === rid);
+      if (!entry) return h("td", { class: "cell quiet", title: "Not required in this market" }, "–");
+      return h("td", { class: "cell", title: `${entry.regulation} ${entry.version_label}, p. ${entry.page}` },
+        entry.change === "changed_in_latest" ? chip("uncertain", "Changed in the version this market applies") : "✓");
+    };
+    const matrix = h("details", { class: "sheet" }, h("summary", {}, `Market × requirement matrix (${ids.length} requirements)`),
+      h("table", { class: "matrix" }, h("thead", {}, h("tr", {}, h("th", {}, "Requirement"), ...markets.map((x) => h("th", {}, names[x] ?? x)))),
+        h("tbody", {}, ...run.requirements.map((r) => h("tr", {}, h("td", {}, h("strong", {}, r.id), " ", h("small", {}, r.text.slice(0, 110))), ...markets.map((x) => cell(x, r.id)))))));
+    $("#content").replaceChildren(h("div", { class: "stack" }, verdicts, advice, matrix));
+  }
+
+  async function load() {
+    if (!id) return message($("#content"), "No run selected.", "error");
+    try {
+      const run = await api.run(id);
+      draftStamp(run.label);
+      $("#subtitle").textContent = `${run.case_id}: ${run.markets.length ? run.markets.join(", ") : "no markets selected"}.`;
+      render(run);
+    } catch (e) {
+      message($("#content"), `This run could not be loaded: ${(e as Error).message}`, "error");
+    }
+  }
+  load();
+</script>

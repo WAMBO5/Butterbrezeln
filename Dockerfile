@@ -1,7 +1,7 @@
 # One image: the FastAPI service by default, the CLI for batch jobs (`docker run IMAGE certivity bench`).
 # Configuration comes from environment variables; secrets from the host's secret store. Run data
 # lives on a mounted volume at /app/data. The challenge package is mounted or copied at build time.
-FROM node:22-slim AS web
+FROM node:24-slim AS web
 WORKDIR /web
 COPY web/package.json web/package-lock.json ./
 RUN npm ci

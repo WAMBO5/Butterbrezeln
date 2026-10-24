@@ -36,6 +36,7 @@ def test_benchmark_run_end_to_end(client, tmp_settings):
     run_id = client.post("/runs", json={"case_dir": REAR_LAMP, "markets": [], "mode": "benchmark"}).json()["run_id"]
     body = wait(client, run_id)
     assert body["status"] == "done" and body["requirements"] and body["label"]
+    assert set(body["quotes"]) == {r["id"] for r in body["requirements"]}
     submission = client.get(f"/runs/{run_id}/submission.json").json()
     assert validate_submission(submission, tmp_settings) == []
     rid = body["requirements"][0]["id"]
