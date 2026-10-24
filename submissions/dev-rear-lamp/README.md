@@ -4,15 +4,18 @@ Every file here passes `industrial-ai-hackathon/tools/validate.py` and carries `
 
 | File | Reqs | How it was made | Platform Req F2 (P / R) |
 |---|---|---|---|
-| `05-ensemble-run4-lane-v7.json` | 347 | `tools/evalkit/ensemble.py` on run 4 (primary) + lane v7 | to upload (estimate ≈ 74–75 %) |
-| `04-pipeline-run4.json` | 354 | run 3's scope plan and obligations, matching redone with the final matcher prompt | to upload (estimate ≈ 72–73 %) |
+| `08-pipeline-run6-opus.json` | 337 | run 3's scope plan and obligations, matching with the final prompts on Opus (`ANTHROPIC_MODEL=claude-opus-5-5`) | **74.7 %** (48.7 / 86.3) |
+| `07-pipeline-run5.json` | 368 | run 4 re-assembled with the cross-regulation duplicate fix | 74.0 % (45.4 / 87.9) |
+| `06-ensemble-run4-lane-v7-exemptions.json` | 351 | ensemble + `tools/evalkit/add_exemptions.py` | 73.8 % (46.7 / 86.3) |
+| `05-ensemble-run4-lane-v7.json` | 347 | `tools/evalkit/ensemble.py` on run 4 (primary) + lane v7 | not uploaded (dominated by 06) |
+| `04-pipeline-run4.json` | 354 | run 3's scope plan and obligations, matching redone with the final matcher prompt | not uploaded (superseded by 07) |
 | `03-pipeline-run3.json` | 310 | pipeline, all changes on this branch except the last matcher refinement | **71.0 %** (49.0 / 80.0) |
 | `lane-dev-v7.json` | 363 | lane (LLM agents over the corpus, built by another session) | 68.6 % (42.4 / 81.1) |
 | `lane-dev-v4.json` | 344 | lane, earlier prompts | 65.7 % (42.2 / 76.3) |
 | `02-pipeline-run2.json` | 405 | pipeline, intermediate prompts | 65.2 % (37.5 / 80.0) |
 | `01-pipeline-run1.json` | 525 | pipeline, first fixes | 59.5 % (29.1 / 80.5) |
 
-Before these, the team's best was 52.5 % (49.8 % for the 19:35 upload, 695 requirements).
+Before these, the team's best was 52.5 % (49.8 % for the 19:35 upload, 695 requirements). On this case the platform ranked the pipeline alone above the ensemble with the lane, so the pipeline alone is the default for the held-out case.
 
 ## What changed in the pipeline (branch `pay-to-win`)
 

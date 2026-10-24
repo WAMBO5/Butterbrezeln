@@ -46,7 +46,8 @@ Rules:
     technical unit, device), the ones for the product's level; for a product that is a vehicle
     component approved with the vehicle (such as a bumper), the vehicle provisions that concern it;
   - an annex only when it sets limits, pass/fail criteria, or the test levels and exposure
-    conditions the part must withstand (for example environmental resistance tests); leave out
+    conditions the part must withstand (for example environmental resistance tests, or the impact
+    test a kept requirement refers to: speeds, masses, heights, directions and impact points); leave out
     annexes that only describe how to set up and perform a measurement, give examples, diagrams or
     illustrations, measuring grids, sampling plans, approval-mark layouts or forms, even when a kept
     section refers to them.

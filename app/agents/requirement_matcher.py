@@ -33,6 +33,11 @@ ids copied exactly:
   conditions a requirement is defined or tested under stay applicable (test voltage, the field or
   directions where a value is measured, illuminant, frequency range, modulation, test solution,
   exposure standard), and so do alternative designs or installation options of the part.
+- housed devices: when a part only houses, frames or mounts a device that is not supplied with the
+  product (a bezel around a lamp, a holder for a sensor), an obligation on that device binds the part
+  only where it constrains the part itself (its position, openings, or obstruction of the device's
+  light or field of view); the device's own design, electrics, markings and photometry are
+  not_applicable to the part.
 - device categories and classes: where the regulation sets requirements per category or class of a
   device, an obligation for a category or class the part cannot belong to, given its type, position
   and function in the product, is not_applicable; use uncertain only when the part could belong to it.
