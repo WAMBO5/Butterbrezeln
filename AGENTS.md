@@ -29,6 +29,8 @@ Every agent in this project is a real Google ADK agent (`google-adk` 2.x, Python
 
 ## Regulatory output rules
 
+Product and data rules (allowlist, base vs latest versions, applicable / not applicable / uncertain states, pipeline stages, data hygiene) are in `industrial-ai-hackathon/AGENTS.md`, and the plan and open decisions are in `industrial-ai-hackathon/PROJECT_PLAN.md`. Read both before designing the pipeline. The rules below add how we enforce them in ADK.
+
 The deliverable is engineering requirements with citations. These are enforced in code, not left to the prompt:
 
 - Every requirement carries the **regulation and page** it comes from. A requirement without a citation is dropped or rejected, never emitted.
