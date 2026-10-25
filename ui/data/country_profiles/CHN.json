@@ -1,0 +1,134 @@
+{
+  "iso3": "CHN",
+  "name_de": "China",
+  "covers": {"products": ["rear lamp", "tail lamp", "rear combination lamp", "rear reflector", "heckleuchte", "rückleuchte"],
+             "regulations": ["UN R148", "UN R150"], "product_de": "Heckleuchten und Rückstrahler"},
+  "summary_de": "China ist keine Vertragspartei des UNECE-Übereinkommens von 1958 und erkennt E-Genehmigungen nicht an; Heckleuchten benötigen eine CCC-Pflichtzertifizierung nach CNCA-C11-07:2026 (Typprüfung in einem benannten chinesischen Labor, Werksinspektion, Überwachung) und ein CCC-Zeichen auf dem Produkt. Technische Grundlage sind seit 01.07.2025 die konsolidierten Normen GB 5920-2024 (Lichtsignaleinrichtungen inkl. Schluss-, Brems- und Rückfahrleuchte) und GB 11564-2024 (Rückstrahler), der Anbau am Fahrzeug richtet sich nach GB 4785-2019. Für Brems- und Rückfahrleuchten gilt GB 5920-2024 bei Neutypen ab dem 19. Monat nach Inkrafttreten, für bestehende Genehmigungen ab dem 37. Monat.",
+  "standards": [
+    {
+      "id": "GB 5920-2024",
+      "title": "汽车和挂车光信号装置及系统 / Light-signalling devices and systems for motor vehicles and their trailers",
+      "scope": "Verpflichtende Norm (强标), veröffentlicht 29.09.2024, in Kraft 01.07.2025. Gilt für Lichtsignaleinrichtungen an Fahrzeugen der Klassen M, N und O, u. a. vordere/hintere Positionsleuchten (Schlussleuchten), Bremsleuchten, Rückfahrscheinwerfer, Fahrtrichtungsanzeiger, Nebelschlussleuchten, Kennzeichenleuchten, Seitenmarkierungsleuchten und Lichtsignal-Projektionseinheiten. Ersetzt laut Sekundärquelle u. a. GB 5920-2019, GB 15235-2007, GB 11554-2008, GB 17509-2008, GB 18408-2015, GB 18409-2013, GB 18099-2013 und GB 23255-2019. Farbanforderungen verweisen auf GB 4785.",
+      "url": "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=EBF484FE4E40D0281C9C4174E6F00F89"
+    },
+    {
+      "id": "GB 11564-2024",
+      "title": "机动车回复反射装置 / Retro-reflective devices and markings for motor vehicles",
+      "scope": "Verpflichtende Norm, veröffentlicht 29.09.2024, in Kraft 01.07.2025. Rückstrahler und Heckmarkierungstafeln für Kraftfahrzeuge. Ersetzt laut Sekundärquelle GB 11564-2008, GB 19151-2003, GB 23254-2009 und GB 25990-2010.",
+      "url": "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=8307257091535B46859F5D6D17589D02"
+    },
+    {
+      "id": "GB 4785-2019",
+      "title": "汽车及挂车外部照明和光信号装置的安装规定 / Prescription for installation of the external lighting and light-signalling devices for motor vehicles and their trailers",
+      "scope": "Verpflichtende Anbauvorschrift (Fahrzeugebene), veröffentlicht 17.12.2019, in Kraft 01.07.2020, ersetzt GB 4785-2007; laut SAMR-Portal weiterhin gültig (Stand 2026-10-25). Regelt Anzahl, Anordnung, Ausrichtung, Schaltung und Farbe der Leuchten inkl. Schlussleuchten, Rückfahrscheinwerfer und Rückstrahler.",
+      "url": "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=65438E7234326343883F762A52E24CFA"
+    },
+    {
+      "id": "GB 5920-2019",
+      "title": "汽车及挂车前位灯、后位灯、示廓灯和制动灯配光性能 / Photometric characteristics of front and rear position lamps, end-outline marker lamps and stop lamps",
+      "scope": "Vorgängernorm für Positions- und Bremsleuchten (in Kraft 01.01.2020); laut SAMR-Portal außer Kraft (废止), abgelöst durch GB 5920-2024. Nur noch für bestehende Genehmigungen innerhalb der Übergangsfristen von GB 5920-2024 relevant.",
+      "url": "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=D0845B327725078457AD2E66FD180EED"
+    },
+    {
+      "id": "GB 15235-2007",
+      "title": "汽车及挂车倒车灯配光性能 / Photometric characteristics of reversing lamps for power-driven vehicles",
+      "scope": "Vorgängernorm für Rückfahrscheinwerfer (in Kraft 01.06.2008); laut SAMR-Portal außer Kraft (废止), Inhalt in GB 5920-2024 überführt.",
+      "url": "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=A35CA7AF722ADF2C3F20A5552100E984"
+    }
+  ],
+  "certification": {
+    "scheme": "CCC (China Compulsory Certification), Durchführungsregel CNCA-C11-07:2026 \"机动车外部照明及光信号装置（试行）\"",
+    "type": "third-party type approval (Typprüfung + Erstinspektion des Werks + Überwachung nach Zertifikatserteilung)",
+    "marking": "CCC-Zeichen, vom Antragsteller auf der Produktaußenfläche oder dem Typschild an gut sichtbarer Stelle aufgedruckt oder eingeformt; dauerhaft und ohne Beschädigung von Fahrzeug/Produkt erkennbar",
+    "summary_de": "Die CNCA hat mit Bekanntmachung 2026 Nr. 4 (datiert 11.04.2026) die Regel CNCA-C11-07:2026 für Außenleuchten und Lichtsignaleinrichtungen von Fahrzeugen der Klassen M, N, O und L erlassen, gültig ab 01.07.2026. Prüfgrundlagen sind u. a. GB 5920 und GB 11564 (grundsätzlich neueste Fassung). Ablauf: Antrag bei einer benannten Zertifizierungsstelle mit Produktbeschreibung und Schlüsselteileliste, Typprüfung in einem vom Antragsteller gewählten benannten Labor (in der Regel max. 30 Tage), Erstinspektion des Werks inkl. Konformitätskontrollplan, danach Überwachung (Folgeinspektion, Stichproben in Werk/Hafen oder Markt). Zertifikate sind 5 Jahre gültig; Änderungen an Schlüsselteilen, Rohstoffen oder Prüfnormen erfordern eine Zertifikatsänderung vor Auslieferung. Einzelbauteile (Linsen, Reflektoren, Lampen) und separat geformte Einzel-Rückstrahler sind vom Geltungsbereich ausgenommen.",
+    "url": "https://www.cnca.gov.cn/zwxx/gg/2026/art/2026/art_28b7746f4ad74ad3b7ca104b124e4ac9.html"
+  },
+  "accepts_un_approvals": false,
+  "deviations": [
+    {
+      "id": "CHN-01",
+      "topic_de": "CCC-Pflichtzertifizierung statt E-Genehmigung",
+      "un_reference": "UN R148",
+      "national_requirement_de": "Außenleuchten und Lichtsignaleinrichtungen für Fahrzeuge der Klassen M, N, O und L unterliegen der chinesischen Pflichtzertifizierung nach CNCA-C11-07:2026 (gültig ab 01.07.2026). Zertifizierungsmodus: Typprüfung in einem benannten Labor + Erstinspektion des Werks (Qualitätssicherungsfähigkeit und Produktkonformität) + Überwachung nach Zertifikatserteilung. Prüfumfang sind alle anwendbaren Punkte der Prüfnorm (GB 5920, GB 11564). Für Lichtsignaleinrichtungen sind 2 Musterleuchten inkl. Lichtquellen einzureichen. Eine E-Genehmigung nach UN R148 ersetzt die CCC nicht; China ist keine Vertragspartei des Übereinkommens von 1958 und die Regel sieht keine Anerkennung ausländischer Genehmigungen vor.",
+      "effort": "pruefung_zertifizierung",
+      "spec_section": "Zertifizierung",
+      "suggestion_de": "CCC-Zertifizierung bei einer benannten Zertifizierungsstelle beantragen, Typprüfung nach GB 5920-2024 in einem benannten chinesischen Labor mit 2 versiegelten Serienmustern (inkl. Lichtquellen und ggf. Steuergerät) einplanen und den CCC-Ablauf (Prüfung, Werksaudit, Zertifikat) als Meilenstein vor SOP China in den Projektplan aufnehmen.",
+      "check": {"type": "always"},
+      "source_url": "https://www.cnca.gov.cn/zwxx/gg/2026/art/2026/art_28b7746f4ad74ad3b7ca104b124e4ac9.html",
+      "verified": true
+    },
+    {
+      "id": "CHN-02",
+      "topic_de": "CCC-Zeichen auf der Leuchte",
+      "un_reference": "UN R148",
+      "national_requirement_de": "Das CCC-Zeichen ist vom Antragsteller an gut sichtbarer Stelle auf der Außenfläche des Produkts oder auf dem Typschild aufzudrucken oder einzuformen. Es muss dauerhaft sein und im eingebauten Zustand ohne Beschädigung von Fahrzeug oder Produkt erkennbar bleiben (CNCA-C11-07:2026, Abschnitt 18). Das nach UN R148 vorgesehene E-Genehmigungszeichen erfüllt diese Pflicht nicht.",
+      "effort": "doku_kennzeichnung",
+      "spec_section": "Kennzeichnung",
+      "suggestion_de": "CCC-Zeichen als Einformung im Gehäuse- oder Linsenwerkzeug oder als dauerhaften Aufdruck an einer im verbauten Zustand sichtbaren Stelle vorsehen und Position, Größe und Ausführung in der Kennzeichnungszeichnung der Spezifikation ergänzen.",
+      "check": {"type": "always"},
+      "source_url": "https://www.cnca.gov.cn/zwxx/gg/2026/art/2026/art_28b7746f4ad74ad3b7ca104b124e4ac9.html",
+      "verified": true
+    },
+    {
+      "id": "CHN-03",
+      "topic_de": "Integrierter Rückstrahler: eigene Prüfgrundlage GB 11564-2024",
+      "un_reference": "UN R150",
+      "national_requirement_de": "Rückstrahler fallen unter GB 11564-2024 (in Kraft seit 01.07.2025). Nach CNCA-C11-07:2026 werden Zertifizierungseinheiten getrennt nach Prüfnorm gebildet (GB 5920 für Lichtsignaleinrichtungen, GB 11564 für Rückstrahlvorrichtungen). Für Kombinationsleuchten mit integriertem Rückstrahler sind zusätzlich 10 Rückstrahlermuster einzureichen. Der Prüfbericht umfasst u. a. Rückstrahlwert (CIL), Farbe, Temperaturbeständigkeit, Wasser- und Staubdichtheit, Kraftstoff- und Schmierölbeständigkeit, Schlagfestigkeit und Korrosion. Typ, Klasse, Form, Abmessungen, Material und Farbe des Rückstrahlers müssen in der Produktbeschreibung stehen. Separat geformte Einzel-Rückstrahler sind vom Geltungsbereich der Regel ausgenommen.",
+      "effort": "pruefung_zertifizierung",
+      "spec_section": "Zertifizierung",
+      "suggestion_de": "Den integrierten Rückstrahler im CCC-Antrag zusätzlich nach GB 11564-2024 prüfen lassen, 10 Serienmuster des Rückstrahlers bereitstellen und Klasse, Form, Abmessungen, Material und Farbe des Rückstrahlers in der Spezifikation dokumentieren.",
+      "check": {"type": "spec_contains", "keywords": ["retro-reflector", "retroreflector", "retro reflector", "retro-reflective", "reflex reflector"]},
+      "source_url": "https://www.cnca.gov.cn/zwxx/gg/2026/art/2026/art_28b7746f4ad74ad3b7ca104b124e4ac9.html",
+      "verified": true
+    },
+    {
+      "id": "CHN-04",
+      "topic_de": "Prüfgrundlage GB 5920-2024 und Übergangsfristen",
+      "un_reference": "UN R148",
+      "national_requirement_de": "GB 5920-2024 (in Kraft seit 01.07.2025) ersetzt u. a. GB 5920-2019 (Positions- und Bremsleuchten) und GB 15235-2007 (Rückfahrscheinwerfer); beide Altnormen sind laut SAMR-Normenportal außer Kraft. Nach Abschnitt 11 der Norm gilt sie für Neutypen von Positionsleuchten ab Inkrafttreten, für Neutypen von Brems- und Rückfahrleuchten ab dem 19. Monat (rechnerisch ab 01.01.2027) und für bereits typgenehmigte Einrichtungen ab dem 37. Monat (rechnerisch ab 01.07.2028). Bei einer Normänderung muss das CCC-Zertifikat innerhalb der von der Behörde gesetzten Frist umgestellt werden (CNCA-C11-07:2026, 17.2.1).",
+      "effort": "pruefung_zertifizierung",
+      "spec_section": "Zertifizierung",
+      "suggestion_de": "Typprüfung direkt nach GB 5920-2024 beauftragen (nicht mehr nach GB 5920-2019 oder GB 15235-2007) und für bestehende CCC-Zertifikate die Umstellung auf GB 5920-2024 bis spätestens Juli 2028 einplanen.",
+      "check": {"type": "always"},
+      "source_url": "https://www.chinesestandard.net/PDF.aspx/GB5920-2024",
+      "verified": true
+    },
+    {
+      "id": "CHN-05",
+      "topic_de": "Werkstoff- und Schlüsselteiledokumentation (Abschlussscheibe)",
+      "un_reference": null,
+      "national_requirement_de": "Der CCC-Antrag erfordert eine Produktbeschreibung mit u. a. Material und Beschichtung der Abschlussscheibe, Lichtfarbe, Lichtquellentyp bzw. LED-Modulen, Reflektormaterial sowie eine Liste der Schlüsselteile und Rohstoffe mit Bezeichnung, Typ, Spezifikation und Lieferant (CNCA-C11-07:2026, Anhang 3). Die Prüfmuster müssen in Schlüsselteilen und Rohstoffen der Serie entsprechen. Technische Änderungen an sicherheitsrelevanten Schlüsselteilen oder Rohstoffen erfordern eine genehmigte Zertifikatsänderung; ohne sie dürfen die Produkte nicht ausgeliefert, verkauft oder importiert werden (17.2.1). Welche Teile Schlüsselteile sind, legt die Zertifizierungsstelle fest (13.3).",
+      "effort": "doku_kennzeichnung",
+      "spec_section": "Materials",
+      "suggestion_de": "PMMA-Typ (Hersteller, Handelsname, Farbe), Beschichtung und Lieferant der roten Abschlussscheibe sowie alle weiteren Schlüsselteile (LED-Module, Reflektor, Rückstrahler) in der Spezifikation festschreiben und einen Änderungsprozess definieren, der jeden Material- oder Lieferantenwechsel vor der Umsetzung bei der CCC-Zertifizierungsstelle anmeldet.",
+      "check": {"type": "spec_contains", "keywords": ["PMMA", "acrylic", "polycarbonate", "outer lens", "lens"]},
+      "source_url": "https://www.cnca.gov.cn/zwxx/gg/2026/art/2026/art_28b7746f4ad74ad3b7ca104b124e4ac9.html",
+      "verified": true
+    },
+    {
+      "id": "CHN-06",
+      "topic_de": "Werksinspektion und Konformitätskontrollplan",
+      "un_reference": null,
+      "national_requirement_de": "Die Erstinspektion des Werks prüft die Qualitätssicherungsfähigkeit und die Produktkonformität. Das Prüfteam besteht aus mindestens 2 Personen, die Leuchte muss während der Inspektion in Produktion sein und die oberste Leitung muss am Eröffnungs- und Abschlussgespräch teilnehmen. Der Hersteller muss einen Konformitätskontrollplan (一致性控制计划) erstellen und jährlich einen Bericht über dessen Umsetzung einreichen. Nach der Zertifizierung folgen Folgeinspektionen und/oder Stichprobenprüfungen im Werk, im Hafen oder im Markt (CNCA-C11-07:2026, Abschnitte 7, 12, 14 und Anhang 1).",
+      "effort": "pruefung_zertifizierung",
+      "spec_section": "Zertifizierung",
+      "suggestion_de": "Für das Serienwerk einen CCC-Konformitätskontrollplan nach Anhang 1 der Regel erstellen, das Werksaudit (laufende Produktion, Teilnahme der Werksleitung) vorbereiten und den jährlichen Umsetzungsbericht sowie Stichprobenprüfungen im Qualitätsprozess verankern.",
+      "check": {"type": "always"},
+      "source_url": "https://www.cnca.gov.cn/zwxx/gg/2026/art/2026/art_28b7746f4ad74ad3b7ca104b124e4ac9.html",
+      "verified": true
+    }
+  ],
+  "sources": [
+    {"title": "SAMR 全国标准信息公共服务平台: GB 5920-2024 汽车和挂车光信号装置及系统 (Status, Daten)", "url": "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=EBF484FE4E40D0281C9C4174E6F00F89", "retrieved": "2026-10-25"},
+    {"title": "SAMR 全国标准信息公共服务平台: GB 11564-2024 机动车回复反射装置", "url": "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=8307257091535B46859F5D6D17589D02", "retrieved": "2026-10-25"},
+    {"title": "SAMR 全国标准信息公共服务平台: GB 4785-2019 汽车及挂车外部照明和光信号装置的安装规定", "url": "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=65438E7234326343883F762A52E24CFA", "retrieved": "2026-10-25"},
+    {"title": "SAMR 全国标准信息公共服务平台: GB 5920-2019 (废止)", "url": "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=D0845B327725078457AD2E66FD180EED", "retrieved": "2026-10-25"},
+    {"title": "SAMR 全国标准信息公共服务平台: GB 15235-2007 (废止)", "url": "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=A35CA7AF722ADF2C3F20A5552100E984", "retrieved": "2026-10-25"},
+    {"title": "ChineseStandard.net: GB 5920-2024 English translation preview (scope, chromaticity clause 8, implementation clause 11)", "url": "https://www.chinesestandard.net/PDF.aspx/GB5920-2024", "retrieved": "2026-10-25"},
+    {"title": "MPR China Certification: New standards for automotive lighting and reflective devices (replaced standards of GB 4599/5920/11564-2024)", "url": "https://www.china-certification.com/en/new-standards-for-automotive-lighting-and-reflective-devices", "retrieved": "2026-10-25"},
+    {"title": "CNCA 国家认监委2026年第4号公告: 熔断体等11项强制性产品认证实施规则 (incl. Anhang 6: CNCA-C11-07:2026 机动车外部照明及光信号装置（试行）, PDF)", "url": "https://www.cnca.gov.cn/zwxx/gg/2026/art/2026/art_28b7746f4ad74ad3b7ca104b124e4ac9.html", "retrieved": "2026-10-25"},
+    {"title": "EU SME Centre (2011): Guideline CCC for automotive parts & components (designated certification bodies in China, type testing in Chinese labs)", "url": "https://eusmecentre.org.cn/sites/default/files/attach/CCC%20for%20automotive%20parts.pdf", "retrieved": "2026-10-25"},
+    {"title": "UN Treaty Collection XI-B-16: Participants of the 1958 Agreement (China not listed)", "url": "https://treaties.un.org/Pages/ViewDetails.aspx?src=TREATY&mtdsg_no=XI-B-16&chapter=11&clang=_en", "retrieved": "2026-10-25"},
+    {"title": "TÜV Rheinland: China draft national standard on light-signaling devices and systems (WTO G/TBT/N/CHN/1656)", "url": "https://www.tuv.com/regulations-and-standards/en/china-draft-national-standard-on-light-signaling-devices-and-systems-for-vehicles-and-their-trailers.html", "retrieved": "2026-10-25"}
+  ]
+}

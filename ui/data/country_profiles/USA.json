@@ -1,0 +1,130 @@
+{
+  "iso3": "USA",
+  "name_de": "Vereinigte Staaten",
+  "covers": {"products": ["rear lamp", "tail lamp", "rear combination lamp", "rear reflector", "heckleuchte", "rückleuchte"],
+             "regulations": ["UN R148", "UN R150"], "product_de": "Heckleuchten und Rückstrahler"},
+  "summary_de": "In den USA gilt für Leuchten und Rückstrahler FMVSS No. 108 (49 CFR 571.108). Es gibt keine Typgenehmigung: Der Hersteller zertifiziert die Konformität selbst (49 U.S.C. 30115), und UN/ECE-Genehmigungen werden nicht anerkannt – eine nach ECE gebaute Heckleuchte darf erst verkauft werden, wenn ihre Funktionen nach FMVSS 108 zertifiziert sind. Pkw brauchen zusätzlich rote seitliche Markierungsleuchten und rote seitliche Rückstrahler hinten; für Kunststofflinsen ist eine 3-jährige Freibewitterung in Florida und Arizona vorgeschrieben.",
+  "standards": [
+    {
+      "id": "FMVSS No. 108 (49 CFR 571.108)",
+      "title": "Lamps, reflective devices, and associated equipment",
+      "scope": "Original- und Ersatzleuchten, Rückstrahler und Zubehör für Pkw, MPV, Lkw, Busse, Anhänger und Motorräder (S1, S3). Table I-a legt Anzahl, Farbe, Anbauort, Anbauhöhe und Aktivierung fest für Schlussleuchte (S7.2), Bremsleuchte (S7.3), seitliche Markierungsleuchte (S7.4), Rückfahrscheinwerfer (S7.6), dritte Bremsleuchte (S7.9) und Rückstrahler (S8.1). Farbprüfung und Prüfung von Kunststoff-Optikmaterial in S14.4, mechanische und Umweltprüfungen in S14.5.",
+      "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-571/subpart-B/section-571.108"
+    },
+    {
+      "id": "49 U.S.C. 30115",
+      "title": "Certification of compliance (Vehicle Safety Act)",
+      "scope": "Gesetzliche Grundlage der Selbstzertifizierung: Der Hersteller zertifiziert, dass Fahrzeug bzw. Ausrüstungsteil alle anwendbaren FMVSS erfüllt, und muss dabei 'reasonable care' walten lassen (wiedergegeben im NHTSA-Handbuch für Hersteller).",
+      "url": "https://vpic.nhtsa.dot.gov/documents/ManufacturerHandbook.pdf"
+    },
+    {
+      "id": "49 CFR Part 551 Subpart D",
+      "title": "Service of Process on Foreign Manufacturers and Importers",
+      "scope": "Ausländische Hersteller, Assembler und Importeure von Fahrzeugen oder Ausrüstung müssen einen in den USA ansässigen Zustellungsbevollmächtigten benennen.",
+      "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-551/subpart-D"
+    },
+    {
+      "id": "49 CFR Part 566",
+      "title": "Manufacturer Identification",
+      "scope": "Hersteller von Fahrzeugen und von Ausrüstung, für die eine FMVSS gilt, müssen Angaben zu sich und eine Beschreibung ihrer Produkte an NHTSA übermitteln, spätestens 30 Tage nach Produktionsbeginn (laut NHTSA-Handbuch).",
+      "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-566"
+    },
+    {
+      "id": "49 CFR 573.6",
+      "title": "Defect and noncompliance information report",
+      "scope": "Bericht an NHTSA zu jedem sicherheitsrelevanten Mangel und jeder Nichteinhaltung einer FMVSS bei Original- oder Ersatzausrüstung, spätestens 5 Arbeitstage nach der Feststellung.",
+      "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-573/section-573.6"
+    }
+  ],
+  "certification": {
+    "scheme": "FMVSS self-certification (NHTSA)",
+    "type": "self-certification",
+    "marking": "Für Signalleuchten und Rückstrahler ist das Symbol 'DOT' optional (FMVSS 108 S6.5.1.2: 'may be marked'). Die Markierung gilt dann als Zertifizierung der Konformität mit FMVSS 108. Laut NHTSA-Handbuch wird die Zertifizierung meist mit 'DOT' auf dem Teil oder auf der Versandverpackung belegt. Verpflichtend ist die DOT-Kennzeichnung auf der Lichtscheibe nur bei Scheinwerfern (S6.5.1).",
+    "summary_de": "Keine Typgenehmigung und keine Zertifizierung durch eine Behörde: NHTSA stellt keine Typgenehmigungen aus und zertifiziert keine Fahrzeuge oder Ausrüstungsteile. Der Hersteller zertifiziert die Konformität mit FMVSS 108 selbst (49 U.S.C. 30115) und muss dabei 'reasonable care' walten lassen, in der Praxis durch eigene oder beauftragte Prüfungen nach den Prüfverfahren der Norm. Vor dem Inverkehrbringen sind nötig: ein US-Zustellungsbevollmächtigter für ausländische Hersteller (Part 551 Subpart D) und die Herstellermeldung an NHTSA (Part 566, spätestens 30 Tage nach Produktionsbeginn). Danach gelten Pflichten zu Rückruf und Meldung (Part 573: Meldung innerhalb von 5 Arbeitstagen). NHTSA prüft die Einhaltung nachträglich.",
+    "url": "https://vpic.nhtsa.dot.gov/documents/ManufacturerHandbook.pdf"
+  },
+  "accepts_un_approvals": false,
+  "deviations": [
+    {
+      "id": "USA-01",
+      "topic_de": "Selbstzertifizierung nach FMVSS 108 statt UN-Genehmigung",
+      "un_reference": "UN R148",
+      "national_requirement_de": "Ausrüstung, die nicht alle anwendbaren FMVSS erfüllt, darf weder importiert noch verkauft werden. Laut NHTSA-Auslegung (Brief an Hella, 1998) gilt eine Heckleuchte, die die ECE-Anforderungen für Pkw erfüllt, als 'motor vehicle equipment'. Sie darf erst verkauft werden, wenn der Hersteller die Konformität aller Leuchtenfunktionen mit FMVSS 108 zertifiziert hat. NHTSA erteilt keine Typgenehmigung. Der Hersteller zertifiziert selbst nach 49 U.S.C. 30115 und muss dabei 'reasonable care' walten lassen.",
+      "effort": "pruefung_zertifizierung",
+      "spec_section": "Zertifizierung",
+      "suggestion_de": "Für jede Funktion (Schluss-, Brems- und Rückfahrleuchte sowie Rückstrahler) eine Nachweisakte zu FMVSS 108 anlegen, mit Prüfberichten nach S14 (Photometrie, Farbe, Kunststoffoptik, Vibration, Feuchte, Staub, Korrosion). Sich dabei nicht auf die E-Genehmigung stützen.",
+      "check": {"type": "always"},
+      "source_url": "https://www.nhtsa.gov/interpretations/18167ztv",
+      "verified": true
+    },
+    {
+      "id": "USA-02",
+      "topic_de": "Seitliche Markierungsleuchte und seitlicher Rückstrahler hinten (rot)",
+      "un_reference": "UN R48",
+      "national_requirement_de": "FMVSS 108 Table I-a schreibt für alle Pkw pro Seite, so weit hinten wie praktikabel, eine rote seitliche Markierungsleuchte vor (Anbauhöhe mindestens 15 in, ca. 381 mm). Sie muss zusammen mit den Scheinwerfern bzw. Parkleuchten eingeschaltet sein. Dazu kommt pro Seite ein roter seitlicher Rückstrahler (15–60 in, ca. 381–1524 mm). Photometrie: Table X (rot, mindestens 0,25 cd an den Prüfpunkten) bzw. Table XVI-a.",
+      "effort": "design",
+      "spec_section": "Function",
+      "suggestion_de": "Die Heckleuchte um eine rote seitliche Markierungsleuchte und einen roten seitlichen Rückstrahler ergänzen, die zur Fahrzeugseite hin abstrahlen. Alternativ mit dem Fahrzeughersteller klären, dass beide Funktionen an anderer Stelle des Fahrzeugs sitzen, und das in der Spezifikation dokumentieren.",
+      "check": {"type": "spec_missing", "keywords": ["side marker", "side reflex", "side reflector", "Seitenmarkierung"]},
+      "source_url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-571/subpart-B/section-571.108",
+      "verified": true
+    },
+    {
+      "id": "USA-03",
+      "topic_de": "Photometrie und Verhältnis Brems- zu Schlussleuchte nach FMVSS 108",
+      "un_reference": "UN R148",
+      "national_requirement_de": "Die Photometrie wird an den Prüfpunkten der FMVSS-Tabellen nachgewiesen: Table VIII (Schlussleuchte), Table IX (Bremsleuchte), Table XII (Rückfahrscheinwerfer), Table XVI-a (Rückstrahler; rot mindestens 420 mcd/lux bei 0,2° Beobachtungs- und 0° Anstrahlwinkel), jeweils nach S14.2. Ist die Schlussleuchte mit der Bremsleuchte kombiniert, muss die Bremsleuchte an jedem Prüfpunkt mindestens die Lichtstärke der Schlussleuchte mal dem Faktor aus Table IX erreichen (S7.3.12). Bei Zweifadenlampen sind ein indizierter Sockel und eine indizierte Fassung Pflicht (S7.3.15).",
+      "effort": "pruefung_zertifizierung",
+      "spec_section": "Function",
+      "suggestion_de": "Die Photometrie aller Funktionen an den FMVSS-Prüfpunkten (Tables VIII, IX, XII, XVI-a) messen, das Verhältnis Brems- zu Schlussleuchte nach S7.3.12 punktweise nachweisen und beides in die Spezifikation aufnehmen. Bei Glühlampen mit zwei Fäden einen indizierten Sockel verwenden.",
+      "check": {"type": "always"},
+      "source_url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-571/subpart-B/section-571.108",
+      "verified": true
+    },
+    {
+      "id": "USA-04",
+      "topic_de": "Kunststoff-Optikmaterial: 3 Jahre Freibewitterung in Florida und Arizona",
+      "un_reference": "UN R148",
+      "national_requirement_de": "Jedes Kunststoffmaterial für optische Teile (beschichtet und unbeschichtet) braucht eine 3-jährige Freibewitterung in Florida und Arizona. Beschleunigte Bewitterung ist nicht zulässig (S14.4.2). Probendicken: 1,6, 2,3, 3,2 und 6,4 mm. Grenzwerte nach der Bewitterung: Trübung bzw. Glanzverlust höchstens 30 % bei Außenlinsen und höchstens 7 % bei Rückstrahlern und Linsen vor Rückstrahlern; Lichttransmission ändert sich um höchstens 25 %; kein Ausbluten der Farbe, keine Haarrisse oder Risse; Farbanforderung weiterhin erfüllt. Dazu Wärmetest: 2 h bei 79 ± 3 °C.",
+      "effort": "pruefung_zertifizierung",
+      "spec_section": "Materials",
+      "suggestion_de": "Vom PMMA-Lieferanten Nachweise zur 3-jährigen Freibewitterung in Florida und Arizona nach FMVSS 108 S14.4.2 anfordern, für die verwendete rote Type bzw. Farbrezeptur und Wanddicke. Sonst 3 Jahre Vorlauf für die Bewitterung einplanen. Den Nachweis in die Werkstoffspezifikation aufnehmen.",
+      "check": {"type": "spec_contains", "keywords": ["PMMA", "acrylic", "polycarbonate", "plastic", "polymer"]},
+      "source_url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-571/subpart-B/section-571.108",
+      "verified": true
+    },
+    {
+      "id": "USA-05",
+      "topic_de": "DOT-Kennzeichnung und Herstellerregistrierung bei NHTSA",
+      "un_reference": "UN R148",
+      "national_requirement_de": "Signalleuchten und Rückstrahler dürfen mit 'DOT' gekennzeichnet werden. Das gilt dann als Zertifizierung der Konformität mit FMVSS 108 (S6.5.1.2, optional). Laut NHTSA-Handbuch wird die Zertifizierung meist mit 'DOT' auf dem Teil oder auf der Versandverpackung belegt. Ein E-Kennzeichen hat in den USA keine Zertifizierungswirkung. Ausländische Hersteller müssen vor dem Verkauf einen US-Zustellungsbevollmächtigten benennen (49 CFR Part 551 Subpart D) und sich spätestens 30 Tage nach Produktionsbeginn bei NHTSA melden (49 CFR Part 566).",
+      "effort": "doku_kennzeichnung",
+      "spec_section": "Kennzeichnung",
+      "suggestion_de": "Im Werkzeug die Markierung 'DOT' auf der Lichtscheibe vorsehen, alternativ auf der Verpackung. Einen US-Zustellungsbevollmächtigten nach Part 551 benennen und die Herstellermeldung nach Part 566 über das NHTSA Manufacturer Portal einreichen.",
+      "check": {"type": "always"},
+      "source_url": "https://vpic.nhtsa.dot.gov/documents/ManufacturerHandbook.pdf",
+      "verified": true
+    },
+    {
+      "id": "USA-06",
+      "topic_de": "Mindest-Leuchtfläche der Bremsleuchte",
+      "un_reference": "UN R148",
+      "national_requirement_de": "Bremsleuchten an Pkw (unter 2032 mm Fahrzeugbreite) brauchen eine effektive projizierte leuchtende Fläche von mindestens 5000 mm², wenn sie nur eine Kammer haben. Bei mehreren Kammern bzw. Leuchten sind es mindestens 2200 mm² je Kammer und 5000 mm² zusammen (FMVSS 108 S6.4.1, Table IV-a).",
+      "effort": "design",
+      "spec_section": "Main Parts",
+      "suggestion_de": "Die effektive leuchtende Fläche der Bremsleuchtenfunktion auf mindestens 5000 mm² auslegen (bei mehreren Kammern mindestens 2200 mm² je Kammer) und in der Spezifikation nachweisen.",
+      "check": {"type": "always"},
+      "source_url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-571/subpart-B/section-571.108",
+      "verified": true
+    }
+  ],
+  "sources": [
+    {"title": "eCFR: 49 CFR 571.108 – Standard No. 108; Lamps, reflective devices, and associated equipment (fetched via eCFR renderer API)", "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-571/subpart-B/section-571.108", "retrieved": "2026-10-25"},
+    {"title": "NHTSA: Requirements for Manufacturers of Motor Vehicles and Motor Vehicle Equipment (Manufacturer Handbook, revision date 09/11/2026)", "url": "https://vpic.nhtsa.dot.gov/documents/ManufacturerHandbook.pdf", "retrieved": "2026-10-25"},
+    {"title": "NHTSA Interpretation 18167.ztv (letter to Hella, Inc., 17 July 1998) – ECE rear lamp assemblies must be certified to FMVSS 108", "url": "https://www.nhtsa.gov/interpretations/18167ztv", "retrieved": "2026-10-25"},
+    {"title": "NHTSA Interpretation nht94-1.79 (16 March 1994) – FMVSS 108 does not incorporate ECE Reg. 20 (headlamps)", "url": "https://www.nhtsa.gov/interpretations/nht94-179", "retrieved": "2026-10-25"},
+    {"title": "eCFR: 49 CFR Part 566 – Manufacturer Identification", "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-566", "retrieved": "2026-10-25"},
+    {"title": "eCFR: 49 CFR Part 551 Subpart D – Service of Process on Foreign Manufacturers and Importers", "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-551/subpart-D", "retrieved": "2026-10-25"},
+    {"title": "eCFR: 49 CFR 573.6 – Defect and noncompliance information report", "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-573/section-573.6", "retrieved": "2026-10-25"}
+  ]
+}

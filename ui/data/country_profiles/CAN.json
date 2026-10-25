@@ -1,0 +1,123 @@
+{
+  "iso3": "CAN",
+  "name_de": "Kanada",
+  "covers": {"products": ["rear lamp", "tail lamp", "rear combination lamp", "rear reflector", "heckleuchte", "rückleuchte"],
+             "regulations": ["UN R148", "UN R150"], "product_de": "Heckleuchten und Rückstrahler"},
+  "summary_de": "Kanada ist keine Vertragspartei des UNECE-Übereinkommens von 1958; Pkw müssen nach MVSR Schedule IV Abschnitt 108 (CMVSS 108) dem Technical Standards Document No. 108 (TSD 108, Rev. 8) entsprechen, das auf FMVSS 108 (Stand 22.02.2022) basiert und UN-Regelungen nur als Alternative für Scheinwerfer zulässt. Die Konformität wird vom Fahrzeughersteller bzw. Importeur selbst zertifiziert (National Safety Mark auf dem Compliance Label des Fahrzeugs); Heckleuchten als Einzelteil sind keine 'equipment' im Sinne des Motor Vehicle Safety Act. Für eine nach UN R148/R48 ausgelegte Heckleuchte sind v. a. US-/kanadische Photometrie, Anbauhöhen, rote seitliche Markierungsleuchten/Rückstrahler hinten und die 3-jährige Freibewitterung der Kunststoffoptik nachzuweisen.",
+  "standards": [
+    {
+      "id": "MVSR C.R.C., c. 1038, Schedule IV, s. 108 (CMVSS 108)",
+      "title": "Motor Vehicle Safety Regulations – Lighting Systems and Reflective Devices (Standard 108)",
+      "scope": "s. 108(1): Pkw, MPV, Lkw, Anhänger und Busse müssen TSD 108 in der jeweils geltenden Fassung entsprechen. s. 108(5)-(8): UN R8, R20, R31, R98, R112 und R123 nur als Alternative für Scheinwerfer, wobei Typgenehmigungs-, Kennzeichnungs- und CoP-Vorschriften der UN-Regelungen ausdrücklich nicht gelten. s. 108(16), (18), (19): kanadaspezifische Aktivierungsregeln für Schlussleuchten (u. a. bei eingeschalteten Nebelscheinwerfern/Nebelschlussleuchte und in Verbindung mit Tagfahrlicht). s. 108(24): am Fahrzeug vorgeschriebene Angaben zweisprachig (Englisch/Französisch). Konsolidierte Fassung, aktuell bis 2026-09-30.",
+      "url": "https://laws-lois.justice.gc.ca/eng/regulations/C.R.C.,_c._1038/FullText.html"
+    },
+    {
+      "id": "TSD 108, Revision 8",
+      "title": "Technical Standards Document No. 108 – Lamps, Reflective Devices, and Associated Equipment",
+      "scope": "Adaption von FMVSS 108 (49 CFR 571.108, Stand 22.02.2022); Veröffentlichung/Inkrafttreten 01.04.2025, verpflichtend ab 01.10.2025. Gilt nur für Originalausrüstung (Ersatzteil-Anforderungen S6.7 nicht übernommen). Enthält Tabelle I-a (vorgeschriebene Leuchten/Rückstrahler für Pkw), Photometrie Schlussleuchte (Tabelle VIII), Bremsleuchte (Tabelle IX), Lichtaustrittsfläche (Tabelle IV-a), Sichtbarkeit (S6.4) sowie physikalische Prüfungen inkl. Kunststoffoptik (S14.4.2) und Vibration/Feuchte/Staub/Korrosion (S14.5).",
+      "url": "https://tc.canada.ca/sites/default/files/2025-05/108_tsd_rev_r8_en-web.pdf"
+    },
+    {
+      "id": "Motor Vehicle Safety Act (S.C. 1993, c. 16)",
+      "title": "Motor Vehicle Safety Act",
+      "scope": "s. 3: National Safety Mark (nur durch vom Minister autorisierte Unternehmen anzubringen); s. 5(1): Konformität mit den Standards, Nachweis, Kennzeichnung und Aufzeichnungen über Konstruktion, Herstellung, Prüfung und Feldverhalten als Voraussetzung für Kennzeichnung, Verkauf und Import; Schedule I definiert 'equipment' nur als Reifen und Rückhalteeinrichtungen für Kinder/Personen mit Behinderung – Leuchten sind keine eigenständig regulierte Ausrüstung.",
+      "url": "https://laws-lois.justice.gc.ca/eng/acts/M-10.01/FullText.html"
+    },
+    {
+      "id": "MVSR C.R.C., c. 1038, ss. 3, 6, 10",
+      "title": "Motor Vehicle Safety Regulations – National Safety Marks, Compliance Label, Records",
+      "scope": "s. 3: National Safety Mark (Schedule I) und Autorisierung durch den Minister; s. 6: Compliance Label am fertigen Fahrzeug (Hersteller, Herstelldatum, National Safety Mark mit Autorisierungsnummer, VIN, GVWR/GAWR, Fahrzeugtyp, z. B. 'PC/VT'); s. 10: Aufbewahrung der Konformitätsunterlagen mindestens 5 Jahre.",
+      "url": "https://laws-lois.justice.gc.ca/eng/regulations/C.R.C.,_c._1038/FullText.html"
+    }
+  ],
+  "certification": {
+    "scheme": "CMVSS / Motor Vehicle Safety Act – National Safety Mark",
+    "type": "self-certification",
+    "marking": "Keine Bauteil-Prüfmarke für Heckleuchten: Die DOT-Kennzeichnungsvorschriften (S6.5.1) sind in TSD 108 gestrichen, eine E-Kennzeichnung ist nicht vorgeschrieben. Das Fahrzeug trägt das Compliance Label mit National Safety Mark und Autorisierungsnummer des Herstellers (MVSR s. 6).",
+    "summary_de": "Kanada setzt auf Selbstzertifizierung: Der Fahrzeughersteller bzw. Importeur bestätigt mit dem Compliance Label und der National Safety Mark die Einhaltung aller CMVSS einschließlich CMVSS 108/TSD 108 und muss Aufzeichnungen über Konstruktion, Prüfung und Feldverhalten führen (MVSA s. 5(1)(g), MVSR s. 10: mind. 5 Jahre). Transport Canada prüft im Nachhinein durch Fahrzeugtests und Prüfung der Zertifizierungsunterlagen. Heckleuchten selbst sind keine 'equipment' nach Schedule I des MVSA; sie werden ausschließlich als Teil des Fahrzeugs bewertet, d. h. der Leuchtenlieferant liefert die TSD-108-Nachweise an den Fahrzeughersteller.",
+    "url": "https://tc.canada.ca/en/corporate-services/transparency/open-tc/multimodal-road-safety-program-oversight-program-description-delivery-fiscal-year-2025-2026"
+  },
+  "accepts_un_approvals": false,
+  "notes": "accepts_un_approvals=false: MVSR s. 108(1) verlangt Konformität mit TSD 108; UN-Regelungen sind nur für Scheinwerfer (s. 108(5)-(7)) als technische Alternative zugelassen, und auch dort gelten Typgenehmigungs- und Kennzeichnungsvorschriften der UN-Regelungen ausdrücklich nicht (s. 108(8)). Für Heckleuchten (Schluss-, Brems-, Rückfahrleuchte, Rückstrahler) gibt es keine UN-Alternative. UN-R48-Vergleichswerte stammen aus der im ABl. L 347 vom 30.09.2021 veröffentlichten Fassung (Ergänzung 1 zur 07er Änderungsserie); neuere UN-R48-Fassungen wurden nicht geprüft. UN-R148-Photometriewerte wurden nicht abgerufen, daher werden in CAN-05 nur die kanadischen Sollwerte genannt.",
+  "deviations": [
+    {
+      "id": "CAN-01",
+      "topic_de": "Keine Anerkennung von UN-Genehmigungen für Heckleuchten",
+      "un_reference": "UN R148",
+      "national_requirement_de": "Pkw müssen TSD 108 (Adaption von FMVSS 108) erfüllen (MVSR s. 108(1)). UN-Regelungen sind nur für Scheinwerfer als Alternative zugelassen (s. 108(5)-(8)); für Schluss-, Brems- und Rückfahrleuchten sowie Rückstrahler gibt es keine UN-Alternative. Eine E-Genehmigung nach UN R148/R150 ersetzt den Nachweis nicht.",
+      "effort": "pruefung_zertifizierung",
+      "spec_section": "Zertifizierung",
+      "suggestion_de": "Für jede Funktion (Schlussleuchte, Bremsleuchte, Rückfahrleuchte, Rückstrahler) einen Prüfbericht gegen TSD 108 Rev. 8 (Photometrie, Farbe, physikalische Prüfungen nach S14) erstellen und dem Fahrzeughersteller als Grundlage für dessen Selbstzertifizierung zur Verfügung stellen.",
+      "check": {"type": "always"},
+      "source_url": "https://laws-lois.justice.gc.ca/eng/regulations/C.R.C.,_c._1038/FullText.html",
+      "verified": true
+    },
+    {
+      "id": "CAN-02",
+      "topic_de": "Kennzeichnung: keine DOT-/E-Pflicht, National Safety Mark am Fahrzeug",
+      "un_reference": "UN R148",
+      "national_requirement_de": "In TSD 108 sind die DOT-Kennzeichnungsvorschriften (S6.5.1 inkl. S6.5.1.2 für Signalleuchten und Rückstrahler) gestrichen; es gibt keine vorgeschriebene Prüfmarke auf der Leuchte. Die Konformität wird über das Compliance Label des Fahrzeugs mit National Safety Mark und Autorisierungsnummer bestätigt (MVSR s. 6, MVSA s. 3). Vom Gesetz am Fahrzeug geforderte Angaben nach s. 108 müssen zweisprachig (Englisch/Französisch) sein (s. 108(24)).",
+      "effort": "doku_kennzeichnung",
+      "spec_section": "Kennzeichnung",
+      "suggestion_de": "In der Kennzeichnungsspezifikation festlegen, dass für Kanada keine Bauteil-Prüfmarke erforderlich ist, und die Lieferdokumentation um die TSD-108-Konformitätserklärung für den Fahrzeughersteller ergänzen; die E-Kennzeichnung kann für UN-Märkte beibehalten werden.",
+      "check": {"type": "always"},
+      "source_url": "https://tc.canada.ca/sites/default/files/2025-05/108_tsd_rev_r8_en-web.pdf",
+      "verified": true
+    },
+    {
+      "id": "CAN-03",
+      "topic_de": "Rote Seitenmarkierungsleuchte und seitlicher Rückstrahler hinten Pflicht",
+      "un_reference": "UN R48",
+      "national_requirement_de": "TSD 108 Tabelle I-a schreibt für alle Pkw je Seite hinten eine rote Seitenmarkierungsleuchte ('as far to the rear as practicable', Anbauhöhe mind. 380 mm, aktiv mit Scheinwerfern/Parkleuchten) und je Seite hinten einen roten seitlichen Rückstrahler vor. UN R48 (07er Serie) verlangt Seitenmarkierungsleuchten und seitliche Rückstrahler nur bei Fahrzeugen über 6 m Länge (bei kürzeren M1 optional bzw. nur bei reduzierter geometrischer Sichtbarkeit der Positionsleuchten).",
+      "effort": "design",
+      "spec_section": "Function",
+      "suggestion_de": "In die Heckleuchte (Seitenfläche) eine rote Seitenmarkierungsleuchte und einen roten seitlichen Rückstrahler nach TSD 108 S7.4/S8.1 integrieren oder sicherstellen, dass das Fahrzeug diese Funktionen an anderer Stelle hinten seitlich besitzt, und dies in der Spezifikation dokumentieren.",
+      "check": {"type": "spec_missing", "keywords": ["side marker", "side-marker", "side reflex", "side reflector", "side retro-reflector", "Seitenmarkierung"]},
+      "source_url": "https://tc.canada.ca/sites/default/files/2025-05/108_tsd_rev_r8_en-web.pdf",
+      "verified": true
+    },
+    {
+      "id": "CAN-04",
+      "topic_de": "Anbauhöhen und Anbau an feststehenden Karosserieteilen",
+      "un_reference": "UN R48",
+      "national_requirement_de": "TSD 108 Tabelle I-a: Schluss- und Bremsleuchten 380-1829 mm, Rückstrahler 380-1524 mm über Boden (UN R48, 07er Serie: Schluss-/Bremsleuchte 350-1500 mm, hinterer Rückstrahler 250-900 mm). Nach S6.1.3.2 gelten Schluss-, Brems- und Blinkleuchten auf nicht feststehenden Teilen (z. B. Heckklappe) nur als Zusatzleuchten; die vorgeschriebenen Funktionen müssen am feststehenden Teil erfüllt werden.",
+      "effort": "design",
+      "spec_section": "Main Parts",
+      "suggestion_de": "Die Einbaulage prüfen: Rückstrahler und alle Leuchtfunktionen mindestens 380 mm über Fahrbahn (Rückstrahler max. 1524 mm) anordnen und die vorgeschriebenen Schluss-/Bremsfunktionen im karosseriefesten Leuchtenteil (nicht in der Heckklappe) unterbringen.",
+      "check": {"type": "always"},
+      "source_url": "https://tc.canada.ca/sites/default/files/2025-05/108_tsd_rev_r8_en-web.pdf",
+      "verified": true
+    },
+    {
+      "id": "CAN-05",
+      "topic_de": "Eigene Photometrie, Lichtaustrittsfläche und Sichtbarkeit nach TSD 108",
+      "un_reference": "UN R148",
+      "national_requirement_de": "Schlussleuchte nach Tabelle VIII (1 Leuchtkammer: mind. 2,0 cd in H-V, max. 18 cd), Bremsleuchte nach Tabelle IX (1 Leuchtkammer: mind. 80 cd in H-V, max. 300 cd; Mindestverhältnis Brems-/Schlusslicht 5 bzw. 3 je Messpunkt, wenn optisch kombiniert), Messung nach S14.2.1 auf dem SAE-Messpunktraster mit Gruppensummen. Bremsleuchte am Pkw mit mind. 5000 mm² effektiver projizierter Lichtaustrittsfläche (Tabelle IV-a, Einkammerleuchte). Sichtbarkeit nach S6.4.3 (Option Lichtaustrittsfläche 1250 mm² oder Option Lichtstärke).",
+      "effort": "pruefung_zertifizierung",
+      "spec_section": "Function",
+      "suggestion_de": "Die Spezifikation um die Sollwerte aus TSD 108 Tabellen VIII, IX und IV-a ergänzen, die Photometrie auf dem TSD-Messraster nachmessen lassen und bei Unterschreitung die Optik bzw. Lichtaustrittsfläche anpassen; die Sichtbarkeitsoption nach S6.4.3 wählen und dokumentieren.",
+      "check": {"type": "always"},
+      "source_url": "https://tc.canada.ca/sites/default/files/2025-05/108_tsd_rev_r8_en-web.pdf",
+      "verified": true
+    },
+    {
+      "id": "CAN-06",
+      "topic_de": "Kunststoffoptik: 3 Jahre Freibewitterung (Florida und Arizona)",
+      "un_reference": "UN R148",
+      "national_requirement_de": "Alle Kunststoffe für optische Teile (Lichtscheiben, Reflektoren) müssen S14.4.2 erfüllen: 3-jährige Freibewitterung in Florida und Arizona, beschleunigte Bewitterung ist nicht zulässig; danach Trübung/Glanzverlust max. 30 % (Außenscheiben) bzw. 7 % (Rückstrahler und Scheiben davor), Änderung der Lichttransmission max. 25 %, keine Rissbildung/Delamination, Farbe weiterhin konform; zusätzlich Wärmetest 79 °C für 2 h. Proben in 1,6/2,3/3,2/6,4 mm Dicke.",
+      "effort": "pruefung_zertifizierung",
+      "spec_section": "Materials",
+      "suggestion_de": "Vom PMMA-Lieferanten einen Nachweis der 3-jährigen Freibewitterung nach TSD/FMVSS 108 S14.4.2 für die verwendete rote Type und Wandstärke anfordern oder die Freibewitterung rechtzeitig einplanen; ein Kurzzeit-Bewitterungstest genügt nicht.",
+      "check": {"type": "spec_contains", "keywords": ["PMMA", "acrylic", "polycarbonate", "plastic", "polymethyl"]},
+      "source_url": "https://tc.canada.ca/sites/default/files/2025-05/108_tsd_rev_r8_en-web.pdf",
+      "verified": true
+    }
+  ],
+  "sources": [
+    {"title": "Motor Vehicle Safety Regulations (C.R.C., c. 1038), full text, current to 2026-09-30 (ss. 3, 6, 10, Schedule IV s. 108)", "url": "https://laws-lois.justice.gc.ca/eng/regulations/C.R.C.,_c._1038/FullText.html", "retrieved": "2026-10-25"},
+    {"title": "Transport Canada – Technical Standards Document No. 108, Revision 8: Lamps, Reflective Devices, and Associated Equipment (effective 2025-04-01, mandatory 2025-10-01)", "url": "https://tc.canada.ca/sites/default/files/2025-05/108_tsd_rev_r8_en-web.pdf", "retrieved": "2026-10-25"},
+    {"title": "Motor Vehicle Safety Act (S.C. 1993, c. 16), full text, current to 2026-09-30", "url": "https://laws-lois.justice.gc.ca/eng/acts/M-10.01/FullText.html", "retrieved": "2026-10-25"},
+    {"title": "Transport Canada – Multimodal and Road Safety Program: Oversight Program Description and Delivery, FY 2025-2026 (self-certification)", "url": "https://tc.canada.ca/en/corporate-services/transparency/open-tc/multimodal-road-safety-program-oversight-program-description-delivery-fiscal-year-2025-2026", "retrieved": "2026-10-25"},
+    {"title": "UN Regulation No 48 (Supplement 1 to the 07 series of amendments), OJ L 347, 30.9.2021 – comparison values for installation", "url": "https://eur-lex.europa.eu/eli/reg/2021/1718/oj/eng", "retrieved": "2026-10-25"}
+  ]
+}

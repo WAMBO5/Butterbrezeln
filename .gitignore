@@ -8,6 +8,8 @@ __pycache__/
 
 # Parsed corpus, caches and run output
 data/
+# ...but the market-approval UI's curated country data is source
+!ui/data/
 
 # Local secrets (commit only .env.example)
 .env
@@ -18,3 +20,12 @@ data/
 web/node_modules/
 web/dist/
 web/.astro/
+
+# Market-approval UI (ui/): its run store and build output
+ui/runs/
+ui/web/node_modules/
+ui/web/dist/
+*.tsbuildinfo
+
+# Regulation PDFs: hackathon use only, no redistribution (industrial-ai-hackathon/LICENSE-DATA.md)
+industrial-ai-hackathon/regulations/pdf/
