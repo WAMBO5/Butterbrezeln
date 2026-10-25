@@ -1,76 +1,76 @@
 {
   "iso3": "IND",
-  "name_de": "Indien",
+  "name": "India",
   "covers": {"products": ["rear lamp", "tail lamp", "rear combination lamp", "rear reflector", "heckleuchte", "rückleuchte"],
-             "regulations": ["UN R148", "UN R150"], "product_de": "Heckleuchten und Rückstrahler"},
-  "summary_de": "Indien ist keine Vertragspartei des UNECE-Übereinkommens von 1958; Leuchten und Rückstrahler sind sicherheitskritische Bauteile nach CMVR Rule 124 und brauchen eine Typgenehmigung (TAC) samt COP durch eine indische Prüfstelle (z. B. ARAI, ICAT, GARC) nach AIS-037. Die technischen Anforderungen (AIS-012/AIS-198 für Leuchten, AIS-057/AIS-200 für Rückstrahler, AIS-008 für den Anbau) sind eng an UN R7/R23/R3 bzw. R148/R150/R48 angelehnt, aber auf bestimmte Stände eingefroren. Eine E-Genehmigung verkürzt die Prüfung, ersetzt die indische Genehmigung aber nicht.",
+             "regulations": ["UN R148", "UN R150"], "product": "rear lamps and retro-reflectors"},
+  "summary": "India is not a contracting party to the 1958 UNECE Agreement. Lamps and retro-reflectors are safety-critical components under CMVR Rule 124 and need a type approval (TAC) including COP from an Indian test agency (e.g. ARAI, ICAT, GARC) under AIS-037. The technical requirements (AIS-012/AIS-198 for lamps, AIS-057/AIS-200 for retro-reflectors, AIS-008 for installation) closely follow UN R7/R23/R3 and R148/R150/R48 respectively, but are frozen at specific versions. An E approval shortens testing but does not replace the Indian approval.",
   "standards": [
     {
       "id": "CMVR 1989 Rule 124 / Rule 126",
-      "title": "Central Motor Vehicles Rules, 1989 – Rule 124 (Safety standards of components) und Rule 126 (Prototype of every motor vehicle to be subject to test)",
-      "scope": "Rule 124: Typgenehmigung und COP sicherheitskritischer Bauteile (u. a. Leuchten, Rückstrahler) durch benannte Prüfstellen; Rule 126: Prototypprüfung/Typgenehmigung jedes Fahrzeugtyps durch benannte Prüfstellen (GARC Chennai per G.S.R. 247(E) vom 15.03.2017 ergänzt).",
+      "title": "Central Motor Vehicles Rules, 1989 – Rule 124 (Safety standards of components) and Rule 126 (Prototype of every motor vehicle to be subject to test)",
+      "scope": "Rule 124: type approval and COP of safety-critical components (including lamps and retro-reflectors) by designated test agencies; Rule 126: prototype testing/type approval of every vehicle type by designated test agencies (GARC Chennai added by G.S.R. 247(E) of 15 Mar 2017).",
       "url": "https://cgtransport.gov.in/GadgetPDF_File/15032017_Notification_no_G_S_R_247E_dated_15_03_2017_regarding_Inclusion_of_IRMRA_and_GARC_under_rule_124_and_rule_126_respectively_0.pdf"
     },
     {
       "id": "AIS-037",
-      "title": "Procedure for Type Approval and Establishing Conformity of Production for Safety Critical Components (mit Amendments bis Nr. 11, 03/2025)",
-      "scope": "Verfahren für Bauteil-Typgenehmigung (TAC), Kennzeichnung (§9), Anerkennung von E/e-Prüfberichten (§7.4) und COP-Prüfumfang/-Frequenz (Annex B) für nach CMVR Rule 124 notifizierte Bauteile, einschließlich importierter Bauteile.",
+      "title": "Procedure for Type Approval and Establishing Conformity of Production for Safety Critical Components (with Amendments up to No. 11, 03/2025)",
+      "scope": "Procedure for component type approval (TAC), marking (§9), recognition of E/e test reports (§7.4) and COP test scope/frequency (Annex B) for components notified under CMVR Rule 124, including imported components.",
       "url": "https://icat.in/wp-content/uploads/2025/12/AIS-037_with_Amd_1.pdf"
     },
     {
       "id": "AIS-008 (Rev.1):2010 / AIS-008 (Rev.3)",
       "title": "Installation Requirements of Lighting and Light-Signalling Devices for Motor Vehicle having more than Three Wheels (incl. Quadricycles), Trailer and Semi-Trailer excluding Agricultural Tractors",
-      "scope": "Anbauvorschriften (Gegenstück zu UN R48); in Kraft per S.O. 1365(E) vom 13.12.2004. Rev.1 basiert auf ECE R48 03-Serie; Rev.3 (Juni 2025) auf UN R48 06-Serie Suppl. 15. Rev.3-Genehmigungen gelten auf Antrag als Erfüllung von Rev.1:2010. Spätere UN-Serienänderungen werden nur fallweise durch den AISC-Vorsitz akzeptiert (§11.2).",
+      "scope": "Installation rules (counterpart to UN R48); in force by S.O. 1365(E) of 13 Dec 2004. Rev.1 is based on the ECE R48 03 series; Rev.3 (June 2025) on the UN R48 06 series Suppl. 15. Rev.3 approvals count as compliance with Rev.1:2010 on request. Later UN series amendments are only accepted case by case by the AISC chair (§11.2).",
       "url": "https://icat.in/wp-content/uploads/2025/12/AIS-008-Rev.3.pdf"
     },
     {
       "id": "AIS-012 (Part 6) (Rev.1):2011",
       "title": "Performance Requirements for Front and Rear Position (Side) Lamps, Stop-Lamps and End-outline Marker Lamps for Motor Vehicles",
-      "scope": "Bauteilanforderungen Schluss-/Bremsleuchten; basiert auf ECE R7 02-Serie Suppl. 12 (in Kraft 10.03.2009). Laut Amendment 1 (08/2013) werden spätere ECE-Serienänderungen nicht berücksichtigt, außer fallweise durch AISC-Vorsitz. Wird durch AIS-198 abgelöst (Übergangsbestimmungen in AIS-198 §6).",
+      "scope": "Component requirements for tail and stop lamps; based on the ECE R7 02 series Suppl. 12 (in force 10 Mar 2009). According to Amendment 1 (08/2013), later ECE series amendments are not taken into account, except case by case by the AISC chair. Being replaced by AIS-198 (transitional provisions in AIS-198 §6).",
       "url": "https://law.resource.org/pub/in/bis/ais/arai.in.ais.012-6.2013.pdf"
     },
     {
       "id": "AIS-012 (Part 7) (Rev.1):2011",
       "title": "Performance Requirements for Reversing Lamps for Motor Vehicles",
-      "scope": "Bauteilanforderungen Rückfahrscheinwerfer (Titel laut AIS-Liste 2015; UN-Basis, vermutlich ECE R23, nicht im Volltext geprüft). Wird durch AIS-198 abgelöst.",
+      "scope": "Component requirements for reversing lamps (title per the 2015 AIS list; UN basis probably ECE R23, not checked against the full text). Being replaced by AIS-198.",
       "url": "https://law.resource.org/pub/in/bis/ais/arai.in.ais.list.2015.pdf"
     },
     {
       "id": "AIS-057 (Rev.1):2010",
       "title": "Provisions concerning the Approval of Retro-Reflecting Devices for Power Driven Vehicles and their Trailers",
-      "scope": "Bauteilanforderungen Rückstrahler; basiert auf ECE R3 02-Serie Suppl. 10 (in Kraft 02.02.2007), mit Änderungen 'im indischen Kontext'. Wird durch AIS-200 abgelöst.",
+      "scope": "Component requirements for retro-reflectors; based on the ECE R3 02 series Suppl. 10 (in force 2 Feb 2007), with changes 'in the Indian context'. Being replaced by AIS-200.",
       "url": "https://law.resource.org/pub/in/bis/ais/arai.in.ais.057.2010.pdf"
     },
     {
       "id": "AIS-198",
-      "title": "Uniform Provisions Concerning the Approval of Light Signaling Devices and Systems for Power-Driven Vehicles (Juni 2025)",
-      "scope": "Indisches Gegenstück zu UN R148 (Originalfassung, Suppl. 4, in Kraft 08.10.2022) für u. a. Schluss-, Brems-, Rückfahr- und Kennzeichenleuchten; fasst AIS-012 Teile 2, 4-10 und AIS-010 (Part 3) zusammen; enthält indienspezifische Kennzeichenmaße; §7 regelt Nachprüfungen für E/e-genehmigte Leuchten.",
+      "title": "Uniform Provisions Concerning the Approval of Light Signaling Devices and Systems for Power-Driven Vehicles (June 2025)",
+      "scope": "Indian counterpart to UN R148 (original version, Suppl. 4, in force 8 Oct 2022) covering, among others, tail, stop, reversing and registration plate lamps; consolidates AIS-012 Parts 2, 4-10 and AIS-010 (Part 3); contains India-specific registration plate dimensions; §7 sets out re-testing for E/e-approved lamps.",
       "url": "https://icat.in/wp-content/uploads/2026/05/1771559573_AIS-198.pdf"
     },
     {
       "id": "AIS-200",
-      "title": "Uniform provisions concerning the approval of retro-reflective devices and markings for power-driven vehicles and their trailers (Juni 2025)",
-      "scope": "Indisches Gegenstück zu UN R150 (bis Suppl. 4, in Kraft 30.06.2022); fasst AIS-057 (Rev.1), AIS-022, AIS-088, AIS-089, AIS-090 zusammen; §7 regelt Nachprüfungen für E/e-genehmigte Rückstrahler.",
+      "title": "Uniform provisions concerning the approval of retro-reflective devices and markings for power-driven vehicles and their trailers (June 2025)",
+      "scope": "Indian counterpart to UN R150 (up to Suppl. 4, in force 30 Jun 2022); consolidates AIS-057 (Rev.1), AIS-022, AIS-088, AIS-089, AIS-090; §7 sets out re-testing for E/e-approved retro-reflectors.",
       "url": "https://icat.in/wp-content/uploads/2026/05/AIS-200_Final_df6aa63d-232a-47db-b1b9-ae95ac1b0607.pdf"
     }
   ],
   "certification": {
-    "scheme": "CMVR-Typgenehmigung (Type Approval Certificate, TAC) nach Rule 124 (Bauteil) und Rule 126 (Fahrzeug)",
+    "scheme": "CMVR type approval (Type Approval Certificate, TAC) under Rule 124 (component) and Rule 126 (vehicle)",
     "type": "third-party type approval",
-    "marking": "TA-Kennung nach AIS-037 §9: Handelsmarke/Herstellerzeichen, Identifikationscode des Herstellers und 6-stellige Genehmigungsreferenz (Buchstabe der Prüfstelle, z. B. A=ARAI, C=ICAT, G=GARC, N=NATRAX, V=VRDE; Jahrescode nach ISO 3779; 4-stellige Zertifikatsnummer, Beispiel 'A10864'). AIS-198 §3.3.2.1 akzeptiert alternativ die UI-Kennzeichnung nach UN-Genehmigung; bei E/e-genehmigten Bauteilen nach AIS-037 §7.4 genügen die ECE-Kennzeichnungen (§9.5).",
-    "summary_de": "Leuchten und Rückstrahler sind nach CMVR Rule 124 notifizierte sicherheitskritische Bauteile: Der Hersteller/Importeur beantragt bei einer CMVR-Prüfstelle (ARAI, ICAT, GARC, NATRAX, VRDE u. a.) eine Bauteil-Typgenehmigung nach AIS-037 gegen AIS-012/AIS-198 bzw. AIS-057/AIS-200; danach folgt periodische COP-Prüfung. Zusätzlich wird der Fahrzeugtyp nach Rule 126 inkl. Anbau nach AIS-008 geprüft. Indien ist keine Vertragspartei des Übereinkommens von 1958, E-Genehmigungen werden daher nicht als solche anerkannt; E/e-Prüfberichte können aber den Prüfumfang reduzieren (AIS-037 §7.4), wobei AIS-198/AIS-200 §7 bestimmte Nachprüfungen trotzdem vorschreiben.",
+    "marking": "TA marking per AIS-037 §9: trade name/manufacturer's mark, manufacturer's identification code and a 6-character approval reference (letter of the test agency, e.g. A=ARAI, C=ICAT, G=GARC, N=NATRAX, V=VRDE; year code per ISO 3779; 4-digit certificate number, example 'A10864'). AIS-198 §3.3.2.1 alternatively accepts the UI marking under a UN approval; for E/e-approved components under AIS-037 §7.4 the ECE markings are sufficient (§9.5).",
+    "summary": "Lamps and retro-reflectors are safety-critical components notified under CMVR Rule 124: the manufacturer/importer applies to a CMVR test agency (ARAI, ICAT, GARC, NATRAX, VRDE and others) for a component type approval under AIS-037 against AIS-012/AIS-198 or AIS-057/AIS-200; periodic COP testing follows. In addition, the vehicle type is tested under Rule 126, including installation per AIS-008. India is not a contracting party to the 1958 Agreement, so E approvals are not recognised as such; however, E/e test reports can reduce the test scope (AIS-037 §7.4), although AIS-198/AIS-200 §7 still require certain re-tests.",
     "url": "https://icat.in/wp-content/uploads/2025/12/AIS-037_with_Amd_1.pdf"
   },
   "accepts_un_approvals": false,
   "deviations": [
     {
       "id": "IND-01",
-      "topic_de": "Indische Bauteil-Typgenehmigung (TAC) erforderlich",
+      "topic": "Indian component type approval (TAC) required",
       "un_reference": "UN R148",
-      "national_requirement_de": "Leuchten und Rückstrahler sind nach CMVR Rule 124 notifizierte sicherheitskritische Bauteile. Für jeden Leuchtentyp ist eine Typgenehmigung (Type Approval Certificate) einer CMVR-Prüfstelle nach AIS-037 erforderlich; die Prüfstelle führt die im notifizierten Standard vorgeschriebenen Prüfungen mit eigenen Einrichtungen durch (AIS-037 §7.3). Das gilt auch für importierte Bauteile (AIS-037 §1.1). Die TAC kann auf bestimmte Fahrzeugmodelle beschränkt werden, wenn Merkmale nur am Fahrzeug prüfbar sind (§8.2).",
-      "effort": "pruefung_zertifizierung",
-      "spec_section": "Zertifizierung",
-      "suggestion_de": "Eine Bauteil-Typgenehmigung bei einer CMVR-Prüfstelle (z. B. ARAI, ICAT oder GARC) nach AIS-037 gegen AIS-198 (bzw. AIS-012 Part 6/Part 7) und AIS-200 (bzw. AIS-057) einplanen und Zeichnungen, technische Beschreibung und Muster gemäß AIS-198 §3.1 bereitstellen; die Zielfahrzeugmodelle benennen.",
+      "national_requirement": "Lamps and retro-reflectors are safety-critical components notified under CMVR Rule 124. Every lamp type needs a type approval (Type Approval Certificate) from a CMVR test agency under AIS-037; the test agency carries out the tests required by the notified standard with its own facilities (AIS-037 §7.3). This also applies to imported components (AIS-037 §1.1). The TAC can be limited to specific vehicle models if certain features can only be tested on the vehicle (§8.2).",
+      "effort": "testing",
+      "spec_section": "Certification",
+      "suggestion": "Plan for a component type approval at a CMVR test agency (e.g. ARAI, ICAT or GARC) under AIS-037 against AIS-198 (or AIS-012 Part 6/Part 7) and AIS-200 (or AIS-057), and provide drawings, technical description and samples as per AIS-198 §3.1; name the target vehicle models.",
       "check": {
         "type": "always"
       },
@@ -79,12 +79,12 @@
     },
     {
       "id": "IND-02",
-      "topic_de": "E-Genehmigung ersetzt indische Prüfung nicht (Nachprüfung der Leuchtenfunktionen)",
+      "topic": "E approval does not replace Indian testing (re-testing of lamp functions)",
       "un_reference": "UN R148",
-      "national_requirement_de": "Abweichend von AIS-037 §7.4 muss die indische Prüfstelle bei E/e-genehmigten Leuchten die technischen Anforderungen u. a. für Schlussleuchten (R1, R2, MR), Bremsleuchten (S1–S4, MS) und Rückfahrscheinwerfer (AR) selbst prüfen (AIS-198 §7.1). Nach AIS-037 §7.4 dürfen Prüfungen für mit der ECE-Regelung gemeinsame Parameter nur entfallen, wenn die Teile für Indien in denselben Produktionsstätten wie die E-genehmigte Exportproduktion gefertigt werden. Prüfbasis ist AIS-198 = UN R148 Originalfassung Suppl. 4; neuere UN-Serienänderungen werden nicht automatisch übernommen.",
-      "effort": "pruefung_zertifizierung",
-      "spec_section": "Zertifizierung",
-      "suggestion_de": "E-Genehmigungsunterlagen und Prüfberichte (UN R148) vorlegen, aber zusätzliche photometrische und farbmetrische Prüfungen der Schluss-, Brems- und Rückfahrfunktion bei der indischen Prüfstelle einplanen; dokumentieren, dass die Indien-Teile aus dem E-genehmigten Werk stammen.",
+      "national_requirement": "In deviation from AIS-037 §7.4, for E/e-approved lamps the Indian test agency must itself test the technical requirements for, among others, tail lamps (R1, R2, MR), stop lamps (S1–S4, MS) and reversing lamps (AR) (AIS-198 §7.1). Under AIS-037 §7.4, tests for parameters shared with the ECE regulation may only be skipped if the parts for India are made in the same production facilities as the E-approved export production. The test basis is AIS-198 = UN R148 original version Suppl. 4; newer UN series amendments are not adopted automatically.",
+      "effort": "testing",
+      "spec_section": "Certification",
+      "suggestion": "Submit the E approval documents and test reports (UN R148), but plan for additional photometric and colorimetric tests of the tail, stop and reversing functions at the Indian test agency; document that the parts for India come from the E-approved plant.",
       "check": {
         "type": "always"
       },
@@ -93,12 +93,12 @@
     },
     {
       "id": "IND-03",
-      "topic_de": "Nachprüfung E-genehmigter Rückstrahler",
+      "topic": "Re-testing of E-approved retro-reflectors",
       "un_reference": "UN R150",
-      "national_requirement_de": "Für E/e-genehmigte Rückstrahler muss die indische Prüfstelle Rückstrahlwert (CIL), Farbe des reflektierten Lichts, Beständigkeit gegen Wasser- und Schmutzeintritt sowie Wärmebeständigkeit nach AIS-200 prüfen (AIS-200 §7.1.1). Hinten sind an Pkw (Kategorie M) zwei nicht-dreieckige Rückstrahler der Klasse IA oder IB nach AIS-057 bzw. AIS-200 vorgeschrieben (AIS-008 Rev.3 §6.14).",
-      "effort": "pruefung_zertifizierung",
-      "spec_section": "Zertifizierung",
-      "suggestion_de": "Den integrierten Rückstrahler (Klasse IA/IB) zur Prüfung von CIL, Farbe, Wasser-/Schmutzdichtheit und Wärmebeständigkeit bei der indischen Prüfstelle einreichen, auch wenn eine UN-R150-Genehmigung vorliegt.",
+      "national_requirement": "For E/e-approved retro-reflectors, the Indian test agency must test the coefficient of luminous intensity (CIL), colour of the reflected light, resistance to water and dirt ingress, and heat resistance according to AIS-200 (AIS-200 §7.1.1). At the rear, passenger cars (category M) must have two non-triangular retro-reflectors of class IA or IB per AIS-057 or AIS-200 (AIS-008 Rev.3 §6.14).",
+      "effort": "testing",
+      "spec_section": "Certification",
+      "suggestion": "Submit the integrated retro-reflector (class IA/IB) to the Indian test agency for testing of CIL, colour, water/dirt tightness and heat resistance, even if a UN R150 approval exists.",
       "check": {
         "type": "spec_contains",
         "keywords": [
@@ -114,12 +114,12 @@
     },
     {
       "id": "IND-04",
-      "topic_de": "Indische Genehmigungskennzeichnung (TA-Code) statt/zusätzlich zum E-Zeichen",
+      "topic": "Indian approval marking (TA code) instead of or in addition to the E mark",
       "un_reference": "UN R148",
-      "national_requirement_de": "Typgenehmigte Bauteile müssen Handelsmarke/Herstellerzeichen, den Identifikationscode des Herstellers und eine 6-stellige Genehmigungsreferenz tragen: Buchstabe der Prüfstelle (z. B. A=ARAI, C=ICAT, G=GARC, N=NATRAX), Jahrescode der Genehmigung und 4-stellige Zertifikatsnummer, z. B. 'A10864' (AIS-037 §9.1–9.2); bei außen sichtbaren Teilen vorzugsweise im eingebauten Zustand sichtbar (§9.4). AIS-198 §3.3.2.1 verlangt das Genehmigungszeichen nach AIS-037, akzeptiert alternativ die UI-Kennzeichnung; E/e-Bauteile nach AIS-037 §7.4 brauchen nur die ECE-Kennzeichnungen (§9.5).",
-      "effort": "doku_kennzeichnung",
-      "spec_section": "Kennzeichnung",
-      "suggestion_de": "Auf Lichtscheibe oder untrennbarem Gehäuseteil ein Feld für den indischen TA-Code (z. B. 'A' + Jahrescode + Zertifikatsnummer) neben Handelsmarke und Teilekennung vorsehen oder belegen, dass die E-/UI-Kennzeichnung nach AIS-037 §9.5 bzw. AIS-198 §3.3.2.1 genügt.",
+      "national_requirement": "Type-approved components must carry the trade name/manufacturer's mark, the manufacturer's identification code and a 6-character approval reference: letter of the test agency (e.g. A=ARAI, C=ICAT, G=GARC, N=NATRAX), year code of the approval and 4-digit certificate number, e.g. 'A10864' (AIS-037 §9.1–9.2); for externally visible parts, preferably visible when installed (§9.4). AIS-198 §3.3.2.1 requires the approval mark per AIS-037 and alternatively accepts the UI marking; E/e components under AIS-037 §7.4 only need the ECE markings (§9.5).",
+      "effort": "documentation",
+      "spec_section": "Marking",
+      "suggestion": "Reserve a field for the Indian TA code (e.g. 'A' + year code + certificate number) next to the trade name and part identification on the lens or a non-removable housing part, or show that the E/UI marking is sufficient under AIS-037 §9.5 or AIS-198 §3.3.2.1.",
       "check": {
         "type": "always"
       },
@@ -128,12 +128,12 @@
     },
     {
       "id": "IND-05",
-      "topic_de": "Periodische COP-Prüfung durch indische Prüfstelle",
+      "topic": "Periodic COP testing by an Indian test agency",
       "un_reference": "UN R148",
-      "national_requirement_de": "Für Licht- und Lichtsignaleinrichtungen der Klassen M/N sind COP-Prüfungen (Photometrie, Farbmetrik) im Abstand von 2 Jahren vorgeschrieben, für Rückstrahler Photometrie, Farbmetrik und Wasserdichtheit ebenfalls alle 2 Jahre (AIS-037 Annex B, lfd. Nr. 12 und 13).",
-      "effort": "pruefung_zertifizierung",
-      "spec_section": "Zertifizierung",
-      "suggestion_de": "Wiederkehrende COP-Prüfungen (Photometrie, Farbmetrik; beim Rückstrahler zusätzlich Wasserdichtheit) im 2-Jahres-Rhythmus bei der genehmigenden indischen Prüfstelle budgetieren und Serienmuster dafür vorhalten.",
+      "national_requirement": "For lighting and light-signalling devices of classes M/N, COP tests (photometry, colorimetry) are required every 2 years; for retro-reflectors, photometry, colorimetry and water tightness, also every 2 years (AIS-037 Annex B, items 12 and 13).",
+      "effort": "testing",
+      "spec_section": "Certification",
+      "suggestion": "Budget for recurring COP tests (photometry, colorimetry; for the retro-reflector also water tightness) every 2 years at the approving Indian test agency and keep production samples available for them.",
       "check": {
         "type": "always"
       },
@@ -142,12 +142,12 @@
     },
     {
       "id": "IND-06",
-      "topic_de": "Kennzeichenleuchte: indienspezifische Kennzeichenmaße",
+      "topic": "Registration plate lamp: India-specific plate dimensions",
       "un_reference": "UN R148",
-      "national_requirement_de": "AIS-198 enthält laut Einleitung (§0.3) indienspezifische Kennzeichenmaße. Die Leuchtdichte-Messpunkte für Kennzeichenleuchten beziehen sich auf Kategorie 1a (hohes Kennzeichen 340 x 200 mm) und Kategorie 1b (breites Kennzeichen 500 x 120 mm) (AIS-198 Annex 3, §3).",
-      "effort": "pruefung_zertifizierung",
+      "national_requirement": "According to its introduction (§0.3), AIS-198 contains India-specific registration plate dimensions. The luminance measuring points for registration plate lamps refer to category 1a (tall plate 340 x 200 mm) and category 1b (wide plate 500 x 120 mm) (AIS-198 Annex 3, §3).",
+      "effort": "testing",
       "spec_section": "Function",
-      "suggestion_de": "Falls die Leuchte eine Kennzeichenbeleuchtung enthält: die Ausleuchtung für die indischen Kennzeichenformate 340 x 200 mm und 500 x 120 mm nach AIS-198 nachweisen und bei Bedarf Optik oder Einbaulage anpassen.",
+      "suggestion": "If the lamp includes registration plate lighting: demonstrate the illumination for the Indian plate formats 340 x 200 mm and 500 x 120 mm per AIS-198 and adjust the optics or mounting position if needed.",
       "check": {
         "type": "spec_contains",
         "keywords": [
@@ -159,27 +159,27 @@
       },
       "source_url": "https://icat.in/wp-content/uploads/2026/05/1771559573_AIS-198.pdf",
       "verified": true,
-      "notes": "Die indischen Maße sind im AIS-198-Volltext belegt; die genaue Abweichung von den Maßen in UN R148 wurde nicht gegen den UN-Text geprüft (UNECE-Website war nicht abrufbar). Betrifft das Testprodukt nur, wenn es eine Kennzeichenleuchte enthält."
+      "notes": "The Indian dimensions are confirmed in the full text of AIS-198; the exact difference from the dimensions in UN R148 was not checked against the UN text (the UNECE website could not be accessed). Only affects the test product if it includes a registration plate lamp."
     }
   ],
   "sources": [
     {
-      "title": "AIS-037 with Amendments – Procedure for Type Approval and Establishing COP for Safety Critical Components (ICAT-Hosting)",
+      "title": "AIS-037 with Amendments – Procedure for Type Approval and Establishing COP for Safety Critical Components (hosted by ICAT)",
       "url": "https://icat.in/wp-content/uploads/2025/12/AIS-037_with_Amd_1.pdf",
       "retrieved": "2026-10-25"
     },
     {
-      "title": "AIS-198 – Uniform Provisions Concerning the Approval of Light Signaling Devices and Systems (June 2025, ICAT-Hosting)",
+      "title": "AIS-198 – Uniform Provisions Concerning the Approval of Light Signaling Devices and Systems (June 2025, hosted by ICAT)",
       "url": "https://icat.in/wp-content/uploads/2026/05/1771559573_AIS-198.pdf",
       "retrieved": "2026-10-25"
     },
     {
-      "title": "AIS-200 – Retro-reflective devices and markings (June 2025, ICAT-Hosting)",
+      "title": "AIS-200 – Retro-reflective devices and markings (June 2025, hosted by ICAT)",
       "url": "https://icat.in/wp-content/uploads/2026/05/AIS-200_Final_df6aa63d-232a-47db-b1b9-ae95ac1b0607.pdf",
       "retrieved": "2026-10-25"
     },
     {
-      "title": "AIS-008 (Rev.3) – Installation Requirements of Lighting and Light-Signalling Devices (June 2025, ICAT-Hosting)",
+      "title": "AIS-008 (Rev.3) – Installation Requirements of Lighting and Light-Signalling Devices (June 2025, hosted by ICAT)",
       "url": "https://icat.in/wp-content/uploads/2025/12/AIS-008-Rev.3.pdf",
       "retrieved": "2026-10-25"
     },
@@ -204,7 +204,7 @@
       "retrieved": "2026-10-25"
     },
     {
-      "title": "Gazette of India G.S.R. 247(E), 15.03.2017 – Central Motor Vehicles (4th Amendment) Rules 2017 (Rule 124/126)",
+      "title": "Gazette of India G.S.R. 247(E), 15 Mar 2017 – Central Motor Vehicles (4th Amendment) Rules 2017 (Rule 124/126)",
       "url": "https://cgtransport.gov.in/GadgetPDF_File/15032017_Notification_no_G_S_R_247E_dated_15_03_2017_regarding_Inclusion_of_IRMRA_and_GARC_under_rule_124_and_rule_126_respectively_0.pdf",
       "retrieved": "2026-10-25"
     },

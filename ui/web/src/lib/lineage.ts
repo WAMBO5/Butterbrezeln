@@ -1,5 +1,6 @@
 import type { Finding, LineageLink, LineageTarget, Requirement, RunResult, Source, Suggestion, TraceEvent } from "../types";
-import { EFFORT, FINDING, STATUS, plural, regulationName } from "./labels";
+import { countryName } from "./geo";
+import { EFFORT, FINDING, STATUS, isAccepted, regulationName } from "./labels";
 
 export interface ChainStep {
   key: string;
@@ -53,42 +54,42 @@ function pipelineSteps(run: RunResult, trace: TraceEvent[], idx: Index, req: Req
   const steps: ChainStep[] = [
     {
       key: "product",
-      title: "Aus Ihrer Produktbeschreibung",
-      text: parts.length ? "Betroffene Bauteile:" : `Grundlage: ${run.spec_name}`,
+      title: "From your product description",
+      text: parts.length ? "Parts affected:" : `Based on: ${run.spec_name}`,
       chips: parts,
-      detail: facts.length ? `Angaben: ${facts.map((f) => f.summary).join(" · ")}` : undefined,
+      detail: facts.length ? `Details: ${facts.map((f) => f.summary).join(" · ")}` : undefined,
       specLines: facts.find((f) => f.spec_lines)?.spec_lines ?? null,
       event: eventOf(of("part")[0] ?? facts[0]),
     },
   ];
   if (scope) {
-    steps.push({ key: "scope", title: `Warum ${regulationName(req.source.regulation, req.source.title)} gilt`, text: scope.summary, event: eventOf(scope) });
+    steps.push({ key: "scope", title: `Why ${regulationName(req.source.regulation, req.source.title)} applies`, text: scope.summary, event: eventOf(scope) });
   }
-  steps.push({ key: "provision", title: "Fundstelle in der Vorschrift", text: provision?.summary ?? req.source.label, sources: [req.source], event: eventOf(provision) });
+  steps.push({ key: "provision", title: "Where it says so in the regulation", text: provision?.summary ?? req.source.label, sources: [req.source], event: eventOf(provision) });
   if (obligation) {
     steps.push({
       key: "obligation",
-      title: "Die Pflicht im Originaltext",
+      title: "The obligation, verbatim",
       text: quote?.[1] ?? obligation.summary,
       quote: true,
-      detail: quote?.[2] ? `Vermerk der Pipeline: ${quote[2]}` : undefined,
+      detail: quote?.[2] ? `Pipeline note: ${quote[2]}` : undefined,
       event: eventOf(obligation),
     });
   }
   if (matches.length) {
     steps.push({
       key: "match",
-      title: `Abgleich mit Ihrem Produkt: ${state === "uncertain" ? "gilt vielleicht" : "gilt"}`,
+      title: `Matched against your product: ${state === "uncertain" ? "may apply" : "applies"}`,
       text: reasons.join(" "),
       event: eventOf(matches[0]),
     });
   }
   steps.push({
     key: "requirement",
-    title: "Die Anforderung, wie sie abgegeben wird",
+    title: "The requirement as delivered",
     text: req.text,
     quote: true,
-    detail: test_case ? `Nachweis: ${test_case}` : undefined,
+    detail: test_case ? `Evidence: ${test_case}` : undefined,
     sources: [req.source],
     event: assemble,
   });
@@ -102,20 +103,20 @@ function requirementSteps(run: RunResult, trace: TraceEvent[], idx: Index, req: 
   const steps: ChainStep[] = [
     {
       key: "spec",
-      title: "Aus Ihrer Produktbeschreibung",
-      text: finding?.spec_lines ? "Diese Stelle Ihrer Beschreibung ist relevant:" : `Grundlage: ${run.spec_name}`,
+      title: "From your product description",
+      text: finding?.spec_lines ? "This part of your description is relevant:" : `Based on: ${run.spec_name}`,
       specLines: finding?.spec_lines ?? null,
       event: agentEvent("spec_parser", trace),
     },
     {
       key: "selection",
-      title: "Passende Vorschrift ausgewählt",
-      text: `${regulationName(req.source.regulation, req.source.title)} (${req.source.regulation}, Version ${req.source.version})`,
+      title: "Applicable regulation selected",
+      text: `${regulationName(req.source.regulation, req.source.title)} (${req.source.regulation}, version ${req.source.version})`,
       event: selection,
     },
     {
       key: "requirement",
-      title: "Die Anforderung im Originaltext",
+      title: "The requirement, verbatim",
       text: req.text,
       quote: true,
       sources: [req.source],
@@ -124,7 +125,7 @@ function requirementSteps(run: RunResult, trace: TraceEvent[], idx: Index, req: 
   if (finding) {
     steps.push({
       key: "finding",
-      title: `Abgleich mit Ihrem Produkt: ${FINDING[finding.status].label}`,
+      title: `Matched against your product: ${FINDING[finding.status].label}`,
       text: finding.explanation,
       detail: finding.suggestion ?? undefined,
       specLines: finding.spec_lines ?? null,
@@ -139,8 +140,8 @@ function decisionSteps(trace: TraceEvent[], suggestionId: string): ChainStep[] {
     .filter((e) => e.agent === "human_review" && e.tags.suggestion === suggestionId)
     .map((e) => ({
       key: e.id,
-      title: "Entscheidung durch einen Menschen",
-      text: e.action.includes("akzeptiert") ? "Vorschlag übernommen." : "Vorschlag abgelehnt.",
+      title: "Decision by a human",
+      text: isAccepted(e.action) ? "Suggestion accepted." : "Suggestion rejected.",
       detail: e.outputs_summary || undefined,
       event: e,
     }));
@@ -156,13 +157,13 @@ export function buildChain(target: LineageTarget, run: RunResult, trace: TraceEv
     const affected = Object.values(run.verdicts).filter((v) => v.suggestions.some((s) => s.requirement_id === req.id));
     steps.push({
       key: "verdicts",
-      title: "Auswirkung auf die Länder",
+      title: "Effect on the markets",
       text: affected.length
-        ? `Führt zu Vorschlägen in: ${affected.map((v) => v.name_de).join(", ")}`
-        : idx.findingsByReq.get(req.id)?.status === "offen"
-          ? "Ein üblicher Prüfnachweis in allen Ländern – ändert die Ampelfarbe nicht."
-          : "Keine Auswirkung auf die Ampelfarbe.",
-      links: affected.map((v) => ({ label: v.name_de, target: { kind: "verdict", iso3: v.iso3 } })),
+        ? `Leads to suggestions in: ${affected.map((v) => countryName(v.iso3, v.name)).join(", ")}`
+        : idx.findingsByReq.get(req.id)?.status === "open"
+          ? "A standard test record in every market – does not change the traffic light."
+          : "No effect on the traffic light.",
+      links: affected.map((v) => ({ label: countryName(v.iso3, v.name), target: { kind: "verdict", iso3: v.iso3 } })),
     });
     return steps;
   }
@@ -174,12 +175,12 @@ export function buildChain(target: LineageTarget, run: RunResult, trace: TraceEv
     const req = s.requirement_id ? idx.requirements.get(s.requirement_id) : undefined;
     const steps: ChainStep[] = req ? requirementSteps(run, trace, idx, req) : [];
     if (s.deviation_id) {
-      steps.push({ key: "deviation", title: `Regel in ${verdict?.name_de ?? s.country}`, text: s.reason, sources: s.sources });
+      steps.push({ key: "deviation", title: `Rule in ${countryName(s.country, verdict?.name)}`, text: s.reason, sources: s.sources });
     }
     if (verdict) {
       steps.push({
         key: "verdict",
-        title: `Bewertung für ${verdict.name_de}: ${STATUS[verdict.status].label}`,
+        title: `Rating for ${countryName(verdict.iso3, verdict.name)}: ${STATUS[verdict.status].label}`,
         text: verdict.reasons.join(" "),
         sources: verdict.sources,
         event: firstEvent(verdict.trace_ids, idx),
@@ -187,7 +188,7 @@ export function buildChain(target: LineageTarget, run: RunResult, trace: TraceEv
     }
     steps.push({
       key: "suggestion",
-      title: `Unser Vorschlag (${EFFORT[s.effort].label})`,
+      title: `Our suggestion (${EFFORT[s.effort].label})`,
       text: s.change,
       detail: s.deviation_id ? undefined : s.reason,
       sources: s.deviation_id ? undefined : s.sources,
@@ -198,22 +199,22 @@ export function buildChain(target: LineageTarget, run: RunResult, trace: TraceEv
 
   const verdict = run.verdicts[target.iso3];
   if (!verdict) return [];
-  const engine = trace.find((e) => e.agent === "requirements_engine" && e.action === "Anforderungen ableiten");
+  const engine = trace.find((e) => e.agent === "requirements_engine" && /^(Anforderungen ableiten|Derive requirements)$/i.test(e.action));
   const assessor = trace.find((e) => e.agent === "spec_assessor" && !e.tags.regulation);
   return [
-    { key: "spec", title: "Produktbeschreibung gelesen", text: run.spec_name, event: agentEvent("spec_parser", trace) },
-    { key: "requirements", title: "Anforderungen aus den Vorschriften abgeleitet", text: engine?.outputs_summary, event: engine },
-    { key: "assessment", title: "Mit Ihrem Produkt abgeglichen", text: assessor?.outputs_summary, event: assessor },
+    { key: "spec", title: "Product description read", text: run.spec_name, event: agentEvent("spec_parser", trace) },
+    { key: "requirements", title: "Requirements derived from the regulations", text: engine?.outputs_summary, event: engine },
+    { key: "assessment", title: "Matched against your product", text: assessor?.outputs_summary, event: assessor },
     {
       key: "verdict",
-      title: `Bewertung für ${verdict.name_de}: ${STATUS[verdict.status].label}`,
+      title: `Rating for ${countryName(verdict.iso3, verdict.name)}: ${STATUS[verdict.status].label}`,
       text: verdict.reasons.join(" "),
       sources: verdict.sources,
       event: firstEvent(verdict.trace_ids, idx),
     },
     {
       key: "suggestions",
-      title: verdict.suggestions.length ? `${plural(verdict.suggestions.length, "Schritt", "Schritte")} nötig` : "Keine Produktänderung nötig",
+      title: verdict.suggestions.length ? `${verdict.suggestions.length} steps to approval` : "No steps needed",
       links: verdict.suggestions.map((s) => ({ label: s.change, target: { kind: "suggestion", id: s.id } })),
     },
   ];

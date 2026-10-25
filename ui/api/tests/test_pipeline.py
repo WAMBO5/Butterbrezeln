@@ -13,31 +13,31 @@ SPEC = (CASES_DIR / "dev-rear-lamp" / "spec.md").read_text(encoding="utf-8")
 COUNTRIES = {
     "meta": {"sources": []},
     "countries": {
-        "DEU": {"name_de": "Deutschland", "regime": "unece_1958", "applied_regulations": "all", "profile": None},
-        "FRA": {"name_de": "Frankreich", "regime": "unece_1958", "applied_regulations": ["UN R10", "UN R48", "UN R148", "UN R150"], "profile": None},
-        "JPN": {"name_de": "Japan", "regime": "unece_1958", "applied_regulations": ["UN R48", "UN R148", "UN R150"], "profile": None},
-        "KOR": {"name_de": "Südkorea", "regime": "unece_1958", "applied_regulations": ["UN R48"], "profile": None},
-        "CHN": {"name_de": "China", "regime": "national", "applied_regulations": [], "profile": "CHN"},
-        "USA": {"name_de": "USA", "regime": "national", "applied_regulations": [], "profile": "USA"},
+        "DEU": {"name": "Germany", "regime": "unece_1958", "applied_regulations": "all", "profile": None},
+        "FRA": {"name": "France", "regime": "unece_1958", "applied_regulations": ["UN R10", "UN R48", "UN R148", "UN R150"], "profile": None},
+        "JPN": {"name": "Japan", "regime": "unece_1958", "applied_regulations": ["UN R48", "UN R148", "UN R150"], "profile": None},
+        "KOR": {"name": "South Korea", "regime": "unece_1958", "applied_regulations": ["UN R48"], "profile": None},
+        "CHN": {"name": "China", "regime": "national", "applied_regulations": [], "profile": "CHN"},
+        "USA": {"name": "USA", "regime": "national", "applied_regulations": [], "profile": "USA"},
     },
 }
 
 
 def _profile(iso3, deviations):
-    return {"iso3": iso3, "name_de": iso3, "summary_de": "Testprofil.", "accepts_un_approvals": False,
+    return {"iso3": iso3, "name": iso3, "summary": "Test profile.", "accepts_un_approvals": False,
             "deviations": deviations}
 
 
 CHN = _profile("CHN", [
-    {"id": "CHN-01", "topic_de": "CCC", "effort": "pruefung_zertifizierung", "spec_section": "Zertifizierung",
-     "suggestion_de": "CCC-Zertifizierung durchführen.", "check": {"type": "always"}, "source_url": "https://example.org/ccc"},
+    {"id": "CHN-01", "topic": "CCC", "effort": "testing", "spec_section": "Certification",
+     "suggestion": "Obtain CCC certification.", "check": {"type": "always"}, "source_url": "https://example.org/ccc"},
 ])
 USA = _profile("USA", [
-    {"id": "USA-01", "topic_de": "Seitenmarkierung", "effort": "design", "spec_section": "Function",
-     "suggestion_de": "Seitenmarkierungsleuchte ergänzen.", "check": {"type": "spec_missing", "keywords": ["side marker"]},
+    {"id": "USA-01", "topic": "Side marker", "effort": "design", "spec_section": "Function",
+     "suggestion": "Add a side marker lamp.", "check": {"type": "spec_missing", "keywords": ["side marker"]},
      "source_url": "https://example.org/fmvss108"},
-    {"id": "USA-02", "topic_de": "nie zutreffend", "effort": "design", "spec_section": "Function",
-     "suggestion_de": "-", "check": {"type": "spec_contains", "keywords": ["xenon"]}},
+    {"id": "USA-02", "topic": "never applies", "effort": "design", "spec_section": "Function",
+     "suggestion": "-", "check": {"type": "spec_contains", "keywords": ["xenon"]}},
 ])
 
 
@@ -92,7 +92,7 @@ def test_unresearched_regulation_is_not_a_gap(client, tmp_path):
     _, result = _run(client, "JPN")
     jpn = result["verdicts"]["JPN"]
     assert jpn["status"] == "green" and not jpn["suggestions"]
-    assert any("UN R10" in r and "nicht geprüft" in r for r in jpn["reasons"])
+    assert any("UN R10" in r and "not been checked" in r for r in jpn["reasons"])
 
 
 def test_requirements_cite_pages_and_validate(client):
@@ -119,11 +119,11 @@ def test_every_trace_id_resolves(client):
 
 def test_ask_and_decide_are_logged(client):
     run_id, result = _run(client, "CHN")
-    qa = client.post(f"/api/runs/{run_id}/countries/CHN/ask", json={"question": "Was muss sich für China ändern?"}).json()
+    qa = client.post(f"/api/runs/{run_id}/countries/CHN/ask", json={"question": "What has to change for China?"}).json()
     assert "CCC" in qa["answer"]
     sid = result["verdicts"]["CHN"]["suggestions"][0]["id"]
-    decided = client.patch(f"/api/runs/{run_id}/suggestions/{sid}", json={"decision": "akzeptiert"}).json()
-    assert decided["decision"] == "akzeptiert"
+    decided = client.patch(f"/api/runs/{run_id}/suggestions/{sid}", json={"decision": "accepted"}).json()
+    assert decided["decision"] == "accepted"
     agents = [e["agent"] for e in client.get(f"/api/runs/{run_id}/trace").json()]
     assert "qa_agent" in agents and "human_review" in agents
 
@@ -152,15 +152,15 @@ def test_qa_drops_uncited_suggestions_and_flags_uncited_answers(client):
     from api import main
 
     run_id, _ = _run(client, "CHN")
-    suggestion = {"spec_section": "Zertifizierung", "change": "CCC-Prüfung beauftragen", "reason": "CCC",
-                  "effort": "pruefung_zertifizierung", "requirement_id": "", "deviation_id": "CHN-01"}
+    suggestion = {"spec_section": "Certification", "change": "Commission CCC testing", "reason": "CCC",
+                  "effort": "testing", "requirement_id": "", "deviation_id": "CHN-01"}
     main.store.llm = ScriptedLLM({"answer": "CCC einplanen.", "cited_requirement_ids": [], "cited_deviation_ids": ["CHN-01"],
                                   "suggestions": [suggestion, {**suggestion, "change": "Ohne Beleg", "deviation_id": ""}]})
     qa = client.post(f"/api/runs/{run_id}/countries/CHN/ask", json={"question": "Was fehlt?"}).json()
     added = [s for s in client.get(f"/api/runs/{run_id}").json()["verdicts"]["CHN"]["suggestions"] if s["id"] in qa["suggestion_ids"]]
-    assert [s["change"] for s in added] == ["CCC-Prüfung beauftragen"] and added[0]["sources"][0]["kind"] == "external"
-    assert "Ohne Quellenangabe" not in qa["answer"]
+    assert [s["change"] for s in added] == ["Commission CCC testing"] and added[0]["sources"][0]["kind"] == "external"
+    assert "No source given" not in qa["answer"]
 
     main.store.llm = ScriptedLLM({"answer": "Keine Ahnung.", "cited_requirement_ids": [], "cited_deviation_ids": [], "suggestions": []})
     qa = client.post(f"/api/runs/{run_id}/countries/CHN/ask", json={"question": "Und sonst?"}).json()
-    assert "Ohne Quellenangabe" in qa["answer"] and not qa["sources"]
+    assert "No source given" in qa["answer"] and not qa["sources"]

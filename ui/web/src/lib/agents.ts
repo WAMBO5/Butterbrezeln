@@ -13,14 +13,14 @@ export interface AgentInfo {
 }
 
 export const AGENTS: Record<AgentKind, AgentInfo> = {
-  reader: { name: "Lese-Agent", does: "liest Ihre Produktbeschreibung", color: "#22d3ee", icon: FileText },
-  researcher: { name: "Recherche-Agent", does: "sucht die passenden Vorschriften", color: "#a78bfa", icon: Search, magnifier: true },
-  checker: { name: "Prüf-Agent", does: "belegt jede Anforderung mit ihrer Fundstelle", color: "#60a5fa", icon: ShieldCheck },
-  matcher: { name: "Abgleich-Agent", does: "vergleicht Ihr Produkt mit jeder Anforderung", color: "#f472b6", icon: Scale },
-  scout: { name: "Länder-Agent", does: "bewertet jedes Zielland", color: "#2dd4bf", icon: Globe, magnifier: true },
-  assistant: { name: "Assistent", does: "beantwortet Ihre Fragen", color: "#818cf8", icon: MessageCircle },
-  human: { name: "Mensch", does: "prüft und entscheidet", color: "#e2e8f0", icon: User },
-  system: { name: "Ablaufsteuerung", does: "koordiniert die Agenten", color: "#94a3b8", icon: Cog },
+  reader: { name: "Reader", does: "reads your product description", color: "#0b7a70", icon: FileText },
+  researcher: { name: "Researcher", does: "finds the regulations that apply", color: "#6d5bd0", icon: Search, magnifier: true },
+  checker: { name: "Checker", does: "backs every requirement with its source", color: "#2f6fd6", icon: ShieldCheck },
+  matcher: { name: "Matcher", does: "compares your product with each requirement", color: "#c2477f", icon: Scale },
+  scout: { name: "Country agent", does: "rates every target market", color: "#0ebea9", icon: Globe, magnifier: true },
+  assistant: { name: "Assistant", does: "answers your questions", color: "#4f63c9", icon: MessageCircle },
+  human: { name: "Human", does: "reviews and decides", color: "#41736f", icon: User },
+  system: { name: "Orchestrator", does: "coordinates the agents", color: "#709693", icon: Cog },
 };
 
 /** The pipeline in the order the agents work. */

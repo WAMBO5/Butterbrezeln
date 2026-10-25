@@ -12,12 +12,12 @@ def test_no_fixes_is_green():
 
 
 def test_doc_or_certification_fixes_are_yellow():
-    assert compute_status("national", ["doku_kennzeichnung"]) == "yellow"
-    assert compute_status("unece_1958", ["pruefung_zertifizierung", "doku_kennzeichnung"]) == "yellow"
+    assert compute_status("national", ["documentation"]) == "yellow"
+    assert compute_status("unece_1958", ["testing", "documentation"]) == "yellow"
 
 
 def test_any_design_fix_is_red():
-    assert compute_status("national", ["doku_kennzeichnung", "design"]) == "red"
+    assert compute_status("national", ["documentation", "design"]) == "red"
 
 
 def test_profile_only_fits_the_product_it_was_researched_for():

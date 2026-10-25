@@ -89,7 +89,7 @@ class TraceRecorder:
             yield handle
         except Exception as exc:
             event.status = "error"
-            event.outputs_summary = event.outputs_summary or f"Fehler: {exc}"
+            event.outputs_summary = event.outputs_summary or f"Error: {exc}"
             self._finish(event)
             raise
         if event.status == "running":

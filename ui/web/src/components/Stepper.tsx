@@ -1,30 +1,34 @@
 import { Check } from "lucide-react";
 
-const STEPS = ["Produkt", "Märkte", "Ergebnis"];
+const STEPS = ["Product", "Markets", "Result"];
 
-/** 1 Produkt · 2 Märkte · 3 Ergebnis – where the user is in the flow. */
-export function Stepper({ current }: { current: 1 | 2 | 3 }) {
+/** 1 Product · 2 Markets · 3 Result – where the user is in the flow. Finished steps are clickable to go back. */
+export function Stepper({ current, onSelect }: { current: 1 | 2 | 3; onSelect?: (step: 1 | 2 | 3) => void }) {
   return (
-    <ol className="hidden items-center gap-2 md:flex">
+    <ol className="hidden items-center gap-1 rounded-lg bg-white p-1 ring-1 ring-mint-900/[0.06] md:flex" aria-label="Progress">
       {STEPS.map((label, i) => {
-        const n = i + 1;
+        const n = (i + 1) as 1 | 2 | 3;
         const done = n < current;
         const active = n === current;
         return (
-          <li key={label} className="flex items-center gap-2">
-            {i > 0 && <span className={`h-px w-8 transition-colors ${done || active ? "bg-gradient-to-r from-teal-300 to-cyan-300" : "bg-white/10"}`} />}
+          <li key={label} aria-current={active ? "step" : undefined}>
+            <button
+              type="button"
+              disabled={!done || !onSelect}
+              onClick={() => onSelect?.(n)}
+              className={`flex items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors duration-300 ${
+                active ? "bg-mint-950 text-white" : done ? "text-mint-900 hover:bg-mint-100/60" : "text-mint-900/45"
+              } disabled:cursor-default`}
+            >
             <span
-              className={`grid h-7 w-7 place-items-center rounded-full text-xs font-bold transition ${
-                done
-                  ? "bg-teal-300/15 text-teal-200 ring-1 ring-teal-300/40"
-                  : active
-                    ? "bg-gradient-to-br from-teal-300 to-cyan-300 text-ink-950 shadow-[0_0_20px_-2px_rgba(45,212,191,0.7)]"
-                    : "bg-white/[0.05] text-slate-500 ring-1 ring-white/10"
+              className={`grid h-5 w-5 place-items-center rounded-full text-[11px] font-semibold ${
+                active ? "bg-mint-400 text-mint-950" : done ? "bg-mint-100 text-mint-800" : "bg-mint-900/[0.06]"
               }`}
             >
-              {done ? <Check size={14} strokeWidth={3} /> : n}
+              {done ? <Check size={12} strokeWidth={3} /> : n}
             </span>
-            <span className={`text-sm font-medium ${active ? "text-white" : done ? "text-slate-300" : "text-slate-500"}`}>{label}</span>
+            {label}
+            </button>
           </li>
         );
       })}

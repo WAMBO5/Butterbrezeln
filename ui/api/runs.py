@@ -9,7 +9,7 @@ from pathlib import Path
 from .assess import assess_country, assess_spec
 from .backend_client import BackendError, make_backend
 from .config import BACKEND_MODE, RUNS_DIR
-from .countries import name_de
+from .countries import country_name
 from .llm import LLM
 from .models import RunResult, Source, TraceEvent
 from .sources import spec_source, validate_requirements
@@ -88,66 +88,66 @@ class RunStore:
     def _execute(self, state: RunState, image: bytes | None) -> None:
         result, trace = state.result, state.trace
         try:
-            names = ", ".join(name_de(c) for c in result.countries)
-            with trace.step("orchestrator", "Analyse", inputs_summary=f"{result.spec_name} · Länder: {names}") as root:
-                with trace.step("spec_parser", "Spec einlesen", parent=root.id) as step:
+            names = ", ".join(country_name(c) for c in result.countries)
+            with trace.step("orchestrator", "Analysis", inputs_summary=f"{result.spec_name} · Countries: {names}") as root:
+                with trace.step("spec_parser", "Read spec", parent=root.id) as step:
                     spec = parse_spec(result.spec_name, result.spec_text)
                     step.add_source(spec_source(spec.name, [1, len(spec.lines)]))
-                    step.output(f"„{spec.title}“ · {len(spec.lines)} Zeilen · Abschnitte: "
+                    step.output(f"\"{spec.title}\" · {len(spec.lines)} lines · Sections: "
                                 + ", ".join(s.title for s in spec.sections))
 
                 backend = make_backend()
-                with trace.step("requirements_engine", "Anforderungen ableiten", parent=root.id,
+                with trace.step("requirements_engine", "Derive requirements", parent=root.id,
                                 inputs_summary=f"Backend: {backend.name}") as step:
                     extraction = backend.extract_requirements(result.spec_text, image, trace, step.id)
                     requirements, case_id, pipeline = extraction.requirements, extraction.case_id, extraction.pipeline
                     regs = sorted({r.source.regulation for r in requirements})
-                    step.output(f"{len(requirements)} Anforderungen aus {len(regs)} Regelungen: {', '.join(regs)}"
-                                + (f" · Pipeline-Lauf {pipeline.run_id}" if pipeline else ""))
+                    step.output(f"{len(requirements)} requirements from {len(regs)} regulations: {', '.join(regs)}"
+                                + (f" · pipeline run {pipeline.run_id}" if pipeline else ""))
                     if pipeline:
-                        step.add_source(Source(kind="dataset", label=pipeline.path, title=f"Pipeline-Lauf {pipeline.run_id}",
+                        step.add_source(Source(kind="dataset", label=pipeline.path, title=f"Pipeline run {pipeline.run_id}",
                                                in_certivity_corpus=False))
                 with state.lock:
                     result.requirements, result.pipeline = requirements, pipeline
                 state.save()
 
-                with trace.step("validator", "Zitate prüfen (tools/validate.py)", parent=root.id,
-                                inputs_summary="Plattform-Validator gegen regulations/index.json") as step:
+                with trace.step("validator", "Check citations (tools/validate.py)", parent=root.id,
+                                inputs_summary="Platform validator against regulations/index.json") as step:
                     validation = validate_requirements(requirements, case_id)
                     step.add_source(Source(kind="dataset", label="regulations/index.json", in_certivity_corpus=True))
-                    step.output("gültig" if validation.ok else f"{len(validation.problems)} Probleme")
+                    step.output("valid" if validation.ok else f"{len(validation.problems)} problems")
                     if not validation.ok:
-                        step.fallback("Validierung fehlgeschlagen")
+                        step.fallback("Validation failed")
                 with state.lock:
                     result.validation = validation
 
                 if extraction.findings is not None:  # the pipeline matched every requirement to the parts itself
-                    with trace.step("spec_assessor", "Spec gegen Anforderungen abgleichen", parent=root.id,
-                                    inputs_summary="Abgleich-Entscheidungen des Pipeline-Laufs (requirement_matcher, match_reviewer)",
+                    with trace.step("spec_assessor", "Check spec against requirements", parent=root.id,
+                                    inputs_summary="Matching decisions of the pipeline run (requirement_matcher, match_reviewer)",
                                     tags={"source": "pipeline"}) as step:
                         findings, notes, mode = extraction.findings, extraction.notes, "pipeline"
                         uncertain = sum(r.pipeline is not None and r.pipeline.state == "uncertain" for r in requirements)
-                        met = sum(f.status == "erfuellt" for f in findings)
-                        step.output(f"{len(findings) - met} Nachweise nötig, davon {uncertain} mit unsicherer Anwendbarkeit · "
-                                    f"{met} erfüllt · {len(notes)} offene Punkte in der Beschreibung")
+                        met = sum(f.status == "met" for f in findings)
+                        step.output(f"{len(findings) - met} pieces of evidence needed, {uncertain} of them with uncertain applicability · "
+                                    f"{met} met · {len(notes)} open points in the description")
                 else:
-                    with trace.step("spec_assessor", "Spec gegen Anforderungen abgleichen", parent=root.id,
-                                    inputs_summary=f"LLM: {self.llm.model}" if self.llm.available else "Regelwerk") as step:
+                    with trace.step("spec_assessor", "Check spec against requirements", parent=root.id,
+                                    inputs_summary=f"LLM: {self.llm.model}" if self.llm.available else "Rule set") as step:
                         findings, notes, mode = assess_spec(spec, requirements, self.llm, trace, step.id)
-                        step.output(f"{len(findings)} Findings · {len(notes)} Spec-Hinweise · Modus: {mode}")
+                        step.output(f"{len(findings)} findings · {len(notes)} spec notes · mode: {mode}")
                 with state.lock:
                     result.findings, result.spec_notes, result.llm_mode = findings, notes, mode
                 state.save()
 
-                with trace.step("country_assessor", "Länder bewerten", parent=root.id,
-                                inputs_summary=f"{len(result.countries)} Länder · Ampelregel compute_status()") as step:
+                with trace.step("country_assessor", "Assess countries", parent=root.id,
+                                inputs_summary=f"{len(result.countries)} countries · traffic-light rule compute_status()") as step:
                     for iso3 in result.countries:
                         verdict = assess_country(iso3, spec, requirements, findings, trace, step.id)
                         with state.lock:
                             result.verdicts[iso3] = verdict
                     counts = {c: sum(v.status == c for v in result.verdicts.values()) for c in ("green", "yellow", "red", "grey")}
-                    step.output(f"grün {counts['green']} · gelb {counts['yellow']} · rot {counts['red']} · grau {counts['grey']}")
-                root.output("fertig")
+                    step.output(f"green {counts['green']} · yellow {counts['yellow']} · red {counts['red']} · grey {counts['grey']}")
+                root.output("done")
             with state.lock:
                 result.status = "done"
         except Exception as exc:  # the run must end in a visible state, never hang

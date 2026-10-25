@@ -28,27 +28,27 @@ STEP_ORDER = ["load_case", "analyze", "scope", "collect", "extract", "match", "a
 
 # per pipeline step: the agent that leads it and what it does, in plain words
 STEPS: dict[str, tuple[str, str]] = {
-    "load_case": ("pipeline", "Fall und Eingaben geladen"),
-    "analyze": ("product_analyst", "Produkt zerlegt: Bauteile, Funktionen, Materialien"),
-    "scope": ("scope_narrower", "Vorschriften eingegrenzt"),
-    "collect": ("pipeline", "Fundstellen in den Vorschriften gesammelt"),
-    "extract": ("obligation_extractor", "Pflichten wörtlich aus den Vorschriften zitiert"),
-    "match": ("requirement_matcher", "Pflichten mit den Bauteilen abgeglichen"),
-    "assemble": ("output_auditor", "Anforderungen zusammengestellt und geprüft"),
-    "markets": ("pipeline", "Märkte geprüft"),
-    "finalize": ("pipeline", "Abgabe geschrieben (submission.json, lineage.json)"),
+    "load_case": ("pipeline", "Case and inputs loaded"),
+    "analyze": ("product_analyst", "Product broken down: parts, functions, materials"),
+    "scope": ("scope_narrower", "Regulations narrowed down"),
+    "collect": ("pipeline", "Relevant passages collected from the regulations"),
+    "extract": ("obligation_extractor", "Obligations quoted word for word from the regulations"),
+    "match": ("requirement_matcher", "Obligations matched to the parts"),
+    "assemble": ("output_auditor", "Requirements assembled and checked"),
+    "markets": ("pipeline", "Markets checked"),
+    "finalize": ("pipeline", "Submission written (submission.json, lineage.json)"),
 }
 AGENT_TASKS: dict[str, str] = {
-    "product_analyst": "Produktanalyse",
-    "profile_verifier": "Gegenprüfung des Produktprofils",
-    "scope_narrower": "Eingrenzung der Vorschriften",
-    "recall_auditor": "Gegenprüfung auf übersehene Vorschriften",
-    "obligation_extractor": "Pflichten zitieren",
-    "requirement_matcher": "Abgleich Pflicht ↔ Bauteil",
-    "match_reviewer": "Gegenprüfung des Abgleichs",
-    "output_auditor": "Schlussprüfung der Anforderungen",
+    "product_analyst": "Product analysis",
+    "profile_verifier": "Double-check of the product profile",
+    "scope_narrower": "Narrowing down the regulations",
+    "recall_auditor": "Double-check for missed regulations",
+    "obligation_extractor": "Quoting obligations",
+    "requirement_matcher": "Matching obligation ↔ part",
+    "match_reviewer": "Double-check of the matching",
+    "output_auditor": "Final check of the requirements",
 }
-SCOPE_STATE = {"applicable": "anwendbar", "uncertain": "unsicher", "not_applicable": "nicht anwendbar"}
+SCOPE_STATE = {"applicable": "applicable", "uncertain": "uncertain", "not_applicable": "not applicable"}
 
 
 def _json(path: Path) -> Any:
@@ -148,13 +148,13 @@ def verify_ledger(folder: Path) -> LedgerCheck | None:
         try:
             record = json.loads(line)
         except ValueError:
-            problems.append(f"Eintrag {n}: kein gültiges JSON")
+            problems.append(f"Entry {n}: not valid JSON")
             continue
         body = {k: v for k, v in record.items() if k != "hash"}
         if record.get("seq") != n or record.get("prev_hash") != prev:
-            problems.append(f"Eintrag {n}: Verkettung unterbrochen")
+            problems.append(f"Entry {n}: chain broken")
         if hashlib.sha256((str(record.get("prev_hash")) + _canonical(body)).encode("utf-8")).hexdigest() != record.get("hash"):
-            problems.append(f"Eintrag {n}: Inhalt passt nicht zum Hash")
+            problems.append(f"Entry {n}: content does not match the hash")
         prev = record.get("hash", "")
     return LedgerCheck(records=n, intact=not problems, problems=problems[:5], head=prev if n else None)
 
@@ -185,7 +185,7 @@ def _steps(events: list[dict[str, Any]]) -> OrderedDict[str, dict[str, Any]]:
 
 
 def _money(usd: float) -> str:
-    return f"{usd:.2f} $".replace(".", ",")
+    return f"${usd:.2f}"
 
 
 def _n(count: int, one: str, many: str) -> str:
@@ -193,10 +193,10 @@ def _n(count: int, one: str, many: str) -> str:
 
 
 def _agent_output(a: dict[str, Any]) -> str:
-    parts = [_n(a["calls"] - a["errors"], "Antwort", "Antworten")]
+    parts = [_n(a["calls"] - a["errors"], "answer", "answers")]
     if a["errors"]:
-        parts.append(f"{a['errors']} ohne lesbare Antwort")
-    parts.append(f"{a['input'] + a['output']:,} Tokens".replace(",", "."))
+        parts.append(f"{a['errors']} without a readable answer")
+    parts.append(f"{a['input'] + a['output']:,} tokens")
     if a["cost"]:
         parts.append(_money(a["cost"]))
     return " · ".join(parts)
@@ -211,22 +211,22 @@ def _step_output(name: str, state: dict[str, Any], profile: dict[str, Any], mani
     if name == "analyze":
         facts = sum(len(p.get("facts") or []) for p in profile.get("parts") or [])
         loop = state.get("profile_loop") or {}
-        check = "alles geklärt" if loop.get("resolved") else f"{len(loop.get('open_issues') or [])} Punkte ungeklärt"
-        return (f"{len(profile.get('parts') or [])} Bauteile, {facts} Fakten aus der Beschreibung, "
-                f"{len(profile.get('unknowns') or [])} offene Punkte · Gegenprüfung in {loop.get('attempts', '?')} Runden: {check}")
+        check = "everything resolved" if loop.get("resolved") else f"{len(loop.get('open_issues') or [])} points unresolved"
+        return (f"{len(profile.get('parts') or [])} parts, {facts} facts from the description, "
+                f"{len(profile.get('unknowns') or [])} open points · double-check in {loop.get('attempts', '?')} rounds: {check}")
     if name == "scope":
-        return (f"{c.get('kept_regulations', '?')} von {c.get('regulations', '?')} Vorschriften behalten, "
-                f"{c.get('sections', '?')} Abschnitte ausgewählt")
+        return (f"{c.get('kept_regulations', '?')} of {c.get('regulations', '?')} regulations kept, "
+                f"{c.get('sections', '?')} sections selected")
     if name == "collect":
-        return f"{c.get('candidate_provisions', '?')} Fundstellen als Kandidaten"
+        return f"{c.get('candidate_provisions', '?')} candidate passages"
     if name == "extract":
-        return f"{c.get('obligations', '?')} Pflichten zitiert" + (f" · {errors} Aufrufe ohne lesbare Antwort" if errors else "")
+        return f"{c.get('obligations', '?')} obligations quoted" + (f" · {errors} calls without a readable answer" if errors else "")
     if name == "match":
-        return (f"{c.get('decisions', '?')} Einzelentscheidungen: {c.get('applicable_decisions', '?')} anwendbar, "
-                f"{c.get('uncertain_decisions', '?')} unsicher")
+        return (f"{c.get('decisions', '?')} individual decisions: {c.get('applicable_decisions', '?')} applicable, "
+                f"{c.get('uncertain_decisions', '?')} uncertain")
     if name == "assemble":
         issues = len((state.get("output_review") or {}).get("issues") or [])
-        return f"{c.get('requirements', '?')} Anforderungen · Schlussprüfung: {issues} Hinweise"
+        return f"{c.get('requirements', '?')} requirements · final check: {issues} notes"
     return ""
 
 
@@ -299,7 +299,7 @@ def import_run(ref: RunRef, spec: ParsedSpec, trace: TraceRecorder, parent: str)
                 tags["cost_usd"] = f"{cost:.4f}"
             event = trace.replay(
                 lead, action, ts_start=step["start"], ts_end=step["end"], parent=parent,
-                inputs_summary="" if origin is ref else f"übernommen aus Lauf {origin.run_id}: dieser Lauf hat ab dem Abgleich neu gerechnet",
+                inputs_summary="" if origin is ref else f"taken over from run {origin.run_id}: this run recalculated from the matching step onwards",
                 outputs_summary=_step_output(name, state, profile, manifest, agents),
                 model=", ".join(sorted({a["model"] for a in agents.values() if a["model"]})) or None,
                 tokens={"input": sum(a["input"] for a in agents.values()), "output": sum(a["output"] for a in agents.values())} if agents else None,
@@ -308,7 +308,7 @@ def import_run(ref: RunRef, spec: ParsedSpec, trace: TraceRecorder, parent: str)
             ids[name], times[name] = event.id, (step["start"], step["end"])
             for agent, a in agents.items():
                 child = trace.replay(
-                    agent, f"{AGENT_TASKS.get(agent, agent)} · {_n(a['calls'], 'Aufruf', 'Aufrufe')}", ts_start=a["start"], ts_end=a["end"],
+                    agent, f"{AGENT_TASKS.get(agent, agent)} · {_n(a['calls'], 'call', 'calls')}", ts_start=a["start"], ts_end=a["end"],
                     parent=event.id, outputs_summary=_agent_output(a), model=a["model"],
                     tokens={"input": a["input"], "output": a["output"]},
                     tags={**tags, "cost_usd": f"{a['cost']:.4f}", "calls": str(a["calls"]), "errors": str(a["errors"])},
@@ -335,20 +335,20 @@ def import_run(ref: RunRef, spec: ParsedSpec, trace: TraceRecorder, parent: str)
     for regulation, group in groups.items():
         d = decisions.get(regulation) or {}
         pages = sorted({g["source"]["page"] for g in group if g["source"].get("page")})
-        span = f", Seiten {pages[0]}–{pages[-1]}" if pages else ""
+        span = f", pages {pages[0]}–{pages[-1]}" if pages else ""
         event = trace.replay(
-            "scope_narrower", f"Vorschrift ausgewählt: {regulation} – {regulation_title(regulation)}",
+            "scope_narrower", f"Regulation selected: {regulation} – {regulation_title(regulation)}",
             ts_start=decided, ts_end=decided, parent=ids.get("scope", parent),
-            inputs_summary="Bauteile: " + (", ".join(parts[p]["name"] for p in d.get("part_ids") or [] if p in parts) or "–"),
+            inputs_summary="Parts: " + (", ".join(parts[p]["name"] for p in d.get("part_ids") or [] if p in parts) or "–"),
             outputs_summary=f"{SCOPE_STATE.get(d.get('state'), d.get('state', '?'))} ({d.get('path', '?')}): {d.get('reason', '')} "
-                            f"→ {len(group)} Anforderungen{span}",
+                            f"→ {len(group)} requirements{span}",
             model=scope_model, sources=[un_source(regulation, group[0]["source"].get("version"))],
             tags={"regulation": regulation, "scope_state": d.get("state", "?"), "pipeline_run": ref.run_id},
         )
         reg_ids[regulation] = event.id
     excluded = [d for d in plan.get("decisions") or [] if d.get("state") == "not_applicable"]
     if excluded:
-        trace.replay("scope_narrower", f"{len(excluded)} Vorschriften ausgeschlossen", ts_start=decided, ts_end=decided,
+        trace.replay("scope_narrower", f"{len(excluded)} regulations excluded", ts_start=decided, ts_end=decided,
                      parent=ids.get("scope", parent), outputs_summary=", ".join(d["regulation"] for d in excluded),
                      model=scope_model, tags={"pipeline_run": ref.run_id, "excluded": str(len(excluded))})
 
@@ -386,13 +386,13 @@ def import_run(ref: RunRef, spec: ParsedSpec, trace: TraceRecorder, parent: str)
         ))
         met = detail.get("evidence_status") == "met"
         findings.append(Finding(
-            id=f"fd-{rid}", requirement_id=rid, regulation=regulation, status="erfuellt" if met else "offen",
+            id=f"fd-{rid}", requirement_id=rid, regulation=regulation, status="met" if met else "open",
             spec_lines=next((link.spec_lines for link in links if link.spec_lines), None),
-            explanation=(detail.get("reason") if met else test_case or detail.get("reason")) or "Im Rahmen der Typprüfung nachzuweisen.",
+            explanation=(detail.get("reason") if met else test_case or detail.get("reason")) or "To be proven during type approval testing.",
             trace_ids=[by_link["match_decision"] or reg_ids[regulation]],
         ))
 
-    notes = [SpecNote(id=f"note-{n}", text=f"Ihre Beschreibung lässt offen: {unknown}",
+    notes = [SpecNote(id=f"note-{n}", text=f"Your description leaves open: {unknown}",
                       trace_ids=[by_link["part"]] if by_link["part"] else [])
              for n, unknown in enumerate(profile.get("unknowns") or [], start=1)]
 

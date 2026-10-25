@@ -40,22 +40,22 @@ def researched_regulations() -> set[str]:
     return researched
 
 
-def name_de(iso3: str) -> str:
+def country_name(iso3: str) -> str:
     entry = country(iso3)
-    return (entry or {}).get("name_de") or iso3
+    return (entry or {}).get("name") or iso3
 
 
 def listing() -> dict[str, Any]:
     data = countries_data()
     entries = data.get("countries", {})
     items = [
-        {"iso3": iso, "name_de": e.get("name_de", iso), "regime": e.get("regime", "not_covered"),
+        {"iso3": iso, "name": e.get("name", iso), "regime": e.get("regime", "not_covered"),
          "has_profile": bool(e.get("profile"))}
-        for iso, e in sorted(entries.items(), key=lambda kv: kv[1].get("name_de", kv[0]))
+        for iso, e in sorted(entries.items(), key=lambda kv: kv[1].get("name", kv[0]))
     ]
     presets = {
         "EU-27": EU27,
         "UNECE 1958": [i["iso3"] for i in items if i["regime"] == "unece_1958"],
-        "Top-Märkte": TOP_MARKETS,
+        "Top markets": TOP_MARKETS,
     }
     return {"countries": items, "presets": presets, "meta": data.get("meta", {})}

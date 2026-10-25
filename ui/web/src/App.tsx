@@ -49,39 +49,43 @@ export default function App() {
     goHome();
     setDraft(emptyDraft());
   };
-  const editMarkets = async (run: RunResult) => {
+  const editRun = async (run: RunResult, target: "product" | "markets") => {
     const image = run.has_image ? await api.runImage(run.run_id) : null;
     setDraft({ specFile: new File([run.spec_text], run.spec_name, { type: "text/markdown" }), specText: run.spec_text, image, selected: new Set(run.countries) });
     setHash("");
     setRunId(null);
-    setStep("markets");
+    setStep(target);
+  };
+  const editMarkets = (run: RunResult) => editRun(run, "markets");
+  /** Stepper click: jump back to an earlier step, restoring the run's inputs when leaving a result. */
+  const goToStep = async (n: 1 | 2 | 3) => {
+    const target = n === 1 ? "product" : "markets";
+    if (runId) await editRun(await api.run(runId), target);
+    else setStep(target);
   };
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-30 border-b border-white/[0.06] bg-ink-950/70 backdrop-blur-xl">
+      <header className="sticky top-0 z-30 bg-flat-white/80 backdrop-blur-md">
         <div className="mx-auto grid max-w-7xl grid-cols-[1fr_auto] items-center gap-4 px-4 py-3 sm:px-6 md:grid-cols-[1fr_auto_1fr]">
-          <button type="button" className="group flex items-center gap-3 justify-self-start text-left" onClick={goHome}>
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-teal-300 via-cyan-300 to-indigo-400 text-ink-950 shadow-[0_0_24px_-4px_rgba(45,212,191,0.7)] transition group-hover:scale-105">
-              <Earth size={22} />
+          <button type="button" className="group flex items-center gap-2.5 justify-self-start rounded-md text-left" onClick={goHome}>
+            <span className="grid h-9 w-9 place-items-center rounded-md bg-mint-950 text-mint-300 transition-colors duration-300 group-hover:bg-mint-900">
+              <Earth size={20} />
             </span>
-            <span>
-              <span className="block font-display font-bold leading-tight text-white">Marktfreigabe-Check</span>
-              <span className="hidden text-xs text-slate-500 sm:block">Was muss sich pro Zielland ändern?</span>
-            </span>
+            <span className="text-[17px] font-semibold tracking-tight text-mint-950">Market Approval Check</span>
           </button>
-          <Stepper current={runId ? 3 : step === "markets" ? 2 : 1} />
+          <Stepper current={runId ? 3 : step === "markets" ? 2 : 1} onSelect={goToStep} />
           <div className="justify-self-end">
             {(runId || draft.specFile) && (
-              <button type="button" className="btn-secondary" onClick={startOver}>
-                <RotateCcw size={15} /> Neue Prüfung
+              <button type="button" className="btn-outline btn-sm" onClick={startOver}>
+                <RotateCcw size={14} /> New check
               </button>
             )}
           </div>
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6">
+      <main className="mx-auto w-full max-w-7xl flex-1 px-4 pb-10 pt-4 sm:px-6">
         {runId ? (
           <ResultPage key={runId} runId={runId} replay={replayId === runId} onNew={startOver} onOpenRun={openRun} onEditMarkets={editMarkets} />
         ) : (
@@ -89,8 +93,8 @@ export default function App() {
         )}
       </main>
 
-      <footer className="px-4 pb-8 pt-4 text-center text-xs text-slate-600">
-        Prototyp · Unreviewed AI draft — not for compliance use · Grundlage: UN-Fahrzeugvorschriften (UNECE) und recherchierte Länderprofile (Entwurf)
+      <footer className="mx-auto w-full max-w-7xl px-4 pb-8 pt-2 text-xs text-mint-900/50 sm:px-6">
+        Prototype · Unreviewed AI draft — not for compliance use · Based on UN vehicle regulations (UNECE) and researched country profiles (draft)
       </footer>
     </div>
   );

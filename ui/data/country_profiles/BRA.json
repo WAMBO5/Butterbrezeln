@@ -1,134 +1,134 @@
 {
   "iso3": "BRA",
-  "name_de": "Brasilien",
+  "name": "Brazil",
   "covers": {"products": ["rear lamp", "tail lamp", "rear combination lamp", "rear reflector", "heckleuchte", "rückleuchte"],
-             "regulations": ["UN R148", "UN R150"], "product_de": "Heckleuchten und Rückstrahler"},
-  "summary_de": "Brasilien ist keine Vertragspartei des UNECE-Übereinkommens von 1958; Fahrzeugbeleuchtung wird durch die Resolução CONTRAN nº 970/2022 (mit Anhängen, in Kraft seit 1.7.2022, zuletzt nur bei Art. 6 geändert durch Res. 1.024/2026) geregelt, deren Anbauvorschriften weitgehend UN R48 entsprechen und für die Bauteile wahlweise auf eigene Anhänge oder UN R7, R23, R3 und R38 verweisen. Die Marktzulassung erfolgt über die Fahrzeughomologation (CAT und RENAVAM-Code der SENATRAN nach Portaria SENATRAN nº 990/2022) mit Herstellererklärung und archivierten Prüfberichten; Prüfergebnisse nach UN-Regelungen oder FMVSS sind als alternativer Leistungsnachweis zulässig (Art. 14), E-Genehmigungen werden aber nicht gegenseitig anerkannt. Wesentliche Abweichung zu UN R48: das Notbremssignal (ESS) ist verpflichtend.",
+             "regulations": ["UN R148", "UN R150"], "product": "rear lamps and retro-reflectors"},
+  "summary": "Brazil is not a contracting party to the 1958 UNECE Agreement. Vehicle lighting is governed by Resolução CONTRAN nº 970/2022 (with annexes, in force since 1 Jul 2022, most recently amended only in Art. 6 by Res. 1.024/2026). Its installation rules largely match UN R48, and for the components it refers either to its own annexes or to UN R7, R23, R3 and R38. Market access is granted through vehicle homologation (CAT and RENAVAM code from SENATRAN under Portaria SENATRAN nº 990/2022) based on a manufacturer declaration and archived test reports. Test results under UN regulations or FMVSS are accepted as alternative proof of performance (Art. 14), but E-approvals are not mutually recognised. Key difference from UN R48: the emergency stop signal (ESS) is mandatory.",
   "standards": [
     {
       "id": "Resolução CONTRAN nº 970/2022",
       "title": "Dispõe sobre as características e especificações técnicas dos sistemas de sinalização, de iluminação e seus dispositivos, bem como sobre o uso de lanternas especiais em veículos",
-      "scope": "Zentrale Vorschrift für Beleuchtungs- und Lichtsignaleinrichtungen (Pkw, Nfz, Anhänger, Motorräder). In Kraft seit 1.7.2022 (Art. 21); ersetzt u. a. Res. 667/2017 (Art. 20) und Res. 227/2007 (ab 1.1.2024, Art. 19). Anhänge I-XVI gelten für ab 1.1.2021 produzierte oder importierte Fahrzeuge (Art. 16). Art. 14: Prüfergebnisse nach UN-Regelungen (ONU/UNECE) oder FMVSS sind alternativ zulässig. Geändert durch Res. CONTRAN nº 1.024/2026 (nur Art. 6, Fahrzeuge mit Sonderwarnleuchten).",
+      "scope": "Main regulation for lighting and light-signalling devices (passenger cars, commercial vehicles, trailers, motorcycles). In force since 1 Jul 2022 (Art. 21); replaces, among others, Res. 667/2017 (Art. 20) and Res. 227/2007 (from 1 Jan 2024, Art. 19). Annexes I-XVI apply to vehicles produced or imported from 1 Jan 2021 (Art. 16). Art. 14: test results under UN regulations (ONU/UNECE) or FMVSS are accepted as an alternative. Amended by Res. CONTRAN nº 1.024/2026 (Art. 6 only, vehicles with special warning lamps).",
       "url": "https://www.gov.br/transportes/pt-br/assuntos/transito/conteudo-contran/resolucoes/resolucao9702022.pdf"
     },
     {
       "id": "Res. CONTRAN 970/2022 Anexo I",
       "title": "Instalação de dispositivos de iluminação e sinalização luminosa",
-      "scope": "Anbauvorschriften (entspricht strukturell UN R48): Ziff. 4.4 Rückfahrscheinwerfer, 4.7 Bremsleuchten inkl. hochgesetzter Bremsleuchte S3/S4 (für M1 verpflichtend), 4.10 Schlussleuchten, 4.11 Nebelschlussleuchte (optional), 4.14 hintere Rückstrahler (nicht dreieckig), 4.17/4.18 seitliche Rückstrahler/Seitenmarkierungsleuchten (verpflichtend erst über 6 m Länge), 4.21 Notbremssignal (verpflichtend).",
+      "scope": "Installation rules (structurally equivalent to UN R48): item 4.4 reversing lamps, 4.7 stop lamps incl. high-mounted stop lamp S3/S4 (mandatory for M1), 4.10 rear position lamps, 4.11 rear fog lamp (optional), 4.14 rear retro-reflectors (non-triangular), 4.17/4.18 side retro-reflectors/side marker lamps (mandatory only above 6 m length), 4.21 emergency stop signal (mandatory).",
       "url": "https://www.abti.org.br/anexos/20220620_Resolucao_CONTRAN_970_Sinalizacao_iluminacao_em_veiculos.pdf"
     },
     {
       "id": "Res. CONTRAN 970/2022 Anexo VI",
       "title": "Lanternas de posição dianteira e traseira (lateral), lanternas de freio e lanternas delimitadoras",
-      "scope": "Bauteilanforderungen an Schluss- und Bremsleuchten (Photometrie, Farbe). Alternativ gilt laut Anexo I Ziff. 4.7.10 und 4.10 'Regulamento nº 7 das Nações Unidas'.",
+      "scope": "Component requirements for rear position and stop lamps (photometry, colour). As an alternative, Anexo I items 4.7.10 and 4.10 allow 'Regulamento nº 7 das Nações Unidas'.",
       "url": "https://www.abti.org.br/anexos/20220620_Resolucao_CONTRAN_970_Sinalizacao_iluminacao_em_veiculos.pdf"
     },
     {
       "id": "Res. CONTRAN 970/2022 Anexo IV",
       "title": "Lanternas de marcha-à-ré",
-      "scope": "Bauteilanforderungen an Rückfahrscheinwerfer. Alternativ gilt laut Anexo I Ziff. 4.4.10 'Regulamento nº 23 das Nações Unidas'.",
+      "scope": "Component requirements for reversing lamps. As an alternative, Anexo I item 4.4.10 allows 'Regulamento nº 23 das Nações Unidas'.",
       "url": "https://www.abti.org.br/anexos/20220620_Resolucao_CONTRAN_970_Sinalizacao_iluminacao_em_veiculos.pdf"
     },
     {
       "id": "Res. CONTRAN 970/2022 Anexo XII",
       "title": "Retrorrefletores",
-      "scope": "Bauteilanforderungen an Rückstrahler (Klasse IA/IB für hintere Rückstrahler). Alternativ gilt laut Anexo I Ziff. 4.14.8 'Regulamento n°3 das Nações Unidas'.",
+      "scope": "Component requirements for retro-reflectors (class IA/IB for rear retro-reflectors). As an alternative, Anexo I item 4.14.8 allows 'Regulamento n°3 das Nações Unidas'.",
       "url": "https://www.abti.org.br/anexos/20220620_Resolucao_CONTRAN_970_Sinalizacao_iluminacao_em_veiculos.pdf"
     },
     {
       "id": "Portaria SENATRAN nº 990/2022",
       "title": "Procedimento para homologação de veículos e equipamentos veiculares, concessão do código de marca/modelo/versão do RENAVAM e emissão do Certificado de Adequação à Legislação de Trânsito (CAT)",
-      "scope": "Homologationsverfahren für alle neuen nationalen und importierten Fahrzeuge (Art. 2). Anhang XI: 'Dispositivos de Iluminação' (Res. 227/2007, 667/2017 oder 970/2022) gehören zu den Prüfberichten der Kontrollstufe 'Nível 2' (aktive Sicherheit) mit Angabe des Prüflabors.",
+      "scope": "Homologation procedure for all new domestic and imported vehicles (Art. 2). Annex XI: 'Dispositivos de Iluminação' (Res. 227/2007, 667/2017 or 970/2022) belong to the test reports of control level 'Nível 2' (active safety), stating the test laboratory.",
       "url": "https://www.gov.br/transportes/pt-br/assuntos/transito/arquivos-senatran/portarias/2022/Portaria9902022.pdf"
     },
     {
       "id": "Portaria Inmetro nº 145/2022",
       "title": "Regulamentos Técnicos da Qualidade e Requisitos de Avaliação da Conformidade para Componentes Automotivos - Consolidado",
-      "scope": "Pflichtzertifizierung bestimmter Kfz-Komponenten für den Ersatzteilmarkt, darunter Glühlampen gelisteter Kategorien (z. B. P21W, P21/5W, W5W, W21W, W21/5W, R5W). Ausgenommen: Bauteile für die Fahrzeugmontagelinie (Art. 3 § 7 I). Komplette Leuchten sind nicht gelistet.",
+      "scope": "Mandatory certification of certain automotive components for the aftermarket, including filament bulbs of listed categories (e.g. P21W, P21/5W, W5W, W21W, W21/5W, R5W). Exempt: components for the vehicle assembly line (Art. 3 § 7 I). Complete lamps are not listed.",
       "url": "https://www.legisweb.com.br/legislacao/?id=429565"
     }
   ],
   "certification": {
     "scheme": "CAT (Certificado de Adequação à Legislação de Trânsito) + código marca/modelo/versão RENAVAM (SENATRAN)",
     "type": "government vehicle homologation based on manufacturer declaration (Certificado de Segurança) and archived test reports; no separate component approval for rear lamps",
-    "marking": "Kein nationales Genehmigungszeichen für Heckleuchten in Res. CONTRAN 970/2022 gefunden; E-Kennzeichen begründet keine Zulassung, da Brasilien keine Vertragspartei des 1958er Übereinkommens ist. Ersatz-Glühlampen gelisteter Kategorien benötigen das INMETRO-Konformitätssiegel (Portaria Inmetro 145/2022).",
-    "summary_de": "Fabrikanten, Importeure, Aufbauhersteller und Umrüster beantragen für jedes neue Fahrzeugmodell bzw. jede Version bei der SENATRAN (über SISCAT oder SEI) das CAT und den RENAVAM-Code; Gebühr R$ 266 pro CAT, Bearbeitungsfrist bis 60 Tage. Der Hersteller erklärt im Certificado de Segurança, zusammen mit einem verantwortlichen Ingenieur (CREA), die Einhaltung aller Vorschriften und muss die Prüfberichte (für Beleuchtung: Kontrollstufe Nível 2 mit Angabe des Prüflabors und Erklärung zum Managementsystem, das die Laborarbeit kontrolliert) auf Anforderung vorlegen. Nach Art. 14 Res. 970/2022 können die Prüfergebnisse alternativ nach UN-Regelungen oder FMVSS erbracht werden.",
+    "marking": "No national approval mark for rear lamps found in Res. CONTRAN 970/2022; an E-mark does not grant approval, as Brazil is not a contracting party to the 1958 Agreement. Replacement bulbs of listed categories need the INMETRO conformity seal (Portaria Inmetro 145/2022).",
+    "summary": "Manufacturers, importers, body builders and converters apply to SENATRAN (via SISCAT or SEI) for the CAT and the RENAVAM code for every new vehicle model or version; the fee is R$ 266 per CAT and processing takes up to 60 days. In the Certificado de Segurança, the manufacturer, together with a responsible engineer (CREA), declares compliance with all regulations and must present the test reports on request (for lighting: control level Nível 2, stating the test laboratory, plus a declaration on the management system that controls the laboratory work). Under Art. 14 Res. 970/2022, test results may alternatively be provided under UN regulations or FMVSS.",
     "url": "https://www.gov.br/pt-br/servicos/emitir-certificado-de-adequacao-a-legislacao-de-transito-cat"
   },
   "accepts_un_approvals": false,
-  "notes": "accepts_un_approvals = false, weil es keine gegenseitige Anerkennung von UN-Typgenehmigungen (E-Kennzeichen) gibt und Brasilien nicht in der UN-Vertragsliste des Übereinkommens von 1958 steht. Res. CONTRAN 970/2022 Art. 14 erlaubt aber Prüfergebnisse nach UN-Regelungen als alternativen Leistungsnachweis im CAT-Verfahren, und die Anhänge verweisen ausdrücklich auf UN R7, R23, R3 und R38. Die Anhänge von Res. 970 wurden aus der DOU-Fassung (Kopie auf abti.org.br) gelesen, weil die Anhangsdatei auf gov.br nicht gefunden wurde. Dass Res. 970 im Oktober 2026 noch gilt, stützt sich darauf, dass Res. 1.024 vom 26.6.2026 (DOU 1.7.2026) sie ändert; später veröffentlichte Änderungen wurden nicht geprüft.",
+  "notes": "accepts_un_approvals = false because there is no mutual recognition of UN type approvals (E-marks) and Brazil is not on the UN list of contracting parties to the 1958 Agreement. However, Res. CONTRAN 970/2022 Art. 14 allows test results under UN regulations as alternative proof of performance in the CAT procedure, and the annexes explicitly refer to UN R7, R23, R3 and R38. The annexes of Res. 970 were read from the DOU version (copy on abti.org.br) because the annex file was not found on gov.br. That Res. 970 is still in force in October 2026 is based on Res. 1.024 of 26 Jun 2026 (DOU 1 Jul 2026) amending it; amendments published later were not checked.",
   "deviations": [
     {
       "id": "BRA-01",
-      "topic_de": "Fahrzeughomologation (CAT/SENATRAN) statt UN-Typgenehmigung",
+      "topic": "Vehicle homologation (CAT/SENATRAN) instead of UN type approval",
       "un_reference": null,
-      "national_requirement_de": "Jedes neue nationale oder importierte Fahrzeugmodell braucht einen Marken-/Modell-/Versionscode im RENAVAM und ein CAT der SENATRAN (Portaria SENATRAN 990/2022, Art. 2). Der Hersteller oder Importeur erklärt im Certificado de Segurança (Anhang VI, mit verantwortlichem CREA-Ingenieur), dass alle Vorschriften eingehalten sind. Für 'Dispositivos de Iluminação' nach Res. CONTRAN 970/2022 müssen Prüfberichte der Kontrollstufe Nível 2 mit Angabe des Prüflabors vorgehalten werden, zusammen mit einer Erklärung, dass ein Managementsystem die Laborarbeit kontrolliert (Anhang XI, Ziff. 1.3/1.4). Es gibt keine automatische Anerkennung von E-Genehmigungen.",
-      "effort": "pruefung_zertifizierung",
-      "spec_section": "Zertifizierung",
-      "suggestion_de": "Für den OEM bzw. Importeur ein Brasilien-Prüfdossier für das CAT-Verfahren erstellen: Prüfberichte nach Res. CONTRAN 970/2022 Anhang VI, IV und XII oder nach UN R7, R23 und R3 (alternativ FMVSS), jeweils mit eindeutiger Angabe des Prüflabors und einem Nachweis des Managementsystems, das die Laborarbeit kontrolliert. Früh abstimmen, welche Unterlagen in den SISCAT-Antrag einfließen.",
+      "national_requirement": "Every new domestic or imported vehicle model needs a make/model/version code in RENAVAM and a CAT from SENATRAN (Portaria SENATRAN 990/2022, Art. 2). In the Certificado de Segurança (Annex VI, with a responsible CREA engineer), the manufacturer or importer declares that all regulations are met. For 'Dispositivos de Iluminação' under Res. CONTRAN 970/2022, test reports of control level Nível 2 stating the test laboratory must be kept on file, together with a declaration that a management system controls the laboratory work (Annex XI, items 1.3/1.4). E-approvals are not recognised automatically.",
+      "effort": "testing",
+      "spec_section": "Certification",
+      "suggestion": "Prepare a Brazil test dossier for the OEM or importer for the CAT procedure: test reports under Res. CONTRAN 970/2022 Annexes VI, IV and XII or under UN R7, R23 and R3 (alternatively FMVSS), each clearly stating the test laboratory and with proof of the management system that controls the laboratory work. Agree early on which documents go into the SISCAT application.",
       "check": {"type": "always"},
       "source_url": "https://www.gov.br/transportes/pt-br/assuntos/transito/arquivos-senatran/portarias/2022/Portaria9902022.pdf",
       "verified": true
     },
     {
       "id": "BRA-02",
-      "topic_de": "Brasilien verweist auf UN R7/R23/R3, nicht auf R148/R150",
+      "topic": "Brazil refers to UN R7/R23/R3, not to R148/R150",
       "un_reference": "UN R148",
-      "national_requirement_de": "Res. CONTRAN 970/2022 Anhang I verlangt für die Bauteile jeweils den eigenen Anhang oder eine bestimmte UN-Regelung: Schluss- und Bremsleuchte 'Anexo VI ... ou Regulamento nº 7', Rückfahrscheinwerfer 'Anexo IV ... ou Regulamento nº 23', hinterer Rückstrahler 'Anexo XII ... ou Regulamento n°3', Nebelschlussleuchte 'Anexo VIII ... ou Regulamento nº 38'. UN R148 und R150 werden im Text nicht genannt. Art. 14 lässt allgemein Prüfergebnisse nach 'Regulamentos Técnicos das Nações Unidas (ONU/UNECE)' zu.",
-      "effort": "doku_kennzeichnung",
-      "spec_section": "Zertifizierung",
-      "suggestion_de": "Die Konformitätsdokumentation um eine Zuordnung R148 → Res. 970 Anhang VI/IV bzw. UN R7/R23 und R150 → Anhang XII bzw. UN R3 ergänzen. Vom OEM oder von der SENATRAN vorab bestätigen lassen, dass R148/R150-Prüfberichte über Art. 14 anerkannt werden; sonst eine Zusatzprüfung nach Anhang VI, IV und XII einplanen.",
+      "national_requirement": "Res. CONTRAN 970/2022 Annex I requires for each component either its own annex or a specific UN regulation: rear position and stop lamp 'Anexo VI ... ou Regulamento nº 7', reversing lamp 'Anexo IV ... ou Regulamento nº 23', rear retro-reflector 'Anexo XII ... ou Regulamento n°3', rear fog lamp 'Anexo VIII ... ou Regulamento nº 38'. UN R148 and R150 are not mentioned in the text. Art. 14 generally allows test results under 'Regulamentos Técnicos das Nações Unidas (ONU/UNECE)'.",
+      "effort": "documentation",
+      "spec_section": "Certification",
+      "suggestion": "Add a mapping to the conformity documentation: R148 → Res. 970 Annex VI/IV or UN R7/R23, and R150 → Annex XII or UN R3. Get the OEM or SENATRAN to confirm in advance that R148/R150 test reports are accepted under Art. 14; otherwise plan an additional test under Annexes VI, IV and XII.",
       "check": {"type": "spec_contains", "keywords": ["R148", "R 148", "R150", "R 150", "Regulation No. 148", "Regulation No. 150"]},
       "source_url": "https://www.abti.org.br/anexos/20220620_Resolucao_CONTRAN_970_Sinalizacao_iluminacao_em_veiculos.pdf",
       "verified": true,
-      "notes": "Belegt ist, welche Regelungen genannt werden. Ob die SENATRAN Prüfberichte nach R148/R150 unter Art. 14 ohne Weiteres akzeptiert, regeln die gelesenen Quellen nicht ausdrücklich."
+      "notes": "It is confirmed which regulations are named. Whether SENATRAN readily accepts test reports under R148/R150 via Art. 14 is not explicitly stated in the sources reviewed."
     },
     {
       "id": "BRA-03",
-      "topic_de": "Notbremssignal (ESS) verpflichtend",
+      "topic": "Emergency stop signal (ESS) mandatory",
       "un_reference": "UN R48",
-      "national_requirement_de": "Res. CONTRAN 970/2022 Anhang I Ziff. 4.21.1: Das Notbremssignal ist für Kraftfahrzeuge verpflichtend; in UN R48 (Ziff. 6.23.1) ist es optional. Alle Bremsleuchten und/oder Fahrtrichtungsanzeiger blinken synchron mit 4,0 ± 1,0 Hz, bei Glühlampen in den hinteren Leuchten mit 4,0 +0,0/−1,0 Hz (Ziff. 4.21.7.1). Das Signal wird automatisch und nur über 50 km/h aktiviert. Nach Art. 16 gilt die Pflicht seit 1.1.2024 auch für Fahrzeugprojekte, deren Code vor dem 1.1.2021 erteilt wurde.",
+      "national_requirement": "Res. CONTRAN 970/2022 Annex I item 4.21.1: the emergency stop signal is mandatory for motor vehicles; in UN R48 (item 6.23.1) it is optional. All stop lamps and/or direction indicators flash in sync at 4.0 ± 1.0 Hz, or at 4.0 +0.0/−1.0 Hz if the rear lamps use filament bulbs (item 4.21.7.1). The signal is activated automatically and only above 50 km/h. Under Art. 16, the requirement has also applied since 1 Jan 2024 to vehicle projects whose code was issued before 1 Jan 2021.",
       "effort": "design",
       "spec_section": "Function",
-      "suggestion_de": "In der Spezifikation unter 'Function' festlegen, dass die Bremsleuchtenfunktion für das Notbremssignal synchron mit 4,0 ± 1,0 Hz blinken kann (bei Glühlampen 4,0 +0/−1 Hz). Dafür LED-Treiber, Ansteuerung und Photometrie im Blinkbetrieb prüfen. Alternativ mit dem OEM dokumentieren, dass das ESS über die Fahrtrichtungsanzeiger umgesetzt wird.",
+      "suggestion": "Specify under 'Function' that the stop lamp function can flash in sync at 4.0 ± 1.0 Hz for the emergency stop signal (4.0 +0/−1 Hz with filament bulbs). Check the LED driver, control and photometry in flashing mode for this. Alternatively, document with the OEM that the ESS is implemented via the direction indicators.",
       "check": {"type": "spec_missing", "keywords": ["emergency stop signal", "emergency braking signal", "ESS function", "flashing stop"]},
       "source_url": "https://www.abti.org.br/anexos/20220620_Resolucao_CONTRAN_970_Sinalizacao_iluminacao_em_veiculos.pdf",
       "verified": true
     },
     {
       "id": "BRA-04",
-      "topic_de": "INMETRO-Pflichtzertifizierung für Ersatz-Glühlampen",
+      "topic": "Mandatory INMETRO certification for replacement bulbs",
       "un_reference": null,
-      "national_requirement_de": "Portaria Inmetro nº 145/2022: Kfz-Glühlampen bestimmter Kategorien für den Ersatzteilmarkt müssen zertifiziert, beim INMETRO registriert und mit dem Konformitätssiegel versehen sein (Art. 6 und 7). Dazu gehören u. a. P21W, P21/5W, PY21W, R5W, R10W, W5W, W21W, W21/5W, C5W und H21W. Ausgenommen sind Bauteile für die Fahrzeugmontagelinie (Art. 3 § 7 I) und nicht gelistete Kategorien; komplette Leuchten sind nicht im Geltungsbereich. Alle Kfz-Lampen müssen auf der Verpackung die internationale Kategoriebezeichnung tragen (Art. 9).",
-      "effort": "pruefung_zertifizierung",
+      "national_requirement": "Portaria Inmetro nº 145/2022: automotive filament bulbs of certain categories for the aftermarket must be certified, registered with INMETRO and carry the conformity seal (Art. 6 and 7). These include P21W, P21/5W, PY21W, R5W, R10W, W5W, W21W, W21/5W, C5W and H21W. Exempt are components for the vehicle assembly line (Art. 3 § 7 I) and unlisted categories; complete lamps are out of scope. All automotive bulbs must show the international category designation on the packaging (Art. 9).",
+      "effort": "testing",
       "spec_section": "Main Parts",
-      "suggestion_de": "Wenn die Leuchte austauschbare Glühlampen einer gelisteten Kategorie verwendet: die internationale Lampenkategorie in der Spezifikation nennen. Außerdem sicherstellen, dass für den brasilianischen Ersatzteilmarkt INMETRO-zertifizierte und registrierte Lampen mit Konformitätssiegel erhältlich sind.",
+      "suggestion": "If the lamp uses replaceable filament bulbs of a listed category: state the international bulb category in the specification. Also make sure that INMETRO-certified and registered bulbs with the conformity seal are available for the Brazilian aftermarket.",
       "check": {"type": "spec_contains", "keywords": ["P21W", "P21/5W", "PY21W", "W21W", "W21/5W", "W5W", "R5W", "R10W", "C5W", "H21W", "filament bulb", "incandescent"]},
       "source_url": "https://www.legisweb.com.br/legislacao/?id=429565",
       "verified": true
     },
     {
       "id": "BRA-05",
-      "topic_de": "Handbuch: Leuchtenfunktionen und zulässige Lampen dokumentieren",
+      "topic": "Owner's manual: document lamp functions and permitted bulbs",
       "un_reference": null,
-      "national_requirement_de": "Res. CONTRAN 970/2022 Art. 8: Identifikation, Lage und korrekte Nutzung der Beleuchtungs- und Signaleinrichtungen müssen im Fahrzeug- bzw. Gerätehandbuch stehen. Art. 11: Originallampen dürfen nur gegen Lampen anderer Leistung oder Technologie getauscht werden, wenn das Handbuch oder eine offizielle Unterlage des Fahrzeugherstellers dies vorsieht. Verstöße werden nach Art. 230 XIII CTB geahndet (Art. 15 VII b).",
-      "effort": "doku_kennzeichnung",
-      "spec_section": "Kennzeichnung",
-      "suggestion_de": "Dem OEM die Angaben für das brasilianische Fahrzeughandbuch liefern: Funktionen und Lage der Heckleuchte, Bedienung, zulässige Lampenkategorien bzw. den Hinweis, dass LED-Module nicht tauschbar sind. In der Spezifikation festlegen, welche Ersatzlichtquellen zulässig sind.",
+      "national_requirement": "Res. CONTRAN 970/2022 Art. 8: the identification, position and correct use of the lighting and signalling devices must be described in the vehicle or equipment manual. Art. 11: original bulbs may only be replaced with bulbs of a different wattage or technology if the manual or an official document from the vehicle manufacturer allows it. Violations are penalised under Art. 230 XIII CTB (Art. 15 VII b).",
+      "effort": "documentation",
+      "spec_section": "Marking",
+      "suggestion": "Provide the OEM with the information for the Brazilian owner's manual: functions and position of the rear lamp, operation, permitted bulb categories or a note that LED modules are not replaceable. Specify in the specification which replacement light sources are permitted.",
       "check": {"type": "always"},
       "source_url": "https://www.legisweb.com.br/legislacao/?id=433065",
       "verified": true
     }
   ],
   "sources": [
-    {"title": "Resolução CONTRAN nº 970, de 20 de junho de 2022 (Haupttext, DOU-Ausdruck) - gov.br Ministério dos Transportes", "url": "https://www.gov.br/transportes/pt-br/assuntos/transito/conteudo-contran/resolucoes/resolucao9702022.pdf", "retrieved": "2026-10-25"},
-    {"title": "Resolução CONTRAN nº 970/2022 inkl. Anhänge I-XXI (DOU 24/06/2022, Seção 1, S. 60; Kopie auf abti.org.br)", "url": "https://www.abti.org.br/anexos/20220620_Resolucao_CONTRAN_970_Sinalizacao_iluminacao_em_veiculos.pdf", "retrieved": "2026-10-25"},
-    {"title": "Resolução CONTRAN nº 970/2022 - Volltext LegisWeb", "url": "https://www.legisweb.com.br/legislacao/?id=433065", "retrieved": "2026-10-25"},
-    {"title": "Resolução CONTRAN nº 1.024, de 26 de junho de 2026 (ändert Res. 970/2022, Art. 6) - gov.br", "url": "https://www.gov.br/transportes/pt-br/assuntos/transito/conteudo-contran/resolucoes/resolucao10242026c.pdf", "retrieved": "2026-10-25"},
+    {"title": "Resolução CONTRAN nº 970, de 20 de junho de 2022 (main text, DOU printout) - gov.br Ministério dos Transportes", "url": "https://www.gov.br/transportes/pt-br/assuntos/transito/conteudo-contran/resolucoes/resolucao9702022.pdf", "retrieved": "2026-10-25"},
+    {"title": "Resolução CONTRAN nº 970/2022 incl. Annexes I-XXI (DOU 24/06/2022, Seção 1, p. 60; copy on abti.org.br)", "url": "https://www.abti.org.br/anexos/20220620_Resolucao_CONTRAN_970_Sinalizacao_iluminacao_em_veiculos.pdf", "retrieved": "2026-10-25"},
+    {"title": "Resolução CONTRAN nº 970/2022 - full text LegisWeb", "url": "https://www.legisweb.com.br/legislacao/?id=433065", "retrieved": "2026-10-25"},
+    {"title": "Resolução CONTRAN nº 1.024, de 26 de junho de 2026 (amends Res. 970/2022, Art. 6) - gov.br", "url": "https://www.gov.br/transportes/pt-br/assuntos/transito/conteudo-contran/resolucoes/resolucao10242026c.pdf", "retrieved": "2026-10-25"},
     {"title": "Portaria SENATRAN nº 990, de 1º de agosto de 2022 (Homologação, CAT, código marca/modelo/versão) - gov.br", "url": "https://www.gov.br/transportes/pt-br/assuntos/transito/arquivos-senatran/portarias/2022/Portaria9902022.pdf", "retrieved": "2026-10-25"},
     {"title": "gov.br Serviço: Emitir Certificado de Adequação à Legislação de Trânsito (CAT)", "url": "https://www.gov.br/pt-br/servicos/emitir-certificado-de-adequacao-a-legislacao-de-transito-cat", "retrieved": "2026-10-25"},
     {"title": "Portaria Inmetro nº 145, de 28 de março de 2022 - Componentes Automotivos Consolidado (LegisWeb)", "url": "https://www.legisweb.com.br/legislacao/?id=429565", "retrieved": "2026-10-25"},
-    {"title": "UN Regulation No 48 (06 series, Supplement 10), OJ L 14, 16.1.2019 - EUR-Lex (Ziff. 6.23.1 Notbremssignal: optional)", "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:42019X0057", "retrieved": "2026-10-25"},
-    {"title": "UN Treaty Collection XI-B-16 (Teilnehmerliste 1958er Übereinkommen; Brasilien nicht aufgeführt)", "url": "https://treaties.un.org/Pages/ViewDetails.aspx?src=TREATY&mtdsg_no=XI-B-16&chapter=11&clang=_en", "retrieved": "2026-10-25"}
+    {"title": "UN Regulation No 48 (06 series, Supplement 10), OJ L 14, 16.1.2019 - EUR-Lex (item 6.23.1 emergency stop signal: optional)", "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:42019X0057", "retrieved": "2026-10-25"},
+    {"title": "UN Treaty Collection XI-B-16 (list of parties to the 1958 Agreement; Brazil not listed)", "url": "https://treaties.un.org/Pages/ViewDetails.aspx?src=TREATY&mtdsg_no=XI-B-16&chapter=11&clang=_en", "retrieved": "2026-10-25"}
   ]
 }

@@ -29,10 +29,18 @@ PIPELINE_CHECKOUTS = [PIPELINE_ROOT]
 PIPELINE_RUN_DIRS = [Path(p) for p in os.environ.get("PIPELINE_RUN_DIRS", "").split(os.pathsep) if p] or sorted(
     (PIPELINE_ROOT / "data").glob("*/runs"))
 PIPELINE_CASE_DIRS = [PIPELINE_ROOT / "industrial-ai-hackathon" / "cases",
-                      *sorted((PIPELINE_ROOT / "approaches").glob("*/tools/evalkit/mockcases")), CASES_DIR]
+                      *sorted((PIPELINE_ROOT / "approaches").glob("*/tools/evalkit/mockcases")),
+                      CASES_DIR, REPO / "testdata" / "fake-cases"]
 # run ids to show when several finished runs share a spec (e.g. the one whose submission was uploaded);
 # otherwise the latest one
 PIPELINE_RUN = [r.strip() for r in os.environ.get("PIPELINE_RUN", "").split(",") if r.strip()]
+# starting a run from the UI: the command that is the `certivity` CLI, run in PIPELINE_ROOT (default: this
+# Python with `-m app.cli`), and whether it uses the scripted stand-in model (free, offline, for demos)
+# Runs started from the UI go through the ./certivity launcher of one approach and land in data/<approach>/runs/
+PIPELINE_APPROACH = os.environ.get("PIPELINE_APPROACH", "main-approach")
+LAUNCH_RUNS_DIR = PIPELINE_ROOT / "data" / PIPELINE_APPROACH / "runs"
+PIPELINE_CMD = os.environ.get("PIPELINE_CMD", "")
+PIPELINE_FAKE_LLM = os.environ.get("PIPELINE_FAKE_LLM", "").lower() in ("1", "true", "yes")
 
 # off (default): rule set only, no paid calls; on: use LLM for the spec check and country questions when
 # credentials resolve, falling back to the rule set on any error. The model comes from the environment, as

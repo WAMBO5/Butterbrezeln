@@ -47,7 +47,7 @@ def _version_file(regulation: str, version: str | None) -> tuple[str, dict[str, 
 def un_source(regulation: str, version: str | None, page: int | None = None, paragraph: str | None = None) -> Source:
     label = regulation if version is None else f"{regulation} v{version}"
     if page:
-        label += f", S. {page}"
+        label += f", p. {page}"
     if paragraph:
         label += f", §{paragraph}"
     found = _version_file(regulation, version)
@@ -70,7 +70,7 @@ def un_source(regulation: str, version: str | None, page: int | None = None, par
 def spec_source(spec_name: str, lines: list[int] | None) -> Source:
     label = spec_name
     if lines:
-        label += f", Z. {lines[0]}" if lines[0] == lines[1] else f", Z. {lines[0]}–{lines[1]}"
+        label += f", line {lines[0]}" if lines[0] == lines[1] else f", lines {lines[0]}–{lines[1]}"
     return Source(kind="spec", label=label, spec_lines=lines, in_certivity_corpus=False)
 
 
