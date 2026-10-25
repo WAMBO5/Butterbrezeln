@@ -2,9 +2,9 @@
 .venv/
 __pycache__/
 .pytest_cache/
-runs/
-web/node_modules/
-web/dist/
+ui/runs/
+ui/web/node_modules/
+ui/web/dist/
 *.tsbuildinfo
 # regulation PDFs: hackathon use only, no redistribution (industrial-ai-hackathon/LICENSE-DATA.md)
 industrial-ai-hackathon/regulations/pdf/

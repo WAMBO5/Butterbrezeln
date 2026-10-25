@@ -1,7 +1,7 @@
-"""FastAPI layer between the web UI and the requirements backend.
+"""FastAPI layer between the web UI and the requirements backend. Run it from ui/ (8000 is certivity serve):
 
-    .venv/bin/uvicorn api.main:app --reload --port 8000                  # finished pipeline runs (default)
-    BACKEND_MODE=mock .venv/bin/uvicorn api.main:app --reload --port 8000  # golden files, offline demo
+    uv run uvicorn api.main:app --reload --reload-dir api --port 8010                    # finished pipeline runs (default)
+    BACKEND_MODE=mock uv run uvicorn api.main:app --reload --reload-dir api --port 8010  # golden files, offline demo
 """
 
 from __future__ import annotations

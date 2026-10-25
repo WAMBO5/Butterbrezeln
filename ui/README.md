@@ -7,24 +7,24 @@ whole chain spec → regulation → page → requirement → finding → verdict
 
 ## Run
 
-```bash
-# API (Python 3.12)
-python3 -m venv .venv && .venv/bin/pip install -r api/requirements.txt
-.venv/bin/uvicorn api.main:app --port 8000 --reload --reload-dir api   # BACKEND_MODE=mock: offline demo
+From `ui/`, in the repository's uv environment (`uv sync` at the repository root):
 
-# UI (Node 20+), proxies /api to :8000
+```bash
+# API on port 8010 (8000 is `certivity serve`)
+uv run uvicorn api.main:app --port 8010 --reload --reload-dir api   # BACKEND_MODE=mock: offline demo
+
+# UI (Node 20+), proxies /api to :8010
 cd web && npm install && npm run dev        # http://localhost:5173
 ```
 
 By default the UI shows finished runs of the certivity pipeline, read only: no run is started from here.
-An uploaded `spec.md` is matched to the run whose manifest lists the same spec hash. A run started in
-the pipeline repo (`uv run certivity run <case folder>`) shows up once its folder has `submission.json`
-and `lineage.json`.
+An uploaded `spec.md` is matched to the run whose manifest lists the same spec hash. A run started with
+`uv run certivity run <case folder>` shows up once its folder has `submission.json` and `lineage.json`.
 
-Regulation PDFs for the source links (hackathon data, not committed):
+Regulation PDFs for the source links (hackathon data, not committed), from the repository root:
 
 ```bash
-cd industrial-ai-hackathon && python3 tools/fetch_regulations.py --role base
+uv run python industrial-ai-hackathon/tools/fetch_regulations.py --role base
 ```
 
 Missing PDFs fall back to the remote `pdf_url` from `regulations/index.json`.
@@ -34,7 +34,7 @@ Missing PDFs fall back to the remote `pdf_url` from `regulations/index.json`.
 | Variable | Default | Meaning |
 |---|---|---|
 | `BACKEND_MODE` | `runs` | `runs` reads finished pipeline runs; `mock` replays `cases/<case>/expected.json` (labelled as mock in the trace); `engine` calls feat/requirements-engine |
-| `PIPELINE_ROOT` | `../Brezel/Butterbrezeln` | pipeline checkout; runs are read from its `data/runs/` and from `../sunday-data/<sample>/runs/`, likewise for `../Butterbrezeln-general` |
+| `PIPELINE_ROOT` | the repository root | pipeline checkout; runs are read from its `data/runs/` and from `../sunday-data/<sample>/runs/`, likewise for the sibling checkouts `../Brezel/Butterbrezeln` and `../Butterbrezeln-general` |
 | `PIPELINE_RUN_DIRS` | – | replaces those run folders (`:`-separated) |
 | `PIPELINE_RUN` | – | run id(s) to show when several finished runs share a spec; otherwise the latest |
 | `ENGINE_ENTRYPOINT` | – | `module:function` of feat/requirements-engine, see `api/backend_client.py` |
@@ -63,7 +63,7 @@ of EU AI Act Art. 12–14; it is not a conformity claim.
 ## Tests
 
 ```bash
-.venv/bin/python -m pytest api/tests -q
+uv run pytest api/tests -q   # from ui/, offline on the golden files
 ```
 
 ## Open
