@@ -9,6 +9,7 @@ import { DraftNotice } from "../components/Badges";
 import { RULE, STATUS, STATUS_ORDER, UNTESTED_FILL, plural } from "../lib/labels";
 import { money, totalCost, when } from "../lib/pipeline";
 import { summarizeSpec } from "../lib/specSummary";
+import { BenchmarkStrip } from "../components/BenchmarkStrip";
 import { Blueprint } from "../components/Blueprint";
 import { CountryCards } from "../components/CountryCards";
 import { CountryDrawer } from "../components/CountryDrawer";
@@ -67,9 +68,13 @@ interface Props {
   onNew: () => void;
   onOpenRun: (runId: string) => void;
   onEditMarkets: (run: RunResult) => void;
+  /** Start a fresh pipeline run on this result's spec and markets. */
+  onRunAgain: (run: RunResult) => void;
+  /** Real mode (header toggle), for follow-up checks started from here. */
+  real?: boolean;
 }
 
-export function ResultPage({ runId, replay, onNew, onOpenRun, onEditMarkets }: Props) {
+export function ResultPage({ runId, replay, onNew, onOpenRun, onEditMarkets, onRunAgain, real = false }: Props) {
   const [run, setRun] = useState<RunResult | null>(null);
   const [trace, setTrace] = useState<TraceEvent[]>([]);
   const [live, setLive] = useState<Map<string, TraceEvent>>(new Map());
@@ -152,7 +157,7 @@ export function ResultPage({ runId, replay, onNew, onOpenRun, onEditMarkets }: P
   const analyzeWith = async (iso3: string) => {
     const file = new File([run.spec_text], run.spec_name, { type: "text/markdown" });
     const image = run.has_image ? await api.runImage(run.run_id) : null;
-    const { run_id } = await api.startRun(file, [...new Set([...run.countries, iso3])], image);
+    const { run_id } = await api.startRun(file, [...new Set([...run.countries, iso3])], image, null, real);
     onOpenRun(run_id);
   };
   const openEvent = (id: string) => {
@@ -204,6 +209,11 @@ export function ResultPage({ runId, replay, onNew, onOpenRun, onEditMarkets }: P
                     {cost != null && ` · ${money(cost)}`}
                   </Meta>
                 )}
+                {run.pipeline?.fake_llm && (
+                  <span className="rounded bg-amber-300/20 px-1.5 text-amber-200" title="A scripted stand-in model wrote these requirements: free and quick, but not a real analysis.">
+                    Demo model – not a real analysis
+                  </span>
+                )}
                 {run.backend_mode === "mock" && (
                   <span className="rounded bg-amber-300/20 px-1.5 text-amber-200" title="Requirements come from the organiser's reference solution – the live requirements engine is not connected yet.">
                     Demo data
@@ -234,6 +244,8 @@ export function ResultPage({ runId, replay, onNew, onOpenRun, onEditMarkets }: P
           </div>
         </div>
       </section>
+
+      <BenchmarkStrip run={run} verdicts={verdicts} onCountry={setCountry} onRunAgain={() => onRunAgain(run)} />
 
       {note && (
         <section className="flex gap-4 rounded-2xl bg-amber-50 p-5 ring-1 ring-inset ring-amber-600/20">

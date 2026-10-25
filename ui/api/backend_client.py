@@ -79,8 +79,11 @@ class PipelineRunsBackend:
 
     name = "runs"
 
+    def __init__(self, prefer: str | None = None):
+        self.prefer = prefer  # the pipeline run just started from the UI for this spec
+
     def extract_requirements(self, spec_md, image, trace, parent):
-        ref = pipeline_runs.match(spec_md)
+        ref = pipeline_runs.match(spec_md, self.prefer)
         if ref is None:
             raise BackendError(NO_RUN)
         imported = pipeline_runs.import_run(ref, parse_spec("spec.md", spec_md), trace, parent)
@@ -134,7 +137,7 @@ class RequirementsEngineClient:
                                            f"Output of {self.entrypoint}"), case_id)
 
 
-def make_backend(mode: str = BACKEND_MODE) -> BackendClient:
+def make_backend(mode: str = BACKEND_MODE, prefer: str | None = None) -> BackendClient:
     if mode == "engine":
         return RequirementsEngineClient()
-    return MockBackend() if mode == "mock" else PipelineRunsBackend()
+    return MockBackend() if mode == "mock" else PipelineRunsBackend(prefer)

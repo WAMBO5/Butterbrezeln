@@ -1,4 +1,4 @@
-import type { CountryListing, Decision, Health, PipelineJob, QAEntry, RunResult, Suggestion, TraceEvent } from "./types";
+import type { CountryListing, Decision, ExistingAnalysis, Health, PipelineJob, QAEntry, RunResult, Suggestion, TraceEvent } from "./types";
 
 /** A failed request; `status` tells e.g. a missing pipeline run (409) from other errors. */
 export class ApiError extends Error {
@@ -36,26 +36,40 @@ export const api = {
   exampleImage: (name: string) =>
     fetch(`/api/examples/${name}/image`).then(async (r) => (r.ok ? new File([await r.blob()], `${name}.png`, { type: "image/png" }) : null)),
   runImageUrl: (id: string) => `/api/runs/${id}/image`,
+  /** The challenge output of the pipeline run behind a result. */
+  submissionUrl: (id: string) => `/api/runs/${id}/submission`,
   /** A run's uploaded drawing as a file again, to start a follow-up run with it. */
   runImage: (id: string) =>
     fetch(`/api/runs/${id}/image`)
       .then(async (r) => (r.ok ? new File([await r.blob()], "drawing.png", { type: "image/png" }) : null))
       .catch(() => null),
 
-  startRun(spec: File, countries: string[], image?: File | null) {
+  /** `pipelineRun`: the pipeline run just started for this spec, so its result opens rather than an older one. */
+  startRun(spec: File, countries: string[], image?: File | null, pipelineRun?: string | null, real = false) {
     const form = new FormData();
     form.append("spec", spec);
     form.append("countries", countries.join(","));
     if (image) form.append("image", image);
+    if (pipelineRun) form.append("pipeline_run", pipelineRun);
+    form.append("real", real ? "true" : "false");
     return fetch("/api/runs", { method: "POST", body: form }).then(json<{ run_id: string }>);
   },
 
-  /** Starts the certivity pipeline on the spec; POST /api/runs finds its result once it has finished. */
-  startPipeline(spec: File, image?: File | null) {
+  /** Starts the certivity pipeline on the spec (`demo`: the free scripted model); POST /api/runs opens its result. */
+  startPipeline(spec: File, image?: File | null, demo = false) {
     const form = new FormData();
     form.append("spec", spec);
     if (image) form.append("image", image);
+    form.append("demo", demo ? "true" : "false");
     return fetch("/api/pipeline/jobs", { method: "POST", body: form }).then(json<PipelineJob>);
+  },
+  /** The finished pipeline run the app would reuse for this spec, or null. */
+  lookupAnalysis(spec: File) {
+    const form = new FormData();
+    form.append("spec", spec);
+    return fetch("/api/pipeline/lookup", { method: "POST", body: form })
+      .then(json<{ run: ExistingAnalysis | null }>)
+      .then((r) => r.run);
   },
   pipelineJob: (id: string) => fetch(`/api/pipeline/jobs/${id}`).then(json<PipelineJob>),
   cancelPipelineJob: (id: string) => fetch(`/api/pipeline/jobs/${id}`, { method: "DELETE" }).then(json<PipelineJob>),

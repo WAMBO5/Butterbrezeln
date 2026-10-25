@@ -2,14 +2,33 @@
 # Run one approach on the shared data:
 #   ./certivity <approach> <command> [args...]     the approach's CLI (uv run certivity ...)
 #   ./certivity <approach> -- <cmd> [args...]      anything else in its environment (pytest, python tools/...)
+#   ./certivity ui [--demo] [--port N]             the product: web UI and API on one port (ui/README.md)
 # Each approach is its own uv project in approaches/<name>/ and runs from that folder, so paths are relative
 # to it (industrial-ai-hackathon/..., data/runs/...). Its data is data/<name>/ (catalog and runs), reached
 # through approaches/<name>/data; the regulation cards and the extraction cache are shared in data/shared/.
 set -euo pipefail
 root=$(cd "$(dirname "$0")" && pwd)
+if [[ ${1:-} == ui ]]; then
+  # every approach's runs in data/*/runs/; runs started from the UI use $PIPELINE_APPROACH (default general-approach)
+  shift
+  port=8010
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      --demo) export PIPELINE_FAKE_LLM=1 ;;  # only the free scripted model, e.g. for a public demo
+      --port) port=$2; shift ;;
+      *) echo "usage: ./certivity ui [--demo] [--port N]" >&2; exit 2 ;;
+    esac
+    shift
+  done
+  cd "$root/ui"
+  uv sync -q
+  (cd web && { [[ -d node_modules ]] || npm ci --silent; } && npm run build --silent >/dev/null)
+  echo "Certivity on http://localhost:$port (pipeline: ${PIPELINE_APPROACH:-general-approach}${PIPELINE_FAKE_LLM:+, demo model only})"
+  exec uv run uvicorn api.main:app --port "$port"
+fi
 names=$(cd "$root/approaches" && ls -d -- */ | tr -d / | xargs)
 if [[ $# -lt 2 || ! -d $root/approaches/$1 ]]; then
-  echo "usage: ./certivity <approach> <command> [args...]   |   ./certivity <approach> -- <cmd> [args...]" >&2
+  echo "usage: ./certivity <approach> <command> [args...]   |   ./certivity <approach> -- <cmd> [args...]   |   ./certivity ui [--demo]" >&2
   echo "approaches: $names" >&2
   exit 2
 fi

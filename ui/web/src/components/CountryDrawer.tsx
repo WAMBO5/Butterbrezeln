@@ -203,7 +203,7 @@ export function CountryDrawer({ iso3, run, onClose, onAsk, onDecide, onLineage, 
 
               <section>
                 <h3 className="mb-4 text-lg">
-                  {steps.length ? "Your path to approval" : "What needs doing?"}{" "}
+                  {steps.length ? "Steps needed" : "What needs doing?"}{" "}
                   {steps.length > 0 && <span className="text-sm font-normal text-mint-900/50">· {plural(steps.length, "step", "steps")}, largest effort first</span>}
                 </h3>
                 {steps.length ? (

@@ -125,6 +125,15 @@ export interface QAEntry {
   trace_ids: string[];
 }
 
+/** The run's challenge output (submission.json), scored only on challenge data; levels only for a case with a reference. */
+export interface Benchmark {
+  case_id?: string | null;
+  requirements: number;
+  valid: boolean;
+  problems: string[];
+  levels: { level: "regulation" | "page" | "requirement"; precision: number; recall: number; f2: number; submitted: number; expected: number; matched: number }[];
+}
+
 /** The certivity pipeline run a result was read from (BACKEND_MODE=runs). */
 export interface PipelineRunInfo {
   run_id: string;
@@ -149,6 +158,21 @@ export interface PipelineRunInfo {
   replay_of?: string | null;
   ledger?: { records: number; intact: boolean; problems: string[]; head?: string | null } | null;
   label?: string | null;
+  /** The scripted demo model wrote this run: not a real analysis. */
+  fake_llm?: boolean;
+  /** The budget guard stopped the run early. */
+  partial?: boolean;
+  approach?: string | null;
+  benchmark?: Benchmark | null;
+}
+
+/** A finished pipeline run of a spec, as the app would reuse it. */
+export interface ExistingAnalysis {
+  run_id: string;
+  approach?: string | null;
+  finished_at?: string | null;
+  cost_usd?: number | null;
+  fake_llm: boolean;
 }
 
 export interface RunResult {
@@ -160,6 +184,9 @@ export interface RunResult {
   spec_text: string;
   countries: string[];
   backend_mode: string;
+  /** Its pipeline run was started for it; otherwise a finished run of this spec is replayed. */
+  pipeline_fresh?: boolean;
+  real?: boolean;
   llm_mode: string;
   has_image?: boolean;
   pipeline?: PipelineRunInfo | null;
@@ -187,13 +214,15 @@ export interface CountryListing {
 export interface Health {
   backend_mode: string;
   llm: { available: boolean; model: string; reason?: string | null };
+  /** Real mode: real pipeline runs and LLM answers with the .env API key; `reason` says what is missing. */
+  real?: { available: boolean; reason?: string | null; model?: string };
   countries_loaded: number;
   pipeline?: {
     root: string;
     finished_runs: number;
     cases: string[];
     /** Whether a certivity run can be started from the UI, and why not. */
-    launch: { available: boolean; reason?: string | null; fake_llm: boolean };
+    launch: { available: boolean; reason?: string | null; /** only the demo model is allowed */ fake_llm: boolean; approach?: string; max_cost_usd?: number };
   } | null;
 }
 

@@ -150,6 +150,25 @@ class LedgerCheck(BaseModel):
     head: str | None = None  # hash of the last record
 
 
+class BenchmarkLevel(BaseModel):
+    level: Literal["regulation", "page", "requirement"]  # requirement: (regulation, paragraph) pairing, an upper bound
+    precision: float
+    recall: float
+    f2: float  # the platform's ranking metric
+    submitted: int
+    expected: int
+    matched: int
+
+
+class Benchmark(BaseModel):
+    """The challenge output of a run (submission.json) and, for a case with a reference solution, its score."""
+    case_id: str | None = None  # the challenge case whose expected.json was used; None: no reference (e.g. held-out)
+    requirements: int = 0
+    valid: bool = True  # validate.py had no problems
+    problems: list[str] = Field(default_factory=list)
+    levels: list[BenchmarkLevel] = Field(default_factory=list)
+
+
 class PipelineRunInfo(BaseModel):
     """The certivity pipeline run a result was read from (BACKEND_MODE=runs)."""
     run_id: str
@@ -174,6 +193,10 @@ class PipelineRunInfo(BaseModel):
     replay_of: str | None = None  # tools/replay_from_match.py reused this run's profile and scope plan
     ledger: LedgerCheck | None = None
     label: str | None = None  # submission.provenance.json, e.g. "Unreviewed AI draft — not for compliance use"
+    fake_llm: bool = False  # the scripted demo model wrote it: not a real analysis
+    partial: bool = False  # the budget guard stopped the run: undecided obligations were kept as uncertain
+    approach: str | None = None  # the approach under approaches/ whose run this is (from data/<approach>/)
+    benchmark: Benchmark | None = None  # submission.json, scored only on challenge data
 
 
 class PipelineJobStep(BaseModel):
@@ -205,6 +228,8 @@ class RunResult(BaseModel):
     spec_text: str
     countries: list[str]
     backend_mode: str
+    real: bool = False  # started in real mode: LLM (the .env API key) answers country questions; paid
+    pipeline_fresh: bool = False  # its pipeline run was started for it; otherwise a finished run of this spec is replayed
     llm_mode: str = "rules"
     has_image: bool = False
     pipeline: PipelineRunInfo | None = None

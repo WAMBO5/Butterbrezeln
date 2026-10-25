@@ -1,15 +1,25 @@
 import { useEffect, useRef, useState } from "react";
-import { Check, Circle, Loader2, Play, Square, X } from "lucide-react";
+import { Check, Circle, FlaskConical, FolderOpen, Loader2, Play, Square, X } from "lucide-react";
 import { api } from "../api";
-import type { PipelineJob } from "../types";
+import { money, when } from "../lib/pipeline";
+import type { ExistingAnalysis, PipelineJob } from "../types";
 
 interface Props {
   spec: File;
   image: File | null;
-  /** The pipeline runs with the scripted stand-in model: free, but not a real analysis. */
-  fakeLlm: boolean;
-  /** The run has written its submission: the caller opens the result. */
-  onDone: () => void;
+  /** Real mode (header toggle): a real, paid run with the .env API key; otherwise the free scripted demo model. */
+  real: boolean;
+  /** The approach whose pipeline runs, e.g. "general-approach". */
+  approach?: string;
+  /** A real run stops when it has spent this much. */
+  maxCostUsd?: number;
+  /** There already is an analysis for this spec: this starts a fresh one. */
+  again?: boolean;
+  /** That analysis, offered instead of a paid run (real mode asks before reusing it). */
+  existing?: ExistingAnalysis | null;
+  onUseExisting?: () => void;
+  /** The run has written its submission: the caller opens the result of run `jobId`. */
+  onDone: (jobId: string) => void;
   onClose: () => void;
 }
 
@@ -21,7 +31,7 @@ function elapsed(since: string, now: number) {
 }
 
 /** Starts a certivity pipeline run on the spec and follows its steps until the submission is written. */
-export function PipelineLauncher({ spec, image, fakeLlm, onDone, onClose }: Props) {
+export function PipelineLauncher({ spec, image, real, approach, maxCostUsd, again = false, existing, onUseExisting, onDone, onClose }: Props) {
   const [job, setJob] = useState<PipelineJob | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -41,15 +51,15 @@ export function PipelineLauncher({ spec, image, fakeLlm, onDone, onClose }: Prop
   useEffect(() => {
     if (job?.status === "done" && !finished.current) {
       finished.current = true;
-      onDone();
+      onDone(job.id);
     }
-  }, [job?.status, onDone]);
+  }, [job?.status, job?.id, onDone]);
 
   const start = async () => {
     setBusy(true);
     setError(null);
     try {
-      setJob(await api.startPipeline(spec, image));
+      setJob(await api.startPipeline(spec, image, !real));
       setNow(Date.now());
     } catch (e) {
       setError(String(e));
@@ -75,7 +85,7 @@ export function PipelineLauncher({ spec, image, fakeLlm, onDone, onClose }: Prop
       <div className="card w-full max-w-lg p-6">
         <div className="flex items-start justify-between gap-4">
           <h3 id="pipeline-title" className="text-xl font-semibold text-mint-950">
-            {job ? "Pipeline run" : "No analysis for this product yet"}
+            {job ? (job.fake_llm ? "Pipeline run · demo model" : "Pipeline run") : existing ? "This product was analysed before" : again ? "Run the pipeline again" : "No analysis for this product yet"}
           </h3>
           {!running && (
             <button type="button" className="btn-ghost btn-sm -mr-2 -mt-1" onClick={onClose} aria-label="Close">
@@ -86,15 +96,29 @@ export function PipelineLauncher({ spec, image, fakeLlm, onDone, onClose }: Prop
 
         {!job && (
           <>
+            {existing && (
+              <p className="mt-3 rounded-lg bg-mint-900/[0.04] p-3 text-sm text-mint-900/80 ring-1 ring-inset ring-mint-900/[0.06]">
+                {existing.approach ?? "The pipeline"} analysed this description on {when(existing.finished_at)}
+                {existing.fake_llm ? " with the scripted demo model (not a real analysis)" : existing.cost_usd != null ? ` with LLM for ${money(existing.cost_usd)}` : ""}. Opening it
+                makes no model calls; a fresh run below does.
+              </p>
+            )}
             <p className="mt-3 text-sm leading-relaxed text-mint-900/75">
-              The agents have not analysed this product description yet. Start the pipeline now: it breaks the product down, narrows the regulations, quotes the obligations and matches
-              them to the parts. When it has finished, the result opens here.
+              {again ? "A fresh run of the pipeline on this description" : "The agents have not analysed this product description yet. The pipeline"}
+              {approach ? ` (${approach})` : ""} breaks the product down, narrows the UN Regulations, quotes the obligations and matches them to the parts. When it has finished, the
+              result opens here with your markets.
             </p>
-            <p className="mt-3 rounded-lg bg-amber-50 p-3 text-sm text-amber-800 ring-1 ring-inset ring-amber-600/20">
-              {fakeLlm
-                ? "Demo mode: the pipeline uses a scripted stand-in model. Free and quick, but the requirements are not a real analysis."
-                : "This makes paid model calls and takes several minutes."}
-            </p>
+            {real ? (
+              <p className="mt-3 rounded-lg bg-amber-50 p-3 text-sm text-amber-800 ring-1 ring-inset ring-amber-600/20">
+                <b>Real run</b> with LLM and the API key from <code>.env</code>: paid, about $5–7 and 15 minutes for a case like the rear lamp
+                {maxCostUsd ? `; it stops at $${maxCostUsd.toFixed(0)} and keeps what it has decided so far` : ""}.
+              </p>
+            ) : (
+              <p className="mt-3 rounded-lg bg-mint-900/[0.04] p-3 text-sm text-mint-900/80 ring-1 ring-inset ring-mint-900/[0.06]">
+                <b>Demo model:</b> free and done in about a minute, but a scripted stand-in writes the requirements – the result is labelled as not a real analysis.
+                Switch the header to <b>Real</b> for an analysis with LLM.
+              </p>
+            )}
           </>
         )}
 
@@ -142,8 +166,13 @@ export function PipelineLauncher({ spec, image, fakeLlm, onDone, onClose }: Prop
                 <button type="button" className="btn-ghost" onClick={onClose}>
                   Close
                 </button>
+                {existing && onUseExisting && (
+                  <button type="button" className="btn-outline" disabled={busy} onClick={onUseExisting}>
+                    <FolderOpen size={16} /> Open that analysis (free)
+                  </button>
+                )}
                 <button type="button" className="btn-primary px-6" disabled={busy} onClick={start}>
-                  <Play size={16} /> {job ? "Run again" : busy ? "Starting …" : "Run pipeline"}
+                  {real ? <Play size={16} /> : <FlaskConical size={16} />} {busy ? "Starting …" : real ? "Start real run (paid)" : "Start demo run (free)"}
                 </button>
               </>
             )

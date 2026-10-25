@@ -46,7 +46,7 @@ export function PipelineRun({ run }: { run: RunResult }) {
           <p className="eyebrow flex items-center gap-1.5">
             <Cpu size={14} /> Data source
           </p>
-          <h3 className="mt-1 text-2xl font-normal tracking-tight">A real run of our requirements pipeline</h3>
+          <h3 className="mt-1 text-2xl font-normal tracking-tight">{p.fake_llm ? "A demo run of our pipeline (scripted model)" : "A real run of our requirements pipeline"}</h3>
           <p className="mt-1 break-all font-mono text-xs text-mint-900/50">{p.path}</p>
           {p.replay_of && <p className="mt-1 text-xs text-mint-900/50">Replay: matching and assembly recomputed; product analysis, scoping and quotes taken from run {p.replay_of}.</p>}
         </div>
@@ -113,11 +113,11 @@ export function PipelineRun({ run }: { run: RunResult }) {
               <Weak title={`${plural(p.open_issues.length, "cross-check objection", "cross-check objections")} not resolved`} items={p.open_issues} />
               <Weak title={`${plural(p.give_ups.length, "step", "steps")} where the pipeline gave up`} items={p.give_ups} />
               {p.review_issues > 0 && <p className="text-xs text-mint-900/55">The final audit raised {plural(p.review_issues, "issue", "issues")} (e.g. duplicates); the pipeline fixed them afterwards.</p>}
-              {p.score?.page_level && (
+              {p.benchmark?.levels.length ? (
                 <p className="text-xs text-mint-900/55">
-                  Measured against this practice case's reference solution: regulations {pct(p.score.regulation_level?.f1)} correct, pages {pct(p.score.page_level.f1)} correct (F1).
+                  Measured against this practice case's reference solution (F2): {p.benchmark.levels.map((l) => `${l.level} ${pct(l.f2)}`).join(", ")}.
                 </p>
-              )}
+              ) : null}
             </div>
           </div>
         </div>

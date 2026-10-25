@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ArrowLeft, ArrowRight, BookOpen, FileUp, ImagePlus, Link2, Rocket, ShieldCheck } from "lucide-react";
 import { api, ApiError } from "../api";
-import type { CountryListing, Health } from "../types";
+import type { CountryListing, Health, ExistingAnalysis } from "../types";
 import { CountryPicker, type Scout } from "../components/CountryPicker";
 import { PipelineLauncher } from "../components/PipelineLauncher";
 import { AgentLineup, HeroVisual } from "../components/Landing";
@@ -25,6 +25,11 @@ interface Props {
   draft: Draft;
   onDraft: (draft: Draft) => void;
   onStarted: (runId: string) => void;
+  /** Open the pipeline dialog right away for a fresh run on the draft (from "Run again" on a result). */
+  rerun?: boolean;
+  onRerunHandled?: () => void;
+  /** Real mode (header toggle): real pipeline runs and LLM answers with the .env API key. */
+  real?: boolean;
 }
 
 const EXAMPLE_NAMES: Record<string, string> = {
@@ -62,7 +67,7 @@ function Legend({ color, children }: { color: string; children: string }) {
   );
 }
 
-export function AnalyzePage({ step, onStep, draft, onDraft, onStarted }: Props) {
+export function AnalyzePage({ step, onStep, draft, onDraft, onStarted, rerun = false, onRerunHandled, real = false }: Props) {
   const [listing, setListing] = useState<CountryListing | null>(null);
   const [examples, setExamples] = useState<string[]>([]);
   const [dragging, setDragging] = useState(false);
@@ -72,6 +77,8 @@ export function AnalyzePage({ step, onStep, draft, onDraft, onStarted }: Props) 
   const [error, setError] = useState<string | null>(null);
   const [launch, setLaunch] = useState<NonNullable<Health["pipeline"]>["launch"] | null>(null);
   const [needsPipeline, setNeedsPipeline] = useState(false);
+  const [again, setAgain] = useState(false); // the dialog starts a fresh run although an analysis exists
+  const [existing, setExisting] = useState<ExistingAnalysis | null>(null); // real mode: offered before a paid run
 
   useEffect(() => {
     api.countries().then(setListing).catch((e) => setError(String(e)));
@@ -138,24 +145,57 @@ export function AnalyzePage({ step, onStep, draft, onDraft, onStarted }: Props) 
     return target && at ? { coordinates: at, zoom: zoomFor(target) } : WORLD_VIEW;
   }, [target]);
 
-  const start = async () => {
+  useEffect(() => {
+    if (!rerun || !launch || !draft.specFile) return;
+    onRerunHandled?.();
+    if (!launch.available) {
+      setError(launch.reason ?? "No pipeline can be started from here.");
+      return;
+    }
+    setExisting(null);
+    setAgain(true);
+    setNeedsPipeline(true);
+  }, [rerun, launch, draft.specFile, onRerunHandled]);
+
+  /** Opens the result of `pipelineRun` (just started), or of the analysis the app finds for the spec. In real mode a
+   *  click on "Start agents" never silently reuses an older analysis: it asks first, and starts a real run otherwise. */
+  const start = async (pipelineRun?: string, reuse = false) => {
     if (!draft.specFile) return;
     setBusy(true);
     setError(null);
+    if (real && !pipelineRun && !reuse && launch?.available) {
+      try {
+        const found = await api.lookupAnalysis(draft.specFile);
+        setExisting(found);
+        setAgain(!!found);
+        setNeedsPipeline(true);
+      } catch (e) {
+        setError(String(e));
+      }
+      setBusy(false);
+      return;
+    }
     try {
-      const { run_id } = await api.startRun(draft.specFile, [...draft.selected], draft.image);
+      const { run_id } = await api.startRun(draft.specFile, [...draft.selected], draft.image, pipelineRun, real);
       onStarted(run_id);
     } catch (e) {
       // no finished pipeline run for this spec: offer to start one, or say why that is not possible
-      if (e instanceof ApiError && e.status === 409 && launch?.available) setNeedsPipeline(true);
+      if (e instanceof ApiError && e.status === 409 && launch?.available) {
+        setExisting(null);
+        setAgain(false);
+        setNeedsPipeline(true);
+      }
       else setError(e instanceof ApiError && e.status === 409 && launch?.reason ? `${e.detail} ${launch.reason}` : String(e));
       setBusy(false);
     }
   };
-  const pipelineDone = useCallback(() => {
-    setNeedsPipeline(false);
-    start();
-  }, [start]);
+  const pipelineDone = useCallback(
+    (jobId: string) => {
+      setNeedsPipeline(false);
+      start(jobId);
+    },
+    [start],
+  );
 
   const errorBox = error && <p className="mx-auto mt-4 max-w-3xl rounded-lg bg-rose-50 p-3 text-sm text-rose-700 ring-1 ring-inset ring-rose-600/20">{error}</p>;
 
@@ -303,14 +343,28 @@ export function AnalyzePage({ step, onStep, draft, onDraft, onStarted }: Props) 
               {selected.length} {selected.length === 1 ? "market" : "markets"}
             </span>
           </div>
-          <button type="button" className="btn-primary px-6" disabled={!draft.specFile || draft.selected.size === 0 || busy} onClick={start}>
+          <button type="button" className="btn-primary px-6" disabled={!draft.specFile || draft.selected.size === 0 || busy} onClick={() => start()}>
             <Rocket size={16} /> {busy ? "Starting …" : "Start agents"}
           </button>
         </div>
         {errorBox}
       </div>
       {needsPipeline && draft.specFile && (
-        <PipelineLauncher spec={draft.specFile} image={draft.image} fakeLlm={launch?.fake_llm ?? false} onDone={pipelineDone} onClose={() => setNeedsPipeline(false)} />
+        <PipelineLauncher
+          spec={draft.specFile}
+          image={draft.image}
+          real={real}
+          approach={launch?.approach}
+          maxCostUsd={launch?.max_cost_usd}
+          again={again}
+          existing={existing}
+          onUseExisting={() => {
+            setNeedsPipeline(false);
+            start(undefined, true);
+          }}
+          onDone={pipelineDone}
+          onClose={() => setNeedsPipeline(false)}
+        />
       )}
     </div>
   );

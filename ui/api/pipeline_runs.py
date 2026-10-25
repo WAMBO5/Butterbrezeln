@@ -17,7 +17,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from .config import PIPELINE_CASE_DIRS, PIPELINE_CHECKOUTS, PIPELINE_RUN, PIPELINE_RUN_DIRS
+from . import benchmark
+from .config import PIPELINE_CASE_DIRS, PIPELINE_CHECKOUTS, PIPELINE_ROOT, PIPELINE_RUN, PIPELINE_RUN_DIRS
 from .models import (Finding, LedgerCheck, LineageLink, PipelineDetail, PipelineRunInfo, Requirement,
                      ScopeExclusion, SpecNote)
 from .sources import regulation_title, un_source
@@ -67,6 +68,14 @@ class RunRef:
     started_at: str
     finished: bool
     spec_sha256: str | None
+    fake: bool = False  # written by the scripted demo model (manifest settings.fake_llm)
+
+
+def _status(folder: Path) -> str | None:
+    try:
+        return _json(folder / "state.json").get("status")
+    except (OSError, ValueError):
+        return None
 
 
 def runs() -> list[RunRef]:
@@ -80,10 +89,13 @@ def runs() -> list[RunRef]:
                 continue  # still being written
             folder = manifest.parent
             run_id = data.get("run_id") or folder.name
+            failed = (_status(folder) == "failed")  # a failed run still writes an empty submission and finished_at
             found[run_id] = RunRef(
                 dir=folder, run_id=run_id, case_id=run_id.split("Z-", 1)[-1], started_at=data.get("started_at") or "",
-                finished=bool(data.get("finished_at")) and all((folder / f).is_file() for f in ("submission.json", "lineage.json")),
+                finished=bool(data.get("finished_at")) and not failed
+                and all((folder / f).is_file() for f in ("submission.json", "lineage.json")),
                 spec_sha256=(data.get("inputs") or {}).get("spec.md"),
+                fake=bool((data.get("settings") or {}).get("fake_llm")),
             )
     return sorted(found.values(), key=lambda r: r.started_at)
 
@@ -102,14 +114,28 @@ def cases_with_runs() -> dict[str, Path]:
     return {case: folder for case, folder in case_dirs().items() if case in done}
 
 
-def match(spec_text: str) -> RunRef | None:
-    """The finished run whose input spec.md equals the upload: a pinned one (PIPELINE_RUN), else the latest."""
+def find(run_id: str) -> RunRef | None:
+    """A run by its id or its folder name (a run started from the UI is named by its job id)."""
+    return next((r for r in runs() if run_id in (r.run_id, r.dir.name)), None)
+
+
+def summary(ref: RunRef) -> dict[str, Any]:
+    """What the UI says about an existing analysis before reusing it: who made it, when, at what cost."""
+    manifest = _json(ref.dir / "manifest.json")
+    return {"run_id": ref.run_id, "approach": _approach(ref.dir), "finished_at": manifest.get("finished_at"),
+            "cost_usd": (manifest.get("cost") or {}).get("spent_usd"), "fake_llm": ref.fake}
+
+
+def match(spec_text: str, prefer: str | None = None) -> RunRef | None:
+    """The finished run whose input spec.md equals the upload: `prefer` (the run just started from the UI) or a
+    pinned one (PIPELINE_RUN), else the latest real run; a demo-model run only when there is no real one."""
     sha = hashlib.sha256(spec_text.encode("utf-8")).hexdigest()
     wanted = _norm(spec_text)
     same_case = {case for case, folder in case_dirs().items() if _norm((folder / "spec.md").read_text(encoding="utf-8")) == wanted}
     hits = [r for r in runs() if r.finished and (r.spec_sha256 == sha or r.case_id in same_case)]
-    pinned = [r for r in hits if r.run_id in PIPELINE_RUN]
-    return (pinned or hits)[-1] if hits else None
+    pinned = [r for r in hits if prefer in (r.run_id, r.dir.name)] or [r for r in hits if r.run_id in PIPELINE_RUN]
+    real = [r for r in hits if not r.fake]
+    return (pinned or real or hits)[-1] if hits else None
 
 
 def _trace(folder: Path) -> list[dict[str, Any]]:
@@ -243,6 +269,14 @@ def _fact_lines(spec: ParsedSpec, fact: dict[str, Any] | None, summary: str) -> 
         if wanted and wanted in _norm(line):
             return [i, i]
     return None
+
+
+def _approach(folder: Path) -> str | None:
+    """data/<approach>/runs/... -> <approach>; None for a demo run or a run elsewhere."""
+    try:
+        return folder.resolve().relative_to((PIPELINE_ROOT / "data").resolve()).parts[0]
+    except ValueError:
+        return None
 
 
 def _display_path(folder: Path) -> str:
@@ -416,6 +450,7 @@ def import_run(ref: RunRef, spec: ParsedSpec, trace: TraceRecorder, parent: str)
         review_issues=len((state.get("output_review") or {}).get("issues") or []),
         excluded=[ScopeExclusion(regulation=d["regulation"], reason=d.get("reason", "")) for d in excluded],
         score=state.get("score"), replay_of=source.run_id if source else None, ledger=verify_ledger(folder),
-        label=provenance.get("label"),
+        label=provenance.get("label"), fake_llm=ref.fake, approach=_approach(folder), partial=bool(state.get("partial")),
+        benchmark=benchmark.for_run(folder, spec.text, state),
     )
     return Imported(requirements, findings, notes, info)

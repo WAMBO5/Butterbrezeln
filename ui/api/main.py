@@ -18,7 +18,8 @@ from . import countries as country_data
 from . import pipeline_jobs, pipeline_runs
 from .assess import ask_country
 from .backend_client import NO_RUN
-from .config import BACKEND_MODE, CASES_DIR, PDF_DIR, PIPELINE_FAKE_LLM, PIPELINE_ROOT, ROOT
+from .config import (BACKEND_MODE, CASES_DIR, PDF_DIR, PIPELINE_APPROACH, PIPELINE_FAKE_LLM, PIPELINE_MAX_COST_USD,
+                     PIPELINE_ROOT, ROOT)
 from .models import AskRequest, DecisionRequest, PipelineJob, QAEntry, RunResult, TraceEvent
 from .runs import RunState, RunStore
 
@@ -40,13 +41,17 @@ def _run(run_id: str) -> RunState:
 def health() -> dict:
     finished = [r for r in pipeline_runs.runs() if r.finished] if BACKEND_MODE == "runs" else []
     problem = pipeline_jobs.launch_problem()
+    real = pipeline_jobs.real_problem()
     return {
         "backend_mode": BACKEND_MODE,
         "llm": {"available": store.llm.available, "model": store.llm.model, "reason": store.llm.disabled_reason},
+        # real mode: real pipeline runs and LLM answers, with the .env API key; the reason says what is missing
+        "real": {"available": real is None, "reason": real, "model": store.llm_real.model},
         "countries_loaded": len(country_data.countries_data().get("countries", {})),
         "pipeline": {"root": str(PIPELINE_ROOT), "finished_runs": len(finished),
                      "cases": sorted({r.case_id for r in finished}),
-                     "launch": {"available": problem is None, "reason": problem, "fake_llm": PIPELINE_FAKE_LLM},
+                     "launch": {"available": problem is None, "reason": problem, "fake_llm": PIPELINE_FAKE_LLM,
+                                "approach": PIPELINE_APPROACH, "max_cost_usd": PIPELINE_MAX_COST_USD},
                      } if BACKEND_MODE == "runs" else None,
     }
 
@@ -88,17 +93,22 @@ def example_image(case: str) -> FileResponse:
 
 @app.post("/api/runs")
 async def create_run(spec: UploadFile = File(...), countries: str = Form(...),
-                     image: UploadFile | None = File(None)) -> dict:
+                     image: UploadFile | None = File(None), pipeline_run: str | None = Form(None),
+                     real: bool = Form(False)) -> dict:
+    """Assesses the spec for the countries; `pipeline_run` is the run just started for it from the UI; `real`:
+    country questions are answered by LLM with the .env API key (paid)."""
+    if real and (problem := pipeline_jobs.real_problem()):
+        raise HTTPException(409, problem)
     text = (await spec.read()).decode("utf-8", errors="replace")
     if not text.strip():
         raise HTTPException(400, "spec.md is empty")
     selected = [c.strip().upper() for c in countries.split(",") if c.strip()]
     if not selected:
         raise HTTPException(400, "Select at least one country")
-    if BACKEND_MODE == "runs" and pipeline_runs.match(text) is None:
+    if BACKEND_MODE == "runs" and pipeline_runs.match(text, pipeline_run) is None:
         raise HTTPException(409, NO_RUN)
     image_bytes = await image.read() if image is not None else None
-    state = store.start(spec.filename or "spec.md", text, image_bytes or None, selected)
+    state = store.start(spec.filename or "spec.md", text, image_bytes or None, selected, pipeline_run, real)
     return {"run_id": state.result.run_id}
 
 
@@ -110,8 +120,10 @@ def _job(job_id: str) -> pipeline_jobs.Job:
 
 
 @app.post("/api/pipeline/jobs")
-async def start_pipeline(spec: UploadFile = File(...), image: UploadFile | None = File(None)) -> PipelineJob:
-    """Starts `certivity run` on the upload; when it has finished, POST /api/runs finds its result."""
+async def start_pipeline(spec: UploadFile = File(...), image: UploadFile | None = File(None),
+                         demo: bool = Form(False)) -> PipelineJob:
+    """Starts `certivity run` on the upload (real and paid, or `demo`: the free scripted model); when it has
+    finished, POST /api/runs with `pipeline_run` set to the job id opens its result."""
     if BACKEND_MODE != "runs":
         raise HTTPException(400, f"Pipeline runs are only started in BACKEND_MODE=runs, not {BACKEND_MODE}")
     data = await spec.read()
@@ -122,9 +134,17 @@ async def start_pipeline(spec: UploadFile = File(...), image: UploadFile | None 
         raise HTTPException(400, "spec.md is not UTF-8 text")
     image_bytes = await image.read() if image is not None else None
     try:
-        return pipeline_jobs.start(data, image_bytes or None, image.filename if image is not None else None)
+        return pipeline_jobs.start(data, image_bytes or None, image.filename if image is not None else None, demo)
     except pipeline_jobs.JobError as exc:
         raise HTTPException(409, str(exc))
+
+
+@app.post("/api/pipeline/lookup")
+async def lookup_analysis(spec: UploadFile = File(...)) -> dict:
+    """The finished pipeline run the app would show for this spec, or null: lets real mode ask before reusing it."""
+    text = (await spec.read()).decode("utf-8", errors="replace")
+    ref = pipeline_runs.match(text) if BACKEND_MODE == "runs" else None
+    return {"run": pipeline_runs.summary(ref) if ref else None}
 
 
 @app.get("/api/pipeline/jobs/{job_id}")
@@ -148,6 +168,17 @@ def run_image(run_id: str) -> FileResponse:
     if not path.is_file():
         raise HTTPException(404, "No drawing uploaded")
     return FileResponse(path, media_type="image/png")
+
+
+@app.get("/api/runs/{run_id}/submission")
+def run_submission(run_id: str) -> FileResponse:
+    """The challenge output of the pipeline run behind this result: built from the UN Regulations only."""
+    info = _run(run_id).result.pipeline
+    ref = pipeline_runs.find(info.run_id) if info else None
+    if ref is None or not (ref.dir / "submission.json").is_file():
+        raise HTTPException(404, "No pipeline submission for this result")
+    return FileResponse(ref.dir / "submission.json", media_type="application/json",
+                        headers={"Content-Disposition": f'attachment; filename="submission-{info.run_id}.json"'})
 
 
 @app.get("/api/runs/{run_id}/trace")
@@ -186,7 +217,7 @@ def ask(run_id: str, iso3: str, body: AskRequest) -> QAEntry:
         raise HTTPException(404, f"{iso3} was not assessed in this run")
     if not body.question.strip():
         raise HTTPException(400, "Question is empty")
-    entry = ask_country(state.result, state.spec, iso3, body.question.strip(), store.llm, state.trace)
+    entry = ask_country(state.result, state.spec, iso3, body.question.strip(), store.llm_for(state.result), state.trace)
     with state.lock:
         state.result.qa.append(entry)
     state.save()

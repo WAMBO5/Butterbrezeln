@@ -6,6 +6,7 @@ import type { FindingStatus, RunResult, TraceEvent, VerdictStatus } from "../typ
 import { AGENTS, PIPELINE, agentOf } from "../lib/agents";
 import { GENEVA, centroid, corners, countryName, flag } from "../lib/geo";
 import { FINDING, PENDING_FILL, STATUS, STATUS_ORDER, UNTESTED_FILL, plural, regulationName, sectionName } from "../lib/labels";
+import { money, when } from "../lib/pipeline";
 import { summarizeSpec } from "../lib/specSummary";
 import { AgentAvatar } from "./Agent";
 import { StatusPill } from "./Badges";
@@ -48,6 +49,8 @@ export function Theater({ run, events, onDone }: Props) {
   const [skip, setSkip] = useState(false);
   const beatStart = useRef(Date.now());
   const done = run?.status === "done";
+  // a finished pipeline run of this spec, shown again: no agent is working now, so this is a replay, not live
+  const replay = run?.backend_mode === "runs" && !run.pipeline_fresh;
   const finished = done ? STAGE_AGENTS.length : finishedStages(events);
 
   // derived facts for the cards
@@ -158,13 +161,26 @@ export function Theater({ run, events, onDone }: Props) {
         <div>
           <p className="flex items-center gap-2">
             <span className="tag">Step 3 of 3</span>
-            {!done && (
-              <span className="flex items-center gap-1.5 rounded bg-rose-50 px-2 py-1 text-xs font-medium text-rose-700">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-rose-500" /> Live
-              </span>
+            {replay ? (
+              <span className="rounded bg-mint-900/[0.06] px-2 py-1 text-xs font-medium text-mint-900/75">Replay · no model calls</span>
+            ) : (
+              !done && (
+                <span className="flex items-center gap-1.5 rounded bg-rose-50 px-2 py-1 text-xs font-medium text-rose-700">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-rose-500" /> Live
+                </span>
+              )
             )}
           </p>
-          <h1 className="mt-4 text-4xl sm:text-5xl">{beat >= 5 ? "Done – your result is ready" : "Our agents are checking your product"}</h1>
+          <h1 className="mt-4 text-4xl sm:text-5xl">
+            {replay ? (beat >= 5 ? "Done – the stored result is ready" : "Replaying a finished analysis") : beat >= 5 ? "Done – your result is ready" : "Our agents are checking your product"}
+          </h1>
+          {replay && run?.pipeline && (
+            <p className="mt-2 text-sm text-mint-900/65">
+              {run.pipeline.approach ?? "The pipeline"} analysed this description on {when(run.pipeline.finished_at)}
+              {run.pipeline.fake_llm ? " with the demo model" : run.pipeline.cost_usd != null ? ` for ${money(run.pipeline.cost_usd)}` : ""}; this replays its steps. For a
+              fresh analysis switch the header to Real and use “Run the pipeline again” on the result.
+            </p>
+          )}
           {run && (
             <p className="mt-3 flex flex-wrap items-center gap-x-2 text-mint-900/65">
               <span className="font-medium text-mint-950">{spec?.title}</span>·<span className="text-lg leading-none">{run.countries.slice(0, 14).map(flag).join(" ")}</span>

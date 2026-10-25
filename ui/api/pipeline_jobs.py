@@ -4,6 +4,11 @@ The upload becomes a case folder `data/uploads/upload-<sha8>/` in the pipeline c
 `./certivity <approach> run <case> --out <run dir>` runs as a subprocess there. Progress is read from the run's own
 trace.jsonl and state.json, so a job also survives a reload of this API. Once the run has written
 submission.json and lineage.json, `pipeline_runs.match` finds it by the spec's sha256 like any other run.
+
+Each run is either real (paid, capped at PIPELINE_MAX_COST_USD, into data/<approach>/runs/) or on the scripted demo
+model (free, into DEMO_RUNS_DIR). A demo run gets its own data folder: the approaches key their extraction cache by
+provision text and extractor version, not by model, so a demo run sharing data/shared/obligations.sqlite would leave
+scripted obligations that a later real run reads as the model's.
 """
 
 from __future__ import annotations
@@ -19,7 +24,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from .config import LAUNCH_RUNS_DIR, PIPELINE_APPROACH, PIPELINE_CMD, PIPELINE_FAKE_LLM, PIPELINE_ROOT
+from .config import (DEMO_DIR, DEMO_RUNS_DIR, LAUNCH_RUNS_DIR, PIPELINE_APPROACH, PIPELINE_CMD, PIPELINE_FAKE_LLM,
+                     PIPELINE_MAX_COST_USD, PIPELINE_ROOT)
 from .models import PipelineJob, PipelineJobStep
 from .pipeline_runs import STEP_ORDER, STEPS
 
@@ -50,18 +56,61 @@ _lock = threading.Lock()
 
 
 def launch_problem() -> str | None:
-    """Why no run can be started from here, or None."""
+    """Why no run (not even on the demo model) can be started from here, or None."""
     if PIPELINE_CMD:
         return None
     if not (PIPELINE_ROOT / "certivity").is_file() or not (PIPELINE_ROOT / "approaches" / PIPELINE_APPROACH).is_dir():
         return (f"No pipeline to start in {PIPELINE_ROOT}: it needs the ./certivity launcher and "
                 f"approaches/{PIPELINE_APPROACH}. Set PIPELINE_ROOT or PIPELINE_APPROACH to match.")
+    if not (PIPELINE_ROOT / "data" / PIPELINE_APPROACH / "catalog.sqlite").is_file():
+        return (f"The regulations are not parsed yet: run `./certivity {PIPELINE_APPROACH} build-corpus` once "
+                "(free, a few minutes), then try again.")
     return None
 
 
-def _command(case_dir: Path, run_dir: Path) -> list[str]:
+def real_problem() -> str | None:
+    """Why no real (paid) run can be started from here, or None. The key itself is never read out."""
+    if PIPELINE_FAKE_LLM:
+        return "Started in demo mode (./certivity ui --demo or PIPELINE_FAKE_LLM=1): only the scripted model."
+    if not os.environ.get("ANTHROPIC_API_KEY"):
+        return "No API key: set ANTHROPIC_API_KEY in .env at the repository root (see .env.example), then restart ./certivity ui."
+    missing = [name for name in ("ANTHROPIC_MODEL", "ANTHROPIC_MODEL_FAST") if not os.environ.get(name)]
+    if missing:
+        return f"No model set: add {' and '.join(missing)} to .env (see .env.example), then restart ./certivity ui."
+    problem = launch_problem()
+    if problem:
+        return problem
+    cards = PIPELINE_ROOT / "data" / "shared" / "cards"
+    if not cards.is_dir() or not any(cards.glob("*.json")):
+        return (f"No regulation cards yet: run `./certivity {PIPELINE_APPROACH} build-corpus --cards` once "
+                "(paid, about $5, shared by both approaches), then try again.")
+    return None
+
+
+def _command(case_dir: Path, run_dir: Path, demo: bool) -> list[str]:
     base = shlex.split(PIPELINE_CMD, posix=os.name != "nt") if PIPELINE_CMD else [str(PIPELINE_ROOT / "certivity"), PIPELINE_APPROACH]
-    return [*base, *(["--fake-llm"] if PIPELINE_FAKE_LLM else []), "run", str(case_dir), "--out", str(run_dir)]
+    return [*base, *(["--fake-llm"] if demo else []), "run", str(case_dir), "--out", str(run_dir)]
+
+
+def demo_data_dir() -> Path:
+    """The demo run's data folder: the approach's catalog and the shared cards (read), an extraction cache of its own."""
+    folder = DEMO_DIR / "data" / PIPELINE_APPROACH
+    folder.mkdir(parents=True, exist_ok=True)
+    real = PIPELINE_ROOT / "data"
+    for name, target in (("catalog.sqlite", real / PIPELINE_APPROACH / "catalog.sqlite"), ("cards", real / "shared" / "cards")):
+        link = folder / name
+        if not link.is_symlink() and not link.exists() and target.exists():
+            link.symlink_to(target.resolve())
+    return folder
+
+
+def _env(demo: bool) -> dict[str, str]:
+    env = {**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"}
+    if demo:
+        env["CERTIVITY_DATA_DIR"] = str(demo_data_dir())
+    else:
+        env["CERTIVITY_MAX_COST_USD"] = f"{PIPELINE_MAX_COST_USD:g}"
+    return env
 
 
 def _write_case(spec: bytes, image: bytes | None, image_name: str | None, sha: str) -> Path:
@@ -77,8 +126,10 @@ def _write_case(spec: bytes, image: bytes | None, image_name: str | None, sha: s
     return case_dir
 
 
-def start(spec: bytes, image: bytes | None = None, image_name: str | None = None) -> PipelineJob:
-    problem = launch_problem()
+def start(spec: bytes, image: bytes | None = None, image_name: str | None = None, demo: bool = False) -> PipelineJob:
+    """Starts a run; `demo` (or PIPELINE_FAKE_LLM) uses the scripted model."""
+    demo = demo or PIPELINE_FAKE_LLM
+    problem = launch_problem() if demo else real_problem()
     if problem:
         raise JobError(problem)
     sha = hashlib.sha256(spec).hexdigest()
@@ -92,15 +143,14 @@ def start(spec: bytes, image: bytes | None = None, image_name: str | None = None
         case_dir = _write_case(spec, image, image_name, sha)
         now = datetime.now(timezone.utc)
         run_id = f"{now:%Y%m%dT%H%M%S%f}Z-{case_dir.name}"
-        run_dir = LAUNCH_RUNS_DIR / run_id
+        run_dir = (DEMO_RUNS_DIR if demo else LAUNCH_RUNS_DIR) / run_id
         run_dir.parent.mkdir(parents=True, exist_ok=True)
         log = case_dir / f"{run_id}.log"
-        env = {**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"}
         with log.open("wb") as out:
-            process = subprocess.Popen(_command(case_dir, run_dir), cwd=PIPELINE_ROOT, env=env, stdout=out,
+            process = subprocess.Popen(_command(case_dir, run_dir, demo), cwd=PIPELINE_ROOT, env=_env(demo), stdout=out,
                                        stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL)
         job = Job(id=run_id, run_dir=run_dir, case_dir=case_dir, log=log, spec_sha256=sha,
-                  started_at=now.isoformat(), fake_llm=PIPELINE_FAKE_LLM, process=process)
+                  started_at=now.isoformat(), fake_llm=demo, process=process)
         _jobs[run_id] = job
     return status(job)
 
@@ -110,16 +160,18 @@ def get(job_id: str) -> Job | None:
     with _lock:
         if job_id in _jobs:
             return _jobs[job_id]
-        run_dir = (LAUNCH_RUNS_DIR / job_id).resolve()
-        if run_dir.parent != LAUNCH_RUNS_DIR.resolve() or not (run_dir / "state.json").is_file():
+        found = [(root, (root / job_id).resolve()) for root in (LAUNCH_RUNS_DIR, DEMO_RUNS_DIR)]
+        found = [(root, d) for root, d in found if d.parent == root.resolve() and (d / "state.json").is_file()]
+        if not found:
             return None
+        root, run_dir = found[0]
         state = _read_json(run_dir / "state.json") or {}
         case_dir = Path(state.get("case_dir") or "")
         if UPLOADS_DIR.resolve() not in case_dir.resolve().parents or not (case_dir / "spec.md").is_file():
             return None  # only runs started from here
         job = Job(id=job_id, run_dir=run_dir, case_dir=case_dir, log=case_dir / f"{job_id}.log",
                   spec_sha256=hashlib.sha256((case_dir / "spec.md").read_bytes()).hexdigest(),
-                  started_at=state.get("started_at") or "", fake_llm=False)
+                  started_at=state.get("started_at") or "", fake_llm=root == DEMO_RUNS_DIR)
         _jobs[job_id] = job
         return job
 

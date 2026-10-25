@@ -56,8 +56,13 @@ class RunStore:
     def __init__(self, root: Path = RUNS_DIR):
         self.root = root
         self.runs: dict[str, RunState] = {}
-        self.llm = LLM()
+        self.llm = LLM()  # LLM_MODE from the environment: off by default
+        self.llm_real = LLM(mode="on")  # for results started in real mode
         self._lock = threading.Lock()
+
+    def llm_for(self, result: RunResult) -> LLM:
+        """LLM for a result started in real mode, else whatever LLM_MODE says (off by default: rules)."""
+        return self.llm_real if result.real else self.llm
 
     def get(self, run_id: str) -> RunState | None:
         with self._lock:
@@ -69,7 +74,8 @@ class RunStore:
                 return self.runs[run_id]
         return None
 
-    def start(self, spec_name: str, spec_text: str, image: bytes | None, countries: list[str]) -> RunState:
+    def start(self, spec_name: str, spec_text: str, image: bytes | None, countries: list[str],
+              pipeline_run: str | None = None, real: bool = False) -> RunState:
         run_id = uuid.uuid4().hex[:12]
         directory = self.root / run_id
         directory.mkdir(parents=True, exist_ok=True)
@@ -77,15 +83,16 @@ class RunStore:
         if image:
             (directory / "image.png").write_bytes(image)
         result = RunResult(run_id=run_id, created_at=now_iso(), spec_name=spec_name, spec_text=spec_text,
-                           countries=countries, backend_mode=BACKEND_MODE, has_image=bool(image))
+                           countries=countries, backend_mode=BACKEND_MODE, has_image=bool(image), real=real,
+                           pipeline_fresh=pipeline_run is not None)
         state = RunState(result, directory)
         with self._lock:
             self.runs[run_id] = state
         state.save()
-        threading.Thread(target=self._execute, args=(state, image), daemon=True).start()
+        threading.Thread(target=self._execute, args=(state, image, pipeline_run), daemon=True).start()
         return state
 
-    def _execute(self, state: RunState, image: bytes | None) -> None:
+    def _execute(self, state: RunState, image: bytes | None, pipeline_run: str | None = None) -> None:
         result, trace = state.result, state.trace
         try:
             names = ", ".join(country_name(c) for c in result.countries)
@@ -96,7 +103,7 @@ class RunStore:
                     step.output(f"\"{spec.title}\" · {len(spec.lines)} lines · Sections: "
                                 + ", ".join(s.title for s in spec.sections))
 
-                backend = make_backend()
+                backend = make_backend(prefer=pipeline_run)
                 with trace.step("requirements_engine", "Derive requirements", parent=root.id,
                                 inputs_summary=f"Backend: {backend.name}") as step:
                     extraction = backend.extract_requirements(result.spec_text, image, trace, step.id)
@@ -131,9 +138,10 @@ class RunStore:
                         step.output(f"{len(findings) - met} pieces of evidence needed, {uncertain} of them with uncertain applicability · "
                                     f"{met} met · {len(notes)} open points in the description")
                 else:
+                    llm = self.llm_for(result)
                     with trace.step("spec_assessor", "Check spec against requirements", parent=root.id,
-                                    inputs_summary=f"LLM: {self.llm.model}" if self.llm.available else "Rule set") as step:
-                        findings, notes, mode = assess_spec(spec, requirements, self.llm, trace, step.id)
+                                    inputs_summary=f"LLM: {llm.model}" if llm.available else "Rule set") as step:
+                        findings, notes, mode = assess_spec(spec, requirements, llm, trace, step.id)
                         step.output(f"{len(findings)} findings · {len(notes)} spec notes · mode: {mode}")
                 with state.lock:
                     result.findings, result.spec_notes, result.llm_mode = findings, notes, mode
