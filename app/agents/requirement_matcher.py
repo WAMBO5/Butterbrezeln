@@ -39,7 +39,9 @@ Return exactly one decision per obligation id, ids copied exactly:
     position, openings, or obstruction of the device);
   - "other_class": it is for a class, category, colour or variant of the device that the parts cannot
     be, given their function, attributes and position; if they could be, use "uncertain";
-  - "other_vehicle": it is limited to vehicle categories the product is not for;
+  - "other_vehicle": its own text limits it to vehicle categories the inputs show the product is not
+    for. Do not infer this from rules elsewhere about which vehicles may carry a device: a rule for
+    optional or additional devices of the part's own function is "uncertain";
   - "shown_absent": it needs a feature the inputs show is absent; cite that fact in fact_refs;
   - "presence_only": it only says whether the vehicle must or may carry the device at all.
 - exclusion: null unless the state is "not_applicable".

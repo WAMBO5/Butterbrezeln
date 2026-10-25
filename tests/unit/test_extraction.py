@@ -141,3 +141,19 @@ async def test_a_batch_without_output_is_retried_in_halves(tmp_path):
     got = await extract_verified(batch, cache, settings, call, None, verify=False)
     assert {o.provision_id for o in got} == {p.provision_id for p in provisions}
     assert sizes == [3, 2, 1, 1, 1]
+
+
+def test_gate_flags_list_items_without_an_obligation():
+    from app.gates.extraction_gate import list_items, missing_list_items
+
+    text = ("The module shall be such that (a) it can only be fitted in the correct position; (b) it is "
+            "tamperproof; and (c) it is not interchangeable with any other module.")
+    p = prov("UN R1@1#4.7", text=text)
+    batch = ExtractionBatch(section_id="UN R1@1#4", provisions=[p], definitions=[])
+    assert [m for m, _ in list_items(text)] == ["a", "b", "c"]
+    only_a = obligation(quote="it can only be fitted in the correct position", text="The module shall fit one way.")
+    issues = missing_list_items(batch, item("UN R1@1#4.7", obs=[only_a]))
+    assert len(issues) == 1 and "(b), (c)" in issues[0].reason
+    whole = obligation(quote=text.split("such that ", 1)[1], text="The module shall meet (a) to (c).")
+    assert missing_list_items(batch, item("UN R1@1#4.7", obs=[whole])) == []
+    assert list_items("as required by paragraph 5.1.(a) only") == []
