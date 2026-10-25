@@ -1,4 +1,5 @@
-from api.assess import compute_status
+from api.assess import _profile_fits, compute_status
+from api.spec import parse_spec
 
 
 def test_not_covered_is_grey_even_with_fixes():
@@ -17,3 +18,12 @@ def test_doc_or_certification_fixes_are_yellow():
 
 def test_any_design_fix_is_red():
     assert compute_status("national", ["doku_kennzeichnung", "design"]) == "red"
+
+
+def test_profile_only_fits_the_product_it_was_researched_for():
+    covers = {"products": ["rear lamp"], "regulations": ["UN R148", "UN R150"]}
+    lamp, bumper = parse_spec("spec.md", "# spec: Rear Lamp\n"), parse_spec("spec.md", "# spec: Bumper\n")
+    assert _profile_fits(covers, lamp, ["UN R10", "UN R148"])
+    assert not _profile_fits(covers, bumper, ["UN R148"])  # side lamps cite the same regulation
+    assert not _profile_fits(covers, lamp, ["UN R10"])
+    assert _profile_fits({}, bumper, [])

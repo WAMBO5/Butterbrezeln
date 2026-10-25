@@ -233,6 +233,15 @@ def _check_applies(check: dict[str, Any] | None, spec: ParsedSpec) -> bool:
     return True
 
 
+def _profile_fits(covers: dict[str, Any], spec: ParsedSpec, cited: list[str]) -> bool:
+    """A country profile is researched for one product: the spec's title must name it and the requirements
+    must cite one of its regulations (a front bumper with side lamps cites UN R148 but is no rear lamp)."""
+    products = [p.lower() for p in covers.get("products") or []]
+    regulations = covers.get("regulations") or []
+    return ((not products or any(p in spec.title.lower() for p in products))
+            and (not regulations or bool(set(regulations) & set(cited))))
+
+
 def _dataset_source(iso3: str, entry: dict[str, Any]) -> Source:
     url = entry.get("source_url")
     return Source(kind="dataset", label="Offizielle UN-Vertragsliste", title=f"data/countries.json: {iso3}",
@@ -274,7 +283,7 @@ def assess_country(iso3: str, spec: ParsedSpec, requirements: list[Requirement],
             reasons.append(f"Für {name} haben wir noch keine Daten – ohne Länderprofil ist keine verlässliche Aussage möglich.")
             if entry:
                 sources.append(_dataset_source(iso3, entry))
-        elif entry.get("regime") == "national" and covers.get("regulations") and not set(covers["regulations"]) & set(cited):
+        elif entry.get("regime") == "national" and not _profile_fits(covers, spec, cited):
             # the profile was researched for another product: its deviations would not fit this one
             regime = "not_covered"
             reasons.append(f"Unser Länderprofil für {name} ist bisher nur für {covers.get('product_de', 'andere Produkte')} "
