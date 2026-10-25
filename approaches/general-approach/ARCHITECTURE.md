@@ -67,8 +67,6 @@ app/
   corpus/          parser, SQLite + FTS5 store, cards, obligation cache
   compliance/      ledger, manifest, lineage, oversight, provenance, replay
   eval/            funnel metrics, requirement judge
-server/            FastAPI service (SSE, oversight, lineage endpoints)
-web/               Astro UI, served by the FastAPI app
 tools/evalkit/     scoring, ensemble, held-out checks
 submissions/       uploaded and candidate submission files with scores
 docs/              AI Act technical file, hackathon runbook and scoreboard

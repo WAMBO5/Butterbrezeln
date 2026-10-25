@@ -1,0 +1,22 @@
+[project]
+name = "certivity-ui"
+version = "0.1.0"
+description = "Certivity market-approval UI: API (FastAPI) and web app (React) on finished pipeline runs"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic>=2.3.0",
+    "fastapi>=0.162.0",
+    "jsonschema>=4.26.0",
+    "python-multipart>=0.0.32",
+    "uvicorn>=0.54.0",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["api/tests"]

@@ -5,6 +5,6 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-    proxy: { "/api": "http://127.0.0.1:8010" }, // 8000 is certivity serve
+    proxy: { "/api": "http://127.0.0.1:8010" },
   },
 });

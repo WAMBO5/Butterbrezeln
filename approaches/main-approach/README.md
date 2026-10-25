@@ -27,13 +27,10 @@ uv run pytest               # offline, no API calls
 | `uv run certivity subgoal <subgoal_dir>` | yes | Sub-goal: which old requirements change in the new version |
 | `uv run certivity markets list` / `markets add NAME --source FILE` | `add`: yes | Market profiles; builds one from cited sources |
 | `uv run certivity technical-file` | no | Regenerates the measured parts of `docs/ai-act/` |
-| `uv run certivity serve` | when runs start | API and UI on http://127.0.0.1:8000 |
 
 Every command takes `--fake-llm`, a scripted stand-in model, for offline demos and tests.
 
-The UI is an Astro app in `web/`; `certivity serve` serves its build. Build it once with `cd web && npm ci && npm run build`. For UI work, run `npm run dev` there (it talks to the API on port 8000).
-
-`ui/` holds the market-approval UI: for finished runs in `data/runs/` it shows a traffic light per target country, a map and the chain from each requirement to its source page. It only reads runs, never starts one, and runs on its own ports (API 8010, UI 5173). Its LLM calls are off unless `LLM_MODE=on`, and its country data is a research draft; see `ui/README.md`.
+The UI lives at the repository root in `ui/`; it reads the finished runs this approach writes to `data/<approach>/runs/`.
 
 `CERTIVITY_SUBMIT_POLICY=recall` (default) submits the requirements the matcher selected with high or medium confidence; `strict` submits only high-confidence ones and holds the rest back (shown in the UI). Assisted runs keep them for the reviewer to decide. `CERTIVITY_COST_MODE=reduced` runs the match reviewer only on disputed decisions and skips the extraction verifier. A budget guard (`CERTIVITY_MAX_COST_USD`, default $5) stops a run; a stopped run is marked partial in its report.
 

@@ -49,9 +49,6 @@ def build_parser() -> argparse.ArgumentParser:
     add = markets_sub.add_parser("add", help="build a market profile from cited source files (paid)")
     add.add_argument("name")
     add.add_argument("--source", action="append", required=True, help="a source document (repeatable)")
-    serve = sub.add_parser("serve", help="FastAPI service and UI on localhost (paid when runs are started)")
-    serve.add_argument("--port", type=int, default=8000)
-    serve.add_argument("--host", default="127.0.0.1")
     signoff = sub.add_parser("signoff", help="record a named sign-off for a reviewed run (free)")
     signoff.add_argument("run_dir")
     signoff.add_argument("--reviewer", required=True)
@@ -312,17 +309,8 @@ def cmd_technical_file(args, settings: Settings) -> int:
     return 0
 
 
-def cmd_serve(args, settings: Settings) -> int:
-    import uvicorn
-
-    from server.main import create_app
-
-    uvicorn.run(create_app(settings), host=args.host, port=args.port, log_level="info")
-    return 0
-
-
 COMMANDS = {"doctor": cmd_doctor, "build-corpus": cmd_build_corpus, "run": cmd_run, "score": cmd_score,
-            "bench": cmd_bench, "rerun": cmd_rerun, "verify": cmd_verify, "signoff": cmd_signoff, "serve": cmd_serve,
+            "bench": cmd_bench, "rerun": cmd_rerun, "verify": cmd_verify, "signoff": cmd_signoff,
             "markets": cmd_markets, "subgoal": cmd_subgoal, "technical-file": cmd_technical_file}
 
 

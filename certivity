@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Run one approach on the shared data:
+#   ./certivity <approach> <command> [args...]     the approach's CLI (uv run certivity ...)
+#   ./certivity <approach> -- <cmd> [args...]      anything else in its environment (pytest, python tools/...)
+# Each approach is its own uv project in approaches/<name>/ and runs from that folder, so paths are relative
+# to it (industrial-ai-hackathon/..., data/runs/...). Its data is data/<name>/ (catalog and runs), reached
+# through approaches/<name>/data; the regulation cards and the extraction cache are shared in data/shared/.
+set -euo pipefail
+root=$(cd "$(dirname "$0")" && pwd)
+names=$(cd "$root/approaches" && ls -d -- */ | tr -d / | xargs)
+if [[ $# -lt 2 || ! -d $root/approaches/$1 ]]; then
+  echo "usage: ./certivity <approach> <command> [args...]   |   ./certivity <approach> -- <cmd> [args...]" >&2
+  echo "approaches: $names" >&2
+  exit 2
+fi
+approach=$1
+shift
+
+data=$root/data
+mkdir -p "$data/shared/cards" "$data/$approach/runs"
+[[ -L $data/$approach/cards ]] || ln -s ../shared/cards "$data/$approach/cards"
+[[ -L $data/$approach/obligations.sqlite ]] || ln -s ../shared/obligations.sqlite "$data/$approach/obligations.sqlite"
+link=$root/approaches/$approach/data
+if [[ ! -L $link ]]; then
+  if [[ -e $link ]]; then
+    echo "approaches/$approach/data is a folder: move its contents into data/$approach/ and run again" >&2
+    exit 1
+  fi
+  ln -s "../../data/$approach" "$link"
+fi
+
+cd "$root/approaches/$approach"
+if [[ $1 == -- ]]; then
+  shift
+  exec uv run "$@"
+fi
+exec uv run certivity "$@"

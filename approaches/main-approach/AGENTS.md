@@ -90,9 +90,6 @@ app/
   compliance/    # ledger, manifest, lineage, oversight, provenance, replay, technical file
   eval/          # funnel metrics and the (paid) requirement judge
   testing/       # scripted fake-model responders for offline runs
-server/          # FastAPI app: the deployable service
-web/             # Astro UI (static build, served by the FastAPI app)
-ui/              # market-approval UI: React app and its own FastAPI layer, reads finished runs (not in the image)
 docs/ai-act/     # classification, risk register, instructions for use, technical file, incidents
 tests/
   unit/          # deterministic code, no API calls
@@ -101,7 +98,7 @@ data/            # git-ignored: parsed corpus, caches, runs
 Dockerfile
 ```
 
-Change it deliberately, and note the change here. 2026-10-24: added `config/`, `corpus/`, `matching/`, `markets/`, `compliance/`, `eval/`, `testing/`, `web/` and `docs/ai-act/` for the requirements engine (design spec section 10.7). 2026-10-25: added `ui/`, the market-approval UI (traffic light per target country, map, source chain); it only reads runs and starts none. Its own LLM calls (spec check and country questions, `ui/api/llm.py`) are off unless `LLM_MODE=on` and take the model from `ANTHROPIC_MODEL`.
+Change it deliberately, and note the change here. 2026-10-24: added `config/`, `corpus/`, `matching/`, `markets/`, `compliance/`, `eval/`, `testing/` and `docs/ai-act/` for the requirements engine (design spec section 10.7). 2026-10-25: the web UI moved out of the approach to `ui/` at the repository root; the approach has no server or frontend.
 
 ## Testing
 
@@ -127,7 +124,6 @@ uv run pytest                          # offline
 uv run certivity --fake-llm bench      # whole pipeline, offline
 uv run certivity doctor                # free setup check
 uv run certivity bench                 # paid: ask first
-uv run certivity serve                 # API + UI (build the UI with: cd web && npm ci && npm run build)
 ```
 
 The full command list is in `README.md`. Use `uv` for everything; never `pip` directly.

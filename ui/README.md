@@ -11,10 +11,10 @@ draft for an engineer to check, not an approval decision.
 
 ## Run
 
-From `ui/`, in the repository's uv environment (`uv sync` at the repository root):
+From `ui/`, which is its own uv project (`uv sync`):
 
 ```bash
-# API on port 8010 (8000 is `certivity serve`)
+# API on port 8010
 uv run uvicorn api.main:app --port 8010 --reload --reload-dir api   # BACKEND_MODE=mock: offline demo
 
 # UI (Node 20+), proxies /api to :8010
@@ -23,12 +23,12 @@ cd web && npm ci && npm run dev        # http://localhost:5173
 
 By default the UI shows finished runs of the certivity pipeline, read only: no run is started from here.
 An uploaded `spec.md` is matched to the run whose manifest lists the same spec hash. A run started with
-`uv run certivity run <case folder>` shows up once its folder has `submission.json` and `lineage.json`.
+`./certivity <approach> run <case folder>` (from the repository root) shows up once its folder has `submission.json` and `lineage.json`.
 
-Regulation PDFs for the source links (hackathon data, not committed), from the repository root:
+Regulation PDFs for the source links (hackathon data, not committed), from the repository root (in an approach's environment):
 
 ```bash
-uv run python industrial-ai-hackathon/tools/fetch_regulations.py --role base
+./certivity main-approach -- python industrial-ai-hackathon/tools/fetch_regulations.py --role base
 ```
 
 Missing PDFs fall back to the remote `pdf_url` from `regulations/index.json`.
@@ -38,7 +38,7 @@ Missing PDFs fall back to the remote `pdf_url` from `regulations/index.json`.
 | Variable | Default | Meaning |
 |---|---|---|
 | `BACKEND_MODE` | `runs` | `runs` reads finished pipeline runs; `mock` replays `cases/<case>/expected.json` (labelled as mock in the trace); `engine` calls `ENGINE_ENTRYPOINT` in-process |
-| `PIPELINE_ROOT` | the repository root | pipeline checkout; runs are read from its `data/runs/` and from `../sunday-data/<sample>/runs/`, likewise for the sibling checkouts `../Brezel/Butterbrezeln` and `../Butterbrezeln-general` |
+| `PIPELINE_ROOT` | the repository root | runs are read from its `data/*/runs/` (one folder per approach) |
 | `PIPELINE_RUN_DIRS` | – | replaces those run folders (`:`-separated) |
 | `PIPELINE_RUN` | – | run id(s) to show when several finished runs share a spec; otherwise the latest |
 | `ENGINE_ENTRYPOINT` | – | `module:function` that returns main-goal requirements, see `api/backend_client.py` |

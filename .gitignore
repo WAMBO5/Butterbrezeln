@@ -8,7 +8,7 @@ __pycache__/
 
 # Parsed corpus, caches and run output
 data/
-# ...but the market-approval UI's curated country data is source
+# ...but the UI's curated country data is source
 !ui/data/
 
 # Local secrets (commit only .env.example)
@@ -16,12 +16,7 @@ data/
 .env.*
 !.env.example
 
-# Web UI build output
-web/node_modules/
-web/dist/
-web/.astro/
-
-# Market-approval UI (ui/): its run store and build output
+# Web UI (ui/): its run store and build output
 ui/runs/
 ui/web/node_modules/
 ui/web/dist/
