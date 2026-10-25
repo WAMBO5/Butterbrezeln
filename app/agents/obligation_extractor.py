@@ -40,8 +40,9 @@ Rules for an obligation:
   that ...", "however, ... may be reduced to ...", "(2,100 mm if ...)").
 - Permissions are obligations too, when they stand on their own rather than as an exception to a
   rule of the same provision: a "may", "is permitted" or "is allowed" about what the product may have
-  or do, or how a test may be run ("may be installed ... only if ...", "may have parts in common
-  with ..."). Word it "... shall be permitted to ...", keeping every condition.
+  or do ("may be installed ... only if ...", "may have parts in common with ..."). Word it
+  "... shall be permitted to ...", keeping every condition. A permission about how a test may be run
+  (another method, another set-up) is extracted too, with role "procedure".
 - text: one self-contained sentence close to the source wording. Name the subject explicitly as the
   provision means it ("The <device or component> shall ...", not "It shall ..."); keep every
   condition, exception, value, unit, tolerance and cross-reference ("as defined in paragraph x.y.z.").
@@ -80,9 +81,11 @@ every issue it names.
 
 
 def create_obligation_extractor(settings: Settings) -> AgentSpec:
+    # Thinking counts against max_tokens. 21,000 is the most a non-streaming call allows in the SDK
+    # (it requires streaming once max_tokens would take over 10 minutes at 128k tokens per hour).
     return make_agent(name="obligation_extractor", description="Splits provisions into atomic obligations",
                       instruction=INSTRUCTION, output_schema=ExtractionOutput, tier="fast", effort="medium",
-                      settings=settings)
+                      settings=settings, max_tokens=21000)
 
 
 def _examples() -> str:

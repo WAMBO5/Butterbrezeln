@@ -17,7 +17,7 @@ from app.models import ExtractionOutput, Issue, Obligation, Review
 from app.pipeline.calls import AgentCall, gather_limited
 from app.pipeline.loop import LoopSpec, run_verified
 
-BATCH_SIZE = 15
+BATCH_SIZE = 8  # provisions per extractor call: dense tables at 15 overran the output limit (dev run, 10 of 108 calls)
 
 
 def extraction_loop(settings: Settings) -> LoopSpec[ExtractionOutput]:
@@ -28,13 +28,24 @@ def extraction_loop(settings: Settings) -> LoopSpec[ExtractionOutput]:
 
 async def _extract(batch: ExtractionBatch, cache: ObligationCache, settings: Settings, call: AgentCall,
                    ledger: Ledger | None, feedback: list[Issue]) -> list[str]:
-    """Extract `batch` and cache every item that passes the gate; returns the provision ids given up."""
+    """Extract `batch` and cache every item that passes the gate; returns the provision ids given up.
+    A batch that produced no output at all (truncated or unparsable) is retried in halves, down to one
+    provision per call, so one long provision cannot sink the rest of its batch."""
     spec = extraction_loop(settings)
     if feedback:
         initial = list(feedback)
         spec = replace(spec, build_prompt=lambda b, fb: build_extraction_prompt(b, fb or initial))
     result = await run_verified(spec, batch, call, ledger)
     output = result.output or result.last_output
+    budget_spent = any(i.type == "budget" for i in result.open_issues)
+    if output is None and len(batch.provisions) > 1 and not budget_spent:
+        mid = (len(batch.provisions) + 1) // 2
+        given_up: list[str] = []
+        for half in (batch.provisions[:mid], batch.provisions[mid:]):
+            ids = {p.provision_id for p in half}
+            given_up += await _extract(ExtractionBatch(batch.section_id, half, batch.definitions), cache, settings,
+                                       call, ledger, [i for i in feedback if i.target_id.split("/")[0] in ids])
+        return given_up
     done: set[str] = set()
     by_id = {p.provision_id: p for p in batch.provisions}
     if output is not None:

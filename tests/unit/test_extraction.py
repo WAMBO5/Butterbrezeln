@@ -118,3 +118,26 @@ async def test_extract_verified_salvages_good_items_and_reextracts_flagged(tmp_p
     assert {o.provision_id for o in second} == {"UN R1@1#5.1", "UN R1@1#5.2"}
     assert calls == ["obligation_extractor", "obligation_extractor", "extraction_verifier", "obligation_extractor"]
     assert cache.unverified([o.obligation_id for o in second]) == []
+
+
+async def test_a_batch_without_output_is_retried_in_halves(tmp_path):
+    from app.config.settings import load_settings
+    from app.llm import AgentOutputError
+    from app.pipeline.extraction import extract_verified
+
+    settings = load_settings({"CERTIVITY_MAX_RETRIES": "0"}, fake_llm=True)
+    provisions = [prov(f"UN R1@1#5.{n}", text="The lamp shall be red.") for n in (1, 2, 3)]
+    batch = ExtractionBatch(section_id="UN R1@1#5", provisions=provisions, definitions=[])
+    sizes = []
+
+    async def call(spec, prompt):
+        ids = extract_payload(prompt)["provision_ids"]
+        sizes.append(len(ids))
+        if len(ids) > 1:  # too long for one output
+            raise AgentOutputError(spec.name, "output truncated at max_tokens=21000")
+        return out(item(ids[0], obs=[obligation(quote="The lamp shall be red.", text="The lamp shall be red.")]))
+
+    cache = ObligationCache(tmp_path / "o.sqlite")
+    got = await extract_verified(batch, cache, settings, call, None, verify=False)
+    assert {o.provision_id for o in got} == {p.provision_id for p in provisions}
+    assert sizes == [3, 2, 1, 1, 1]
