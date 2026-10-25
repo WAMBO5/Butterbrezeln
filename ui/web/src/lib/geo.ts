@@ -39,13 +39,24 @@ export interface CountryShape {
   feature: Feature<Geometry>;
 }
 
+const polygons = (g: Geometry | null): Polygon["coordinates"][] =>
+  g?.type === "Polygon" ? [g.coordinates] : g?.type === "MultiPolygon" ? g.coordinates : [];
+
+/** One shape per country: the 50m atlas also files Ashmore and Cartier Is. under Australia's id (036),
+ * which otherwise overwrites Australia's mainland and doubles its React key. */
 function shapes(atlas: unknown): CountryShape[] {
   const topology = atlas as Topology<{ countries: GeometryCollection }>;
-  return (feature(topology, topology.objects.countries) as FeatureCollection).features.map((f, i) => ({
-    key: String(f.id ?? `x${i}`),
-    iso3: numericToIso3(f.id),
-    feature: f,
-  }));
+  const byKey = new Map<string, CountryShape>();
+  (feature(topology, topology.objects.countries) as FeatureCollection).features.forEach((f, i) => {
+    const key = String(f.id ?? `x${i}`);
+    const seen = byKey.get(key);
+    if (!seen) {
+      byKey.set(key, { key, iso3: numericToIso3(f.id), feature: f });
+      return;
+    }
+    seen.feature = { ...seen.feature, geometry: { type: "MultiPolygon", coordinates: [...polygons(seen.feature.geometry), ...polygons(f.geometry)] } };
+  });
+  return [...byKey.values()];
 }
 
 export const COUNTRY_SHAPES: CountryShape[] = shapes(world);

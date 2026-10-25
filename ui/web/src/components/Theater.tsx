@@ -111,7 +111,12 @@ export function Theater({ run, events, onDone }: Props) {
   );
 
   // the whole journey from Geneva, kept clear of the card at the bottom
-  const tour = useMemo<Framing>(() => ({ fit: [GENEVA, ...order.flatMap(corners)], maxZoom: 3.4, inset: { top: 0.08, bottom: 0.3 } }), [order]);
+  const tour = useMemo<Framing>(() => ({
+      fit: [GENEVA, ...order.flatMap(corners)],
+      keep: [GENEVA, ...order.map(centroid).filter((c): c is [number, number] => !!c)],
+      maxZoom: 3.4,
+      inset: { top: 0.08, bottom: 0.3 },
+    }), [order]);
   const focus: MapFocus = beat === 1 ? GENEVA_VIEW : beat === 2 || beat === 3 ? GENEVA_WIDE : tour;
   const scoutTarget = beat >= 4 ? (hop === 0 ? GENEVA : centroid(order[Math.min(hop, order.length) - 1])) : undefined;
   const scoutAt = useGlide(scoutTarget, Math.min(0.55, (per * 0.8) / 1000));

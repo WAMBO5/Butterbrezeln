@@ -112,7 +112,7 @@ export function ResultPage({ runId, replay, onNew, onOpenRun, onEditMarkets }: P
 
   const verdicts = useMemo(() => Object.values(run?.verdicts ?? {}), [run]);
   // open the map on the assessed markets, e.g. Europe for an EU-27 check
-  const markets = useMemo<Framing>(() => ({ fit: verdicts.flatMap((v) => corners(v.iso3)), maxZoom: EUROPE_VIEW.zoom }), [verdicts]);
+  const markets = useMemo<Framing>(() => ({ fit: verdicts.flatMap((v) => corners(v.iso3)), keep: verdicts.map((v) => centroid(v.iso3)).filter((c): c is [number, number] => !!c), maxZoom: EUROPE_VIEW.zoom }), [verdicts]);
   const counts = useMemo(() => {
     const c: Record<VerdictStatus, number> = { green: 0, yellow: 0, red: 0, grey: 0 };
     verdicts.forEach((v) => (c[v.status] += 1));

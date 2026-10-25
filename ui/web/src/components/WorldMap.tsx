@@ -16,6 +16,7 @@ export interface MapView {
 /** Places to frame instead of a fixed view. */
 export interface Framing {
   fit: [number, number][];
+  keep?: [number, number][]; // places to keep in front when not all of fit can be, e.g. country centres
   maxZoom?: number;
   inset?: { top: number; bottom: number }; // share of the frame to keep clear, e.g. under an overlay card
 }
@@ -44,12 +45,53 @@ function globeProjection({ coordinates: [lon, lat], zoom }: MapView, height: num
     .translate([MAP_WIDTH / 2, height / 2]);
 }
 
+const VISIBLE = Math.cos((84 * Math.PI) / 180); // a place this near the rim still reads; pins vanish at ~88°
+
+const toVector = ([lon, lat]: [number, number]): [number, number, number] => {
+  const [l, p] = [(lon * Math.PI) / 180, (lat * Math.PI) / 180];
+  return [Math.cos(p) * Math.cos(l), Math.cos(p) * Math.sin(l), Math.sin(p)];
+};
+
+/** Where to face: the places' mean if that shows them all, else the point whose farthest kept place
+ * is nearest. The mean fails for places on opposite sides of the earth (Europe and Australia): it
+ * faces a pole and turns some of them to the back. */
+function lookAt(points: [number, number][], keep: [number, number][]): [number, number] {
+  const farthest = (places: [number, number][]) => {
+    const vectors = places.map(toVector);
+    return (c: [number, number]) => {
+      const [x, y, z] = toVector(c);
+      return -Math.min(...vectors.map(([a, b, d]) => a * x + b * y + d * z)); // cosine of the farthest place, negated
+    };
+  };
+  const mean = geoCentroid({ type: "MultiPoint", coordinates: points }) as [number, number];
+  if (farthest(points)(mean) < -VISIBLE) return mean;
+  const cost = farthest(keep);
+  let best = mean;
+  let bestCost = cost(mean);
+  for (let lon = -180; lon < 180; lon += 6) {
+    for (let lat = -78; lat <= 78; lat += 6) {
+      const c = cost([lon, lat]);
+      if (c < bestCost) [best, bestCost] = [[lon, lat], c];
+    }
+  }
+  for (let step = 3; step >= 0.75; step /= 2) {
+    const [lon0, lat0] = best;
+    for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, 1], [-1, 1], [1, -1]]) {
+      const at: [number, number] = [wrapLon(lon0 + dx * step), clamp(lat0 + dy * step, -85, 85)];
+      const c = cost(at);
+      if (c < bestCost) [best, bestCost] = [at, c];
+    }
+  }
+  return best;
+}
+
 /** Turn and zoom that frame the places in a map of the given height. */
-export function fitView({ fit, maxZoom = 4, inset = { top: 0, bottom: 0 } }: Framing, height = MAP_HEIGHT): MapView {
+export function fitView({ fit, keep = fit, maxZoom = 4, inset = { top: 0, bottom: 0 } }: Framing, height = MAP_HEIGHT): MapView {
   if (!fit.length) return WORLD_VIEW;
-  const centre = geoCentroid({ type: "MultiPoint", coordinates: fit }) as [number, number];
+  const kept = keep.length ? keep : fit;
+  const centre = lookAt(fit, kept);
   const flat = globeProjection({ coordinates: centre, zoom: 1 }, height);
-  const points = fit.filter((p) => geoDistance(p, centre) < Math.PI / 2).map((p) => flat(p)!);
+  const points = [...fit, ...kept].filter((p) => geoDistance(p, centre) < Math.PI / 2).map((p) => flat(p)!);
   if (!points.length) return { coordinates: centre, zoom: 1 };
   const pad = 36; // margin on screen, whatever the zoom
   const xs = points.map(([x]) => x);
@@ -63,7 +105,9 @@ export function fitView({ fit, maxZoom = 4, inset = { top: 0, bottom: 0 } }: Fra
     cx + ((x0 + x1) / 2 - cx) * zoom,
     cy + ((y0 + y1) / 2 - cy) * zoom + ((inset.bottom - inset.top) * height) / 2,
   ]);
-  return { coordinates: look ?? centre, zoom };
+  // unless that turns a kept place round to the back
+  const shows = (at: [number, number]) => kept.every((p) => Math.cos(geoDistance(p, at)) > VISIBLE);
+  return { coordinates: look && (shows(look) || !shows(centre)) ? look : centre, zoom };
 }
 
 const ZoomContext = createContext(1);
@@ -130,7 +174,7 @@ export function WorldMap({ fillFor, onSelect, selected, tooltipFor, focus, inter
   const heightRef = useRef(height);
   heightRef.current = height;
 
-  const target = !focus ? null : "fit" in focus ? fitView(focus, height) : focus;
+  const target = useMemo(() => (!focus ? null : "fit" in focus ? fitView(focus, height) : focus), [focus, height]);
   const [view, setView] = useState<MapView>(target ?? WORLD_VIEW);
   const [hover, setHover] = useState<string | null>(null);
   const [settled, setSettled] = useState(true);
