@@ -12,16 +12,28 @@ Industrial Agents Hackathon, Munich, 24–25 October 2026: turn a product specif
 | `ui/` | The web frontend for the whole solution (the market-approval UI: API and React app); reads the runs of every approach |
 | `approaches/main-approach/` | The approach that was on `main` (requirements engine) |
 | `approaches/general-approach/` | The approach that was on `general` (general, outcome-based pipeline, evalkit, submissions) |
+| `certivity` | Launcher: runs one approach on the shared data |
+| `data/` | Git-ignored: every approach's corpus, caches and runs (below) |
 
-Each approach is a self-contained `uv` project with its own `README.md`, `AGENTS.md`, `README.md`, `pyproject.toml` and tests. Work from inside its folder:
+Each approach is a self-contained `uv` project with its own `README.md`, `AGENTS.md`, `README.md`, `pyproject.toml` and tests. Switch between them with the launcher, which runs from the approach's folder (so paths are relative to it):
 
 ```bash
-cd approaches/general-approach
-uv sync
-uv run pytest
+./certivity general-approach doctor                                            # its CLI: uv run certivity ...
+./certivity main-approach run industrial-ai-hackathon/cases/heldout-front-bumper
+./certivity general-approach -- pytest                                         # anything else: uv run ...
 ```
 
-Each folder holds a symlink `industrial-ai-hackathon -> ../../industrial-ai-hackathon`, because the code looks for that folder relative to its working directory. The Docker builds copy that folder, so build them from a context that resolves the link (or set `CERTIVITY_CHALLENGE_DIR`).
+`cd approaches/<approach> && uv run ...` works the same. A new approach is a new folder under `approaches/`; the launcher sets up its data on first use.
+
+### Data
+
+| Path | What |
+| --- | --- |
+| `industrial-ai-hackathon/` | The source: regulation text and PDFs, cases, expected answers. Each approach links to it as `approaches/<approach>/industrial-ai-hackathon` |
+| `data/shared/` | Shared by all approaches: regulation cards (`cards/`) and the extraction cache (`obligations.sqlite`, keyed by each approach's extractor version) |
+| `data/<approach>/` | One approach's own data: `catalog.sqlite` (built by its parser) and `runs/<run_id>/`; `cards` and `obligations.sqlite` link to `data/shared/`. The approach sees it as `approaches/<approach>/data` |
+
+The catalog stays per approach: the parsers differ, and each rebuilds a catalog written by another parser. Never let an approach create `approaches/<approach>/data` as a real folder; that splits its data from the rest.
 
 ## Frontend
 
