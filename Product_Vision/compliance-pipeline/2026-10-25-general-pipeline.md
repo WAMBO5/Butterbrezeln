@@ -1,6 +1,6 @@
 # General pipeline: spec to cited requirements for any product
 
-**Date:** 2026-10-25 · **Branch:** `general` (from `pay-to-win` f7dfbf7) · **Status:** sections 3–7 implemented, offline tests pass; not yet measured on a paid run. Decided with the user: role tags at extraction, rule on every obligation and keep unsure, three scope samples kept at 2 of 3 with sections unioned, a separate match tier.
+**Date:** 2026-10-25 · **Branch:** `general` (from `pay-to-win` f7dfbf7) · **Status:** sections 3–7 implemented, offline tests pass; not yet measured on a paid run. Decided with the user: role tags at extraction, rule on every obligation and keep unsure, three scope samples, regulations and sections kept at 2 of 3, a separate match tier.
 
 The pay-to-win branch reached 76.9 % requirement F2 on the rear-lamp worked example; fix/precision peaked at 52.5 % with the same architecture. This note keeps what made the difference, removes what was fitted to the rear lamp, and rebuilds the funnel around one principle: regulations prescribe outcomes, specs describe construction.
 
@@ -75,7 +75,7 @@ Three independent scope samples, each with its own gate and recall audit, merged
 
 - A regulation is **kept** when at least 2 of 3 samples keep it (applicable or uncertain). It is `applicable` when at least 2 say applicable, otherwise `uncertain`.
 - A regulation kept by only 1 sample is reported as considered, not matched. One wrong regulation can add over a hundred false requirements (R128 on dev: 114, none expected).
-- **Sections per part:** the union over the samples that kept the regulation. A missed section costs recall at every lower level; extra sections are pruned by the role filter and the matcher.
+- **Sections:** kept when at least 2 of 3 samples chose them (for any part), and given to every part a sample assigned them to; the union only when no section reaches a majority. First built as the union; the dev run showed requirements from 1-of-3 sections at 7 % on expert paragraphs (2 of 3: 37 %, 3 of 3: 64 %), below F2's break-even of about 15 %, so the rule was changed with the user on 2026-10-25.
 
 ## 7. Models and cost
 

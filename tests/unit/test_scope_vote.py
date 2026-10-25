@@ -15,7 +15,7 @@ def test_majority():
     assert [majority(n) for n in (1, 2, 3, 5)] == [1, 2, 2, 3]
 
 
-def test_two_of_three_keep_a_regulation_and_sections_are_the_union():
+def test_two_of_three_keep_a_regulation_and_its_majority_sections():
     plans = [
         ScopePlan(decisions=[d("A", "applicable", {"p1": ["A#5"]}), d("B", "uncertain", {"p1": ["B#3"]}),
                              d("C", "applicable", {"p2": ["C#1"]})], parts_without_regulation=[]),
@@ -26,8 +26,9 @@ def test_two_of_three_keep_a_regulation_and_sections_are_the_union():
     ]
     merged, votes = merge_plans(plans)
     by_reg = {x.regulation: x for x in merged.decisions}
-    assert by_reg["A"].state == "applicable" and by_reg["A"].part_ids == ["p1", "p2"]
-    assert {s.part_id: s.section_ids for s in by_reg["A"].sections} == {"p1": ["A#5", "A#6"], "p2": ["A#7"]}
+    assert by_reg["A"].state == "applicable" and by_reg["A"].part_ids == ["p1"]
+    # A#5 and A#6 were chosen by 2 samples each; A#7 by one only
+    assert {s.part_id: s.section_ids for s in by_reg["A"].sections} == {"p1": ["A#5", "A#6"]}
     assert by_reg["B"].state == "uncertain"  # kept by 2, applicable by only 1
     assert by_reg["C"].state == "not_applicable" and by_reg["C"].sections == []
     assert by_reg["C"].reason.startswith("kept by 1 of 3 scope samples only")
@@ -38,3 +39,10 @@ def test_two_of_three_keep_a_regulation_and_sections_are_the_union():
 def test_a_single_plan_is_returned_unchanged():
     plan = ScopePlan(decisions=[d("A", "uncertain", {"p1": ["A#5"]})], parts_without_regulation=[])
     assert merge_plans([plan]) == (plan, {})
+
+
+def test_the_union_is_kept_when_no_section_reaches_a_majority():
+    plans = [ScopePlan(decisions=[d("A", "applicable", {"p1": [f"A#{n}"]})], parts_without_regulation=[])
+             for n in (1, 2, 3)]
+    merged, _ = merge_plans(plans)
+    assert merged.decisions[0].sections[0].section_ids == ["A#1", "A#2", "A#3"]

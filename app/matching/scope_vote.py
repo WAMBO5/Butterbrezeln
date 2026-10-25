@@ -3,9 +3,10 @@
 The scope draw is the run's largest random factor, so several `scope_narrower` samples run
 independently and code merges them: a regulation is kept when a majority of the samples keep it
 (one wrong regulation can add a hundred false requirements), and is `applicable` when a majority say
-so, otherwise `uncertain`. Its sections per part are the union over the samples that kept it: a
-missed section loses recall at every later step, while extra sections are pruned by the role filter
-and the matcher.
+so, otherwise `uncertain`. A section is kept the same way, when a majority of the samples chose it
+(for any part), and goes to every part a sample gave it to. On the rear-lamp dev run, requirements
+from sections only 1 of 3 samples chose were 7 % on expert paragraphs, below F2's break-even of about
+15 %; 2 of 3 gave 37 %. If no section of a kept regulation reaches a majority, the union is kept.
 """
 
 from __future__ import annotations
@@ -22,13 +23,17 @@ def majority(n: int) -> int:
     return n // 2 + 1
 
 
-def _union_sections(decisions: list[RegulationDecision]) -> list[PartSections]:
+def _sections(decisions: list[RegulationDecision], need: int) -> list[PartSections]:
+    """Sections chosen by at least `need` of the samples, each with every part a sample gave it to;
+    the union when none reaches `need`."""
+    votes = Counter(sid for d in decisions for sid in {i for s in d.sections for i in s.section_ids})
+    keep = {sid for sid, n in votes.items() if n >= need} or set(votes)
     by_part: dict[str, list[str]] = {}
     for d in decisions:
         for s in d.sections:
             ids = by_part.setdefault(s.part_id, [])
-            ids += [i for i in s.section_ids if i not in ids]
-    return [PartSections(part_id=pid, section_ids=ids) for pid, ids in by_part.items()]
+            ids += [i for i in s.section_ids if i in keep and i not in ids]
+    return [PartSections(part_id=pid, section_ids=ids) for pid, ids in by_part.items() if ids]
 
 
 def merge_plans(plans: list[ScopePlan]) -> tuple[ScopePlan, dict[str, str]]:
@@ -49,12 +54,13 @@ def merge_plans(plans: list[ScopePlan]) -> tuple[ScopePlan, dict[str, str]]:
             votes[regulation] = f"{len(kept)}/{n} kept, {len(applicable)}/{n} applicable"
         if len(kept) >= need:
             first = (applicable or kept)[0]
+            sections = _sections(kept, need)
             decisions.append(RegulationDecision(
                 regulation=regulation, version_label=first.version_label,
                 state="applicable" if len(applicable) >= need else "uncertain",
                 path=Counter(d.path for d in kept).most_common(1)[0][0],
-                part_ids=list(dict.fromkeys(pid for d in kept for pid in d.part_ids)),
-                sections=_union_sections(kept), reason=f"{first.reason} [scope vote: {votes[regulation]}]",
+                part_ids=[s.part_id for s in sections],
+                sections=sections, reason=f"{first.reason} [scope vote: {votes[regulation]}]",
                 evidence=list(dict.fromkeys(e for d in kept for e in d.evidence)),
                 consolidation_override=next((d.consolidation_override for d in kept if d.consolidation_override), None)))
         else:
