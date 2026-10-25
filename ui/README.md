@@ -17,9 +17,16 @@ uv run uvicorn api.main:app --port 8010 --reload --reload-dir api   # BACKEND_MO
 cd web && npm install && npm run dev        # http://localhost:5173
 ```
 
-By default the UI shows finished runs of the certivity pipeline, read only: no run is started from here.
-An uploaded `spec.md` is matched to the run whose manifest lists the same spec hash. A run started with
-`uv run certivity run <case folder>` shows up once its folder has `submission.json` and `lineage.json`.
+By default the UI shows finished runs of the certivity pipeline. An uploaded `spec.md` is matched to
+the run whose manifest lists the same spec hash. A run started with `uv run certivity run <case folder>`
+shows up once its folder has `submission.json` and `lineage.json`.
+
+If no finished run matches, the UI offers to start one: the upload is written to
+`<PIPELINE_ROOT>/data/uploads/upload-<sha8>/` and `certivity run` runs there as a subprocess
+(`api/pipeline_jobs.py`), one run at a time; the dialog follows its steps from `trace.jsonl` and opens the
+result when it has finished. This needs the pipeline code (`app/`, on `main`) in `PIPELINE_ROOT`; on a
+UI-only checkout, point `PIPELINE_ROOT` at one. `PIPELINE_FAKE_LLM=1` runs it with the scripted stand-in
+model: free and quick, for demos only.
 
 Regulation PDFs for the source links (hackathon data, not committed), from the repository root:
 
@@ -36,6 +43,8 @@ Missing PDFs fall back to the remote `pdf_url` from `regulations/index.json`.
 | `BACKEND_MODE` | `runs` | `runs` reads finished pipeline runs; `mock` replays `cases/<case>/expected.json` (labelled as mock in the trace); `engine` calls feat/requirements-engine |
 | `PIPELINE_ROOT` | the repository root | pipeline checkout; runs are read from its `data/runs/` and from `../sunday-data/<sample>/runs/`, likewise for the sibling checkouts `../Brezel/Butterbrezeln` and `../Butterbrezeln-general` |
 | `PIPELINE_RUN_DIRS` | – | replaces those run folders (`:`-separated) |
+| `PIPELINE_CMD` | `<this python> -m app.cli` | the `certivity` CLI used to start runs from the UI, run in `PIPELINE_ROOT` |
+| `PIPELINE_FAKE_LLM` | – | `1`: runs started from the UI use `--fake-llm` (no API calls, not a real analysis) |
 | `PIPELINE_RUN` | – | run id(s) to show when several finished runs share a spec; otherwise the latest |
 | `ENGINE_ENTRYPOINT` | – | `module:function` of feat/requirements-engine, see `api/backend_client.py` |
 | `LLM_MODE` | `auto` | `auto` uses LLM when credentials resolve, else the rule set; `off` forces rules |

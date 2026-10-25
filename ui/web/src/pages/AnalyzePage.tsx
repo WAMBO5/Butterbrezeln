@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ArrowLeft, ArrowRight, BookOpen, FileUp, ImagePlus, Link2, Rocket, ShieldCheck } from "lucide-react";
-import { api } from "../api";
-import type { CountryListing } from "../types";
+import { api, ApiError } from "../api";
+import type { CountryListing, Health } from "../types";
 import { CountryPicker, type Scout } from "../components/CountryPicker";
+import { PipelineLauncher } from "../components/PipelineLauncher";
 import { AgentLineup, HeroVisual } from "../components/Landing";
 import { ProductCard } from "../components/ProductCard";
 import { AgentPin, WORLD_VIEW, WorldMap, type MapView } from "../components/WorldMap";
@@ -30,6 +31,9 @@ const EXAMPLE_NAMES: Record<string, string> = {
   "dev-rear-lamp": "Rear lamp",
   "heldout-front-bumper": "Front bumper",
   "mock-front-bumper": "Bumper (practice case)",
+  "fake-chmsl": "High-mounted stop lamp",
+  "fake-headlamp": "Headlamp",
+  "fake-side-indicator": "Side indicator",
 };
 
 const TRUST = [
@@ -66,9 +70,12 @@ export function AnalyzePage({ step, onStep, draft, onDraft, onStarted }: Props) 
   const [scout, setScout] = useState<Scout>(null);
   const [target, setTarget] = useState<string | null>(null); // the map follows the search, not clicks on the map
   const [error, setError] = useState<string | null>(null);
+  const [launch, setLaunch] = useState<NonNullable<Health["pipeline"]>["launch"] | null>(null);
+  const [needsPipeline, setNeedsPipeline] = useState(false);
 
   useEffect(() => {
     api.countries().then(setListing).catch((e) => setError(String(e)));
+    api.health().then((h) => setLaunch(h.pipeline?.launch ?? null)).catch(() => setLaunch(null));
     api.examples().then(setExamples).catch(() => setExamples([]));
   }, []);
 
@@ -139,10 +146,16 @@ export function AnalyzePage({ step, onStep, draft, onDraft, onStarted }: Props) 
       const { run_id } = await api.startRun(draft.specFile, [...draft.selected], draft.image);
       onStarted(run_id);
     } catch (e) {
-      setError(String(e));
+      // no finished pipeline run for this spec: offer to start one, or say why that is not possible
+      if (e instanceof ApiError && e.status === 409 && launch?.available) setNeedsPipeline(true);
+      else setError(e instanceof ApiError && e.status === 409 && launch?.reason ? `${e.detail} ${launch.reason}` : String(e));
       setBusy(false);
     }
   };
+  const pipelineDone = useCallback(() => {
+    setNeedsPipeline(false);
+    start();
+  }, [start]);
 
   const errorBox = error && <p className="mx-auto mt-4 max-w-3xl rounded-lg bg-rose-50 p-3 text-sm text-rose-700 ring-1 ring-inset ring-rose-600/20">{error}</p>;
 
@@ -296,6 +309,9 @@ export function AnalyzePage({ step, onStep, draft, onDraft, onStarted }: Props) 
         </div>
         {errorBox}
       </div>
+      {needsPipeline && draft.specFile && (
+        <PipelineLauncher spec={draft.specFile} image={draft.image} fakeLlm={launch?.fake_llm ?? false} onDone={pipelineDone} onClose={() => setNeedsPipeline(false)} />
+      )}
     </div>
   );
 }
