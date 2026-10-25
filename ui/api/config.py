@@ -23,11 +23,12 @@ BACKEND_MODE = os.environ.get("BACKEND_MODE", "runs")
 ENGINE_ENTRYPOINT = os.environ.get("ENGINE_ENTRYPOINT", "")
 
 # the pipeline: the approaches under approaches/ write each run to data/<approach>/runs/<run_id>/ (see ./certivity
-# in the repository root), so every approach's finished runs show up here
+# in the repository root), so every approach's finished runs show up here, as do the held-out samples of
+# general-approach's tools/sunday_runs.sh in data/<approach>/sunday/<sample>/runs/
 PIPELINE_ROOT = Path(os.environ.get("PIPELINE_ROOT", REPO))
 PIPELINE_CHECKOUTS = [PIPELINE_ROOT]
 PIPELINE_RUN_DIRS = [Path(p) for p in os.environ.get("PIPELINE_RUN_DIRS", "").split(os.pathsep) if p] or sorted(
-    (PIPELINE_ROOT / "data").glob("*/runs"))
+    [*(PIPELINE_ROOT / "data").glob("*/runs"), *(PIPELINE_ROOT / "data").glob("*/sunday")])
 PIPELINE_CASE_DIRS = [PIPELINE_ROOT / "industrial-ai-hackathon" / "cases",
                       *sorted((PIPELINE_ROOT / "approaches").glob("*/tools/evalkit/mockcases")),
                       CASES_DIR, REPO / "testdata" / "fake-cases"]

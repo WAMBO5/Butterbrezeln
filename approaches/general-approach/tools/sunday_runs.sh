@@ -5,15 +5,15 @@
 #
 #   tools/sunday_runs.sh [case_dir] [samples]        DRY=1 sunday_runs.sh ...   prints the commands only
 #
-# Run it after `uv run certivity build-corpus --extract-missing --cards` has finished in the main checkout,
+# Run it after `uv run certivity build-corpus --extract-missing --cards` has finished,
 # because each sample copies data/catalog.sqlite, data/obligations.sqlite and data/cards.
 # Dev evidence for the recipe: Sonnet run 5 74.0% -> Opus replay 74.7% -> +ex 75.4% -> Opus FULL replay +ex 76.9%.
 set -u
-ROOT=${CERTIVITY_ROOT:-${0:A:h:h}}   # the repo root: this script lives in tools/
+ROOT=${CERTIVITY_ROOT:-${0:A:h:h}}   # the approach folder: this script lives in tools/
 CASE=${1:-$ROOT/industrial-ai-hackathon/cases/heldout-front-bumper}
 N=${2:-3}
 CID=$(basename $CASE)
-BASE=${BASE:-${ROOT:h}/sunday-data}   # outside the repo: nothing gets committed by accident
+BASE=${BASE:-$ROOT/data/sunday}   # data/general-approach/sunday/: git-ignored, and the UI shows its runs
 EK=$ROOT/tools/evalkit
 X() { if [ -n "${DRY:-}" ]; then echo "+ $*"; else eval "$@"; fi }
 cd $ROOT
@@ -45,7 +45,7 @@ for i in $(seq 1 $N); do
   X mkdir -p $D/runs
   X sqlite3 $ROOT/data/catalog.sqlite "'.backup $D/catalog.sqlite'"
   X sqlite3 $ROOT/data/obligations.sqlite "'.backup $D/obligations.sqlite'"
-  X rm -rf $D/cards "&&" cp -R $ROOT/data/cards $D/
+  X rm -rf $D/cards "&&" cp -RL $ROOT/data/cards $D/
 done
 for i in $(seq 1 $N); do
   chain s$i &
