@@ -16,7 +16,7 @@ PING_INSTRUCTION = "You answer connectivity checks. Follow the request exactly."
 
 async def ping(settings: Settings, provision_id: str) -> list[dict]:
     llm = LLM(settings, budget=Budget(0.5, load_prices(settings.prices_path)))
-    checks = [(tier, None) for tier in ("judgment", "fast", "review")] + [("judgment", "read_provision")]
+    checks = [(tier, None) for tier in ("judgment", "fast", "review", "match")] + [("match", "read_provision")]
     results = []
     for tier, tool in checks:
         row: dict = {"tier": tier, "tool": tool or "-"}

@@ -26,6 +26,11 @@ def match_gate(batch: MatchInput, out: GroupMatchBatch) -> list[Issue]:
                 issues.append(_issue("unknown_part", d.obligation_id, f"{pid} is not one of this batch's parts"))
         if d.state != "not_applicable" and not d.part_ids:
             issues.append(_issue("no_parts", d.obligation_id, f"name the parts it binds when it is {d.state}"))
+        if d.state == "not_applicable" and d.exclusion is None:
+            issues.append(_issue("no_exclusion", d.obligation_id, "not_applicable needs an exclusion (other_function, "
+                                 "other_class, other_vehicle, shown_absent, presence_only); otherwise decide uncertain"))
+        if d.state == "not_applicable" and d.exclusion == "shown_absent" and not d.fact_refs:
+            issues.append(_issue("absent_without_fact", d.obligation_id, "shown_absent needs the fact that shows it"))
         for ref in d.fact_refs:
             if ref not in facts:
                 issues.append(_issue("unknown_fact", d.obligation_id, f"{ref} is not a fact of these parts"))

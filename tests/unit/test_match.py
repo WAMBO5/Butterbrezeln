@@ -2,7 +2,7 @@ from app.agents.prompting import extract_payload
 from app.agents.requirement_matcher import build_match_prompt
 from app.gates.match_gate import match_gate
 from app.matching.collect import collect_candidates
-from app.matching.match import MatchInput, make_match_batches, resolve
+from app.matching.match import MatchInput, make_match_batches, resolve, role_decisions
 from app.models import (Fact, GroupDecision, GroupMatchBatch, Issue, Obligation, Part, PartSections, ProductProfile,
                         RegulationCard, RegulationDecision, ScopePlan)
 from app.pipeline.loop import Attempt, LoopResult
@@ -20,10 +20,10 @@ CARD = RegulationCard(regulation="UN R999", version_label="1.0.0", title="Rear l
                       device_sections=[], evidence=[])
 
 
-def ob(n, pid="UN R999@1.0.0#5.1"):
+def ob(n, pid="UN R999@1.0.0#5.1", role="outcome"):
     return Obligation(obligation_id=f"{pid}/{n}", provision_id=pid, subject="lamp", condition=None, constraint="c",
-                      quantities=[], text=f"The lamp shall do {n}.", quote="q", kind="design", extractor_version="x1",
-                      verified=False)
+                      quantities=[], text=f"The lamp shall do {n}.", quote="q", kind="design", role=role,
+                      extractor_version="x1", verified=False)
 
 
 def plan(sections=("UN R999@1.0.0#5",), parts=("p1", "p2")):
@@ -39,9 +39,11 @@ def batch(obligations=None):
                       obligations=obligations or [ob(1), ob(2)], definitions=[])
 
 
-def decision(oid, state="applicable", parts=("p1", "p2"), facts=(), status="evidence_needed"):
-    return GroupDecision(obligation_id=oid, state=state, part_ids=list(parts), reason="matcher says so",
-                         fact_refs=list(facts), evidence_status=status, test_case="t")
+def decision(oid, state="applicable", parts=("p1", "p2"), facts=(), status="evidence_needed", exclusion=None):
+    if state == "not_applicable" and exclusion is None:
+        exclusion = "other_function"
+    return GroupDecision(obligation_id=oid, state=state, part_ids=list(parts), exclusion=exclusion,
+                         reason="matcher says so", fact_refs=list(facts), evidence_status=status, test_case="t")
 
 
 def test_collect_adds_referenced_provision_once(mini_store):
@@ -100,6 +102,36 @@ def test_gate_cases():
     assert {"duplicate_decision", "unknown_id", "not_met_without_fact", "unknown_fact", "unknown_part",
             "no_parts"} <= types
     assert {i.type for i in match_gate(batch(), GroupMatchBatch(decisions=[decision(ob(1).obligation_id)]))} == {"missing_decision"}
+
+
+def test_gate_requires_an_exclusion_for_not_applicable():
+    no_reason = decision(ob(2).obligation_id, "not_applicable", ())
+    no_reason = no_reason.model_copy(update={"exclusion": None})
+    absent = decision(ob(1).obligation_id, "not_applicable", (), exclusion="shown_absent")
+    types = {i.type for i in match_gate(batch(), GroupMatchBatch(decisions=[absent, no_reason]))}
+    assert types == {"no_exclusion", "absent_without_fact"}
+    absent_with_fact = decision(ob(1).obligation_id, "not_applicable", (), facts=["p1-f1"], exclusion="shown_absent")
+    ok = GroupMatchBatch(decisions=[absent_with_fact, decision(ob(2).obligation_id)])
+    assert match_gate(batch(), ok) == []
+
+
+def test_procedure_and_administrative_obligations_skip_the_matcher_but_keep_a_decision(mini_store):
+    cands = collect_candidates(mini_store, plan(sections=("UN R999@1.0.0#5",), parts=("p1", "p2")))
+    pid = "UN R999@1.0.0#5.1"
+    by_provision = {pid: [ob(1, pid), ob(2, pid, "procedure"), ob(3, pid, "administrative"), ob(4, pid, "permission")]}
+    batches = make_match_batches(cands, by_provision, PROFILE, [CARD], mini_store, 50)
+    matched = {o.obligation_id for b in batches for o in b.obligations}
+    assert matched == {f"{pid}/1", f"{pid}/4"}
+    filtered = role_decisions(cands, by_provision)
+    assert {(d.part_id, d.obligation_id) for d in filtered} == {(p, f"{pid}/{n}") for p in ("p1", "p2") for n in (2, 3)}
+    assert {d.state for d in filtered} == {"not_applicable"} and "role procedure" in filtered[0].reason
+
+
+def test_not_applicable_reason_names_the_exclusion():
+    out = GroupMatchBatch(decisions=[decision(ob(1).obligation_id), decision(ob(2).obligation_id, "not_applicable", (),
+                                                                              exclusion="other_class")])
+    decided = resolve(batch(), LoopResult(output=out, resolved=True, attempts=[Attempt(1)], open_issues=[]))
+    assert {d.reason for d in decided if d.obligation_id == ob(2).obligation_id} == {"other_class: matcher says so"}
 
 
 def test_resolve_expands_to_one_decision_per_part():

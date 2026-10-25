@@ -11,7 +11,7 @@ from pydantic import BaseModel
 from app.compliance.manifest import prompt_version
 from app.config.settings import Settings
 
-Tier = Literal["judgment", "fast", "review"]
+Tier = Literal["judgment", "fast", "review", "match"]
 Effort = Literal["low", "medium", "high"]
 
 AGENT_MODEL_IDS: dict[str, str] = {}
@@ -40,11 +40,13 @@ class AgentSpec:
         return prompt_version(self.instruction)
 
 
-_TIER_VARS = {"judgment": "ANTHROPIC_MODEL", "fast": "ANTHROPIC_MODEL_FAST", "review": "ANTHROPIC_MODEL_REVIEW"}
+_TIER_VARS = {"judgment": "ANTHROPIC_MODEL", "fast": "ANTHROPIC_MODEL_FAST", "review": "ANTHROPIC_MODEL_REVIEW",
+              "match": "ANTHROPIC_MODEL_MATCH"}
 
 
 def model_id_for(tier: Tier, settings: Settings) -> str:
-    model = {"judgment": settings.model_judgment, "fast": settings.model_fast, "review": settings.model_review}[tier]
+    model = {"judgment": settings.model_judgment, "fast": settings.model_fast, "review": settings.model_review,
+             "match": settings.model_match or settings.model_judgment}[tier]
     if not model:
         raise ConfigError(f"{_TIER_VARS[tier]} is not set")
     return model

@@ -18,7 +18,7 @@ def prov(pid="UN R1@1#5.1", text="The ﬁeld shall be measured. The lamp shall b
 
 def obligation(quote="The field shall be measured", text="The field shall be measured."):
     return ExtractedObligation(subject="field", condition=None, constraint="measured", quantities=[], text=text,
-                               quote=quote, kind="test")
+                               quote=quote, kind="test", role="outcome_condition")
 
 
 def out(*items):

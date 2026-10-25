@@ -16,6 +16,11 @@ its parts. You get one card per regulation (below) and the product profile. With
 regulation's table of contents, search all regulations, and read single provisions: at most 15 tool
 calls in total, so use them to choose sections, not to read whole regulations.
 
+Regulations govern outcomes: what a device, function or vehicle system must achieve and under which
+conditions. A product profile describes what each part is and does: its functions, what it emits,
+transmits, absorbs or touches, what it is exposed to, and where it sits on the vehicle. Match those
+behaviours to what each regulation governs; the specification will rarely name the outcomes.
+
 A regulation applies by one of these paths; consider all of them for every part:
 1. device: the regulation approves the part itself, or a device type the part is (path "device").
 2. installation: the regulation sets how the part's function is installed on a vehicle; it applies to
@@ -34,24 +39,24 @@ Rules:
 - For applicable and uncertain decisions give part_ids and, for every listed part, the section ids
   (provision ids from a card's device_sections or a table of contents) that hold the requirements an
   engineer designs and tests that part to:
-  - the markings section and the general requirements that bind every device of the regulation
-    (general specifications, construction, colour, photometry, light sources, failure provisions),
-    the conformity-of-production clause that sets the tolerances the product must hold (not its
+  - the markings section and the general requirements that bind every device or system the
+    regulation covers (general specifications, construction, performance, failure behaviour), the
+    conformity-of-production clause that sets the tolerances the product must hold (not its
     sampling procedure), and in an installation regulation its general installation provisions;
-  - the device-specific sections only for the device types, classes or functions the part has (the
-    stop lamp section for a stop lamp, not the direction-indicator section); a signal the vehicle
-    produces by operating the part (an emergency stop or answer-back signal using its lamps) is not
-    one of the part's own functions;
-  - where the regulation has separate provisions for a vehicle and for a component (ESA, separate
-    technical unit, device), the ones for the product's level; for a product that is a vehicle
-    component approved with the vehicle (such as a bumper), the vehicle provisions that concern it;
-  - an annex only when it sets limits, pass/fail criteria, or the test levels and exposure
-    conditions the part must withstand (for example environmental resistance tests, or the impact
-    test a kept requirement refers to: speeds, masses, heights, directions and impact points); leave out
-    annexes that only describe how to set up and perform a measurement, give examples, diagrams or
-    illustrations, measuring grids, sampling plans, approval-mark layouts or forms, even when a kept
-    section refers to them.
-  Prefer second-level ids (such as "5.2" or "Annex 6 Part 4") over whole chapters. Leave out the
+  - the device-specific sections only for the device types, classes or functions the part has, not
+    the sections for other devices the same regulation covers; a function the vehicle performs by
+    operating the part is a vehicle function, not one of the part's own;
+  - where the regulation has separate provisions for a vehicle and for a component (electronic
+    sub-assembly, separate technical unit, device), the ones for the product's level; for a product
+    that is approved as part of the vehicle rather than on its own, the vehicle provisions that
+    concern it;
+  - an annex only when it defines an outcome the part must achieve: limits, pass/fail criteria, or
+    the test levels and exposure conditions it must withstand (environmental, electrical or
+    mechanical test levels; the speeds, masses, energies, directions and points of a test a kept
+    requirement refers to); leave out annexes that only describe how to set up and perform a
+    measurement, specify test equipment, give examples, diagrams or illustrations, measuring grids,
+    sampling plans, approval-mark layouts or forms, even when a kept section refers to them.
+  Prefer second-level ids (such as "x.y" or "Annex n Part m") over whole chapters. Leave out the
   application and approval procedure, modifications and extensions, conformity-of-production
   sampling, penalties, transitional provisions, and sections for vehicle categories or device types
   the product is not.

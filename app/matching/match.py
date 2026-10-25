@@ -15,6 +15,10 @@ from app.matching.collect import SectionCandidates
 from app.models import GroupMatchBatch, MatchDecision, Obligation, Part, ProductProfile, Provision, RegulationCard
 from app.pipeline.loop import LoopResult
 
+# Roles that are product requirements. `procedure` (how a laboratory runs a test) and `administrative`
+# (approval procedure) are decided by code, the same way for every product, and never reach the matcher.
+KEPT_ROLES = frozenset({"outcome", "outcome_condition", "design_rule", "permission"})
+
 
 @dataclass
 class MatchInput:
@@ -59,7 +63,8 @@ def make_match_batches(cands: list[SectionCandidates], obligations_by_provision:
             groups[key] = (c, [c.part_id])
     batches: list[MatchInput] = []
     for c, part_ids in groups.values():
-        obligations = [o for p in c.provisions for o in obligations_by_provision.get(p.provision_id, [])]
+        obligations = [o for p in c.provisions for o in obligations_by_provision.get(p.provision_id, [])
+                       if o.role in KEPT_ROLES]
         if not obligations:
             continue
         defs: dict[str, Provision] = {}
@@ -76,6 +81,22 @@ def make_match_batches(cands: list[SectionCandidates], obligations_by_provision:
                                       definitions=list(defs.values()), regulation=c.regulation,
                                       section_id=c.section_id))
     return batches
+
+
+def role_decisions(cands: list[SectionCandidates],
+                   obligations_by_provision: dict[str, list[Obligation]]) -> list[MatchDecision]:
+    """A not_applicable decision per part for every candidate obligation whose role is no product
+    requirement, so it stays in the lineage instead of disappearing."""
+    out: dict[tuple[str, str], MatchDecision] = {}
+    for c in cands:
+        for p in c.provisions:
+            for o in obligations_by_provision.get(p.provision_id, []):
+                if o.role not in KEPT_ROLES and (c.part_id, o.obligation_id) not in out:
+                    out[(c.part_id, o.obligation_id)] = MatchDecision(
+                        part_id=c.part_id, obligation_id=o.obligation_id, state="not_applicable",
+                        reason=f"not a product requirement: role {o.role}", fact_refs=[],
+                        evidence_status="evidence_needed", test_case="")
+    return list(out.values())
 
 
 def resolve(batch: MatchInput, result: LoopResult[GroupMatchBatch]) -> list[MatchDecision]:
@@ -102,6 +123,8 @@ def resolve(batch: MatchInput, result: LoopResult[GroupMatchBatch]) -> list[Matc
         for pid in group:
             state = d.state if pid in bound else "not_applicable"
             reason = d.reason if pid in bound or d.state == "not_applicable" else f"does not bind this part: {d.reason}"
+            if d.state == "not_applicable" and d.exclusion:
+                reason = f"{d.exclusion}: {reason}"
             if issue is not None:
                 state, reason = "uncertain", f"{d.reason} | reviewer: {issue.reason}"
             out.append(MatchDecision(part_id=pid, obligation_id=o.obligation_id, state=state, reason=reason,

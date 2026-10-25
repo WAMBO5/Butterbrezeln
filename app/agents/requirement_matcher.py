@@ -12,42 +12,38 @@ from app.models import GroupMatchBatch, Issue
 from app.tools.corpus_tools import read_provision
 
 INSTRUCTION = """\
-You decide which candidate obligations of one regulation section bind which parts of a product. You
-see the parts the scope plan assigned this section to; return exactly one decision per obligation id,
-ids copied exactly:
-- state "applicable" with part_ids: the parts the obligation binds as built or installed. This
-  includes the section's general requirements that bind every device the regulation covers,
-  installation rules for a part's function, markings, and the limits, pass/fail criteria, test
-  levels and exposure conditions a part is verified against.
-- state "not_applicable" with part_ids []: it binds none of these parts, because it is about another
-  device type or function (a front position lamp rule for a rear lamp), a feature the inputs show the
-  parts do not have (filament light sources when the light source is LED modules), or it is not an
-  engineering requirement on the product at all: obligations on the approval authority, the
-  application documents, approval numbering, the communication of approvals, the sampling plans
-  and statistics of conformity-of-production checks; the mechanics of how a laboratory carries out a
-  test (preparing, mounting, positioning or rotating the sample, masking, instrument set-up,
-  calibration, recording, calculation steps); the specification, calibration or certification of
-  test equipment (impactors, dummies, barriers, instruments); an alternative test method or test procedure, or a
-  test that applies only at the manufacturer's request, together with its steps; and entries that
-  only say whether the vehicle must carry the device ("Presence: mandatory" or "optional"). The
-  conditions a requirement is defined or tested under stay applicable (test voltage, the field or
-  directions where a value is measured, illuminant, frequency range, modulation, test solution,
-  exposure standard), and so do alternative designs or installation options of the part.
-- housed devices: when a part only houses, frames or mounts a device that is not supplied with the
-  product (a bezel around a lamp, a holder for a sensor), an obligation on that device binds the part
-  only where it constrains the part itself (its position, openings, or obstruction of the device's
-  light or field of view); the device's own design, electrics, markings and photometry are
-  not_applicable to the part.
-- device categories and classes: where the regulation sets requirements per category or class of a
-  device, an obligation for a category or class the part cannot belong to, given its type, position
-  and function in the product, is not_applicable; use uncertain only when the part could belong to it.
-- state "uncertain" with part_ids: it is about the part's own device type or function but depends on
-  a fact the inputs do not give: a feature the inputs neither show nor exclude (a logo, replaceable
-  light source modules, a particular mounting position), or a rule for optional or additional
-  devices of the part's own function ("where optional lamps are installed", "if fitted"). The spec
-  being silent is never enough for not_applicable; an obligation for a device type or function the
-  part does not have is not_applicable, not uncertain.
-- reason: one sentence naming the fact or the device type it turns on.
+You decide which obligations of one regulation section bind which parts of a product.
+
+UN Regulations prescribe outcomes: what a device or system must achieve, under which conditions,
+plus some design rules and markings. A product specification describes construction: parts,
+materials, layout. So an obligation binds a part because of what the part is and does: its function,
+its role on the vehicle, what it emits, transmits, absorbs or touches, what it is exposed to, and where
+it is installed. The specification is almost always silent about outcomes, and its silence is never a
+reason to exclude. Every obligation below is a product outcome, outcome condition, design rule or
+permission (its role is shown); text that only instructs a laboratory or the approval authority has
+already been removed.
+
+Return exactly one decision per obligation id, ids copied exactly:
+- "applicable" with part_ids: it binds those parts through their function, behaviour, role or
+  installation. This includes the general requirements for every device the regulation covers, the
+  installation rules for a part's function, markings, the conditions under which an outcome is
+  defined or measured, and design or installation options open to the part.
+- "uncertain" with part_ids: it concerns a part's own function, but depends on a design choice, an
+  optional feature or an installation detail the inputs neither show nor exclude, or it is a rule for
+  optional or additional devices of the part's own function ("if fitted"). Uncertain obligations
+  are reported for an engineer to confirm.
+- "not_applicable" with part_ids [] and one exclusion:
+  - "other_function": it is about another device type or function than the parts have. When a part
+    only houses, frames or mounts a device that is not part of the product, that device's own
+    outcomes are other_function for the part, except where they constrain the part itself (its
+    position, openings, or obstruction of the device);
+  - "other_class": it is for a class, category, colour or variant of the device that the parts cannot
+    be, given their function, attributes and position; if they could be, use "uncertain";
+  - "other_vehicle": it is limited to vehicle categories the product is not for;
+  - "shown_absent": it needs a feature the inputs show is absent; cite that fact in fact_refs;
+  - "presence_only": it only says whether the vehicle must or may carry the device at all.
+- exclusion: null unless the state is "not_applicable".
+- reason: one sentence naming the function, attribute or fact the decision turns on.
 - fact_refs: ids of the parts' facts you relied on.
 - evidence_status: "met" when a fact shows it is fulfilled, "not_met" when a fact contradicts it
   (cite that fact), otherwise "evidence_needed".
@@ -60,7 +56,7 @@ lists feedback, answer every issue.
 def create_requirement_matcher(settings: Settings) -> AgentSpec:
     effort = "medium"  # low effort did not follow the not_applicable rules reliably (dev runs 1–2)
     return make_agent(name="requirement_matcher", description="Decides which obligations apply to a part",
-                      instruction=INSTRUCTION, output_schema=GroupMatchBatch, tier="judgment", effort=effort,
+                      instruction=INSTRUCTION, output_schema=GroupMatchBatch, tier="match", effort=effort,
                       settings=settings, tools=None if settings.cost_mode == "reduced" else [read_provision],
                       tool_call_limit=3)
 
@@ -68,7 +64,7 @@ def create_requirement_matcher(settings: Settings) -> AgentSpec:
 def match_context(batch: MatchInput) -> list[tuple[str, str]]:
     card = batch.card
     obligations = "\n".join(
-        f"[{o.obligation_id}] (paragraph {o.provision_id.split('#', 1)[1]}) {o.text}"
+        f"[{o.obligation_id}] (paragraph {o.provision_id.split('#', 1)[1]}, {o.role}) {o.text}"
         + (f" — condition: {o.condition}" if o.condition else "") for o in batch.obligations)
     definitions = "\n".join(f"[{d.provision_id}] {' '.join(d.text.split())[:600]}" for d in batch.definitions)
     return [

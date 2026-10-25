@@ -110,7 +110,8 @@ def make_fake_extractor(store: CorpusStore) -> Responder:
                 quote = m.group(0).strip()
                 items.append({"provision_id": pid, "no_obligation_reason": None, "obligations": [{
                     "subject": "the device", "condition": None, "constraint": "as stated", "quantities": [],
-                    "text": normalize(quote)[:2000], "quote": quote, "kind": "design"}]})
+                    "text": normalize(quote)[:2000], "quote": quote, "kind": "design",
+                    "role": "outcome"}]})
             else:
                 items.append({"provision_id": pid, "obligations": [], "no_obligation_reason": "fake: no shall clause"})
         return json.dumps({"items": items})
@@ -120,7 +121,8 @@ def make_fake_extractor(store: CorpusStore) -> Responder:
 def fake_matcher(prompt: str, req: FakeRequest) -> str:
     payload = extract_payload(prompt)
     return json.dumps({"decisions": [
-        {"obligation_id": oid, "state": "applicable", "part_ids": payload["part_ids"], "reason": "fake: applies",
+        {"obligation_id": oid, "state": "applicable", "part_ids": payload["part_ids"], "exclusion": None,
+         "reason": "fake: applies",
          "fact_refs": [], "evidence_status": "evidence_needed", "test_case": "Inspect and test per the paragraph."}
         for oid in payload["obligation_ids"]]})
 

@@ -1,6 +1,6 @@
 # Architecture
 
-Certivity requirements engine: a component's specification and/or exploded view in, the engineering requirements it must meet under the challenge's UN Regulations out, each cited to regulation, base version, page and paragraph. Specialist LLM agents do the judgment; a plain-Python orchestrator, code gates and reviewer agents keep them honest. How agents are built (rules for prompts, tools, the SDK) is in `AGENTS.md`; the product design is in `Product_Vision/compliance-pipeline/`.
+Certivity requirements engine: a component's specification and/or exploded view in, the engineering requirements it must meet under the challenge's UN Regulations out, each cited to regulation, base version, page and paragraph. Specialist LLM agents do the judgment; a plain-Python orchestrator, code gates and reviewer agents keep them honest. How agents are built (rules for prompts, tools, the SDK) is in `AGENTS.md`; the product design is in `Product_Vision/compliance-pipeline/`, and the general, outcome-based funnel this branch implements in `Product_Vision/compliance-pipeline/2026-10-25-general-pipeline.md`.
 
 ## Pipeline
 
@@ -23,10 +23,10 @@ The order is fixed code (`app/pipeline/main.py`, `STEPS`); no model decides the 
 | Step | Who | What it decides |
 |---|---|---|
 | analyze | `product_analyst` (judgment tier, vision), checked by `profile_verifier` (fast) | Parts, functions, properties, materials and facts with verbatim quotes. When the spec lists the main parts, those are the parts; unlabelled drawing elements go to `unknowns`. |
-| scope | `scope_narrower` (judgment, high effort, ≤15 corpus tool calls) against one card per regulation; `recall_auditor` (review tier) plus a full-text safety net challenge what was excluded | Applicable / uncertain / not applicable per regulation, and the sections per part: markings, general requirements, sections for the part's own functions, component-level sections, annexes only when they set limits, pass/fail criteria or test levels. |
+| scope | `CERTIVITY_SCOPE_SAMPLES` (default 3) independent `scope_narrower` samples (judgment, high effort, ≤15 corpus tool calls) against one card per regulation, each with `recall_auditor` (review tier) and a full-text safety net; code merges them by vote (`app/matching/scope_vote.py`: kept by 2 of 3, sections unioned) | Applicable / uncertain / not applicable per regulation, and the sections per part: markings, general requirements, sections for the part's own functions, component-level sections, annexes only when they set limits, pass/fail criteria or test levels. |
 | collect | code (`app/matching/collect.py`) | Provisions under the chosen sections plus paragraphs they reference, one level deep. A reference to a whole annex adds nothing. |
-| extract | `obligation_extractor` (fast tier, medium effort), product-agnostic, cached per provision text and `EXTRACTOR_VERSION` | One obligation per binding clause: list items split, either/or lists kept whole, test-method sentence plus table rows, exceptions kept with their rule, permissions on the product extracted. Quotes must be verbatim. |
-| match | `requirement_matcher` (judgment, medium effort), `match_reviewer` (review tier) | Which obligations bind which parts: applicable, uncertain (conditions the inputs do not settle, kept in the output) or not applicable (other devices, authority procedure, lab mechanics, alternative tests, impossible device categories). |
+| extract | `obligation_extractor` (fast tier, medium effort), product-agnostic, cached per provision text and `EXTRACTOR_VERSION` | One obligation per binding clause: list items split, either/or lists kept whole, test-method sentence plus table rows, exceptions kept with their rule, permissions extracted. Each gets a role: outcome, outcome condition, design rule, permission, procedure or administrative. Quotes must be verbatim. |
+| match | code drops procedure and administrative roles (recorded as not applicable); `requirement_matcher` and `match_reviewer` (match tier) | Which outcomes bind which parts, by function and behaviour: applicable, uncertain (a design choice the inputs do not settle, kept in the output) or not applicable with one exclusion: other function, other class, other vehicle category, shown absent, presence only. |
 | assemble | code, citation gate, `output_auditor` (judgment) | One requirement per obligation, cited to the base version; quote checked on the cited page ±1; duplicates dropped, merged items re-extracted. |
 | finalize | code | `tools/validate.py`, offline score, manifest, report, provenance sidecar. |
 
@@ -34,7 +34,7 @@ Every producing agent runs in a bounded verify loop: producer → code gate (sch
 
 ## Models and cost
 
-All calls go through `app/llm.py` (one `AsyncAnthropic` client, budget guard, token and cost log, fake model for tests). Three tiers from the environment: `ANTHROPIC_MODEL` (judgment), `ANTHROPIC_MODEL_FAST` (fast), `ANTHROPIC_MODEL_REVIEW` (review). `CERTIVITY_COST_MODE=reduced` runs the match reviewer only on disputed batches and skips the extraction verifier.
+All calls go through `app/llm.py` (one `AsyncAnthropic` client, budget guard, token and cost log, fake model for tests). Four tiers from the environment: `ANTHROPIC_MODEL` (judgment), `ANTHROPIC_MODEL_FAST` (fast), `ANTHROPIC_MODEL_REVIEW` (review) and `ANTHROPIC_MODEL_MATCH` (matcher and match reviewer; Opus scored best there). `CERTIVITY_COST_MODE=reduced` runs the match reviewer only on disputed batches and skips the extraction verifier.
 
 A dev run (rear lamp, reduced mode) costs $3–6. The budget guard (`CERTIVITY_MAX_COST_USD`) stops a run when spent; set it to 20 for benchmark runs, because a stopped run leaves undecided obligations as uncertain.
 

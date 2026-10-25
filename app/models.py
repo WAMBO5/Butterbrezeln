@@ -17,6 +17,8 @@ ProvisionKind = Literal[
     "scope", "definition", "administrative", "requirement", "test_procedure", "conformity", "transitional", "form", "other"
 ]
 DecisionState = Literal["applicable", "uncertain", "not_applicable"]
+# The only grounds on which the matcher may exclude an obligation from a part (spec silence is not one).
+ExclusionReason = Literal["other_function", "other_class", "other_vehicle", "shown_absent", "presence_only"]
 EvidenceStatus = Literal["met", "not_met", "evidence_needed"]
 
 
@@ -108,6 +110,10 @@ class RegulationCard(_Model):
 
 
 ObligationKind = Literal["design", "performance", "marking", "test", "documentation", "conformity"]
+# What an obligation is, independent of any product: an outcome the product must achieve, a condition
+# that defines or measures an outcome, a design rule, a permission; or text that is no product
+# requirement at all (how a laboratory runs a test, the approval procedure).
+ObligationRole = Literal["outcome", "outcome_condition", "design_rule", "permission", "procedure", "administrative"]
 
 
 class ExtractedObligation(_Model):
@@ -118,6 +124,7 @@ class ExtractedObligation(_Model):
     text: str = Field(max_length=TEXT_LIMIT)
     quote: str
     kind: ObligationKind
+    role: ObligationRole
 
 
 class Obligation(ExtractedObligation):
@@ -125,6 +132,7 @@ class Obligation(ExtractedObligation):
     provision_id: str
     extractor_version: str
     verified: bool
+    role: ObligationRole = "outcome_condition"  # obligations cached before roles existed count as kept
 
 
 class ProvisionObligations(_Model):
@@ -217,6 +225,7 @@ class GroupDecision(_Model):
     obligation_id: str
     state: DecisionState
     part_ids: list[str]
+    exclusion: ExclusionReason | None
     reason: str
     fact_refs: list[str]
     evidence_status: EvidenceStatus

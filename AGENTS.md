@@ -23,7 +23,7 @@ FastAPI service / CLI
 
 1. **All LLM calls go through `app/llm.py`.** It owns the single `AsyncAnthropic` client, logs tokens and cost per agent, enforces the per-run budget, and is where tests swap in a fake model. Nothing else under `app/` imports `anthropic`.
 2. **Typed output only.** One-shot agents use `client.messages.parse(..., output_format=SomeModel)` and read `response.parsed_output`. Tool-using agents pass `output_format=SomeModel` to `client.beta.messages.tool_runner(...)`. Never parse JSON out of free text.
-3. **Model IDs from the environment.** One variable per tier: `ANTHROPIC_MODEL` (judgment), `ANTHROPIC_MODEL_FAST` (fast) and `ANTHROPIC_MODEL_REVIEW` (review; defaults to `ANTHROPIC_MODEL`), bare IDs such as `claude-sonnet-5-5`. No model-ID literal under `app/` (prices live in `app/config/prices.yaml`), no other provider.
+3. **Model IDs from the environment.** One variable per tier: `ANTHROPIC_MODEL` (judgment), `ANTHROPIC_MODEL_FAST` (fast), `ANTHROPIC_MODEL_REVIEW` (review; defaults to `ANTHROPIC_MODEL`) and `ANTHROPIC_MODEL_MATCH` (matcher and match reviewer; defaults to `ANTHROPIC_MODEL`), bare IDs such as `claude-sonnet-5-5`. No model-ID literal under `app/` (prices live in `app/config/prices.yaml`), no other provider.
 4. **Current-model API rules.** Sonnet 5.5 and Opus 5.5 reject the old patterns with a 400:
    - no forced `tool_choice` (`any` / `tool`): use structured output, or `auto` and check that the tool was called;
    - leave thinking adaptive (omit `thinking`) and set depth and cost with `output_config={"effort": ...}`; `{"type": "disabled"}` and `budget_tokens` are rejected;

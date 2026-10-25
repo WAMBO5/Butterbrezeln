@@ -10,7 +10,8 @@
         "quantities": [],
         "text": "Every piece of safety glazing material, including the samples and test pieces submitted for approval, shall bear a trade name or mark of the manufacturer as listed under item 3 of Annex 1.",
         "quote": "Every piece of safety glazing material, including the samples and test pieces submitted for approval, shall bear a trade name or mark of the manufacturer as listed under item 3 of Annex 1",
-        "kind": "marking"
+        "kind": "marking",
+        "role": "design_rule"
       },
       {
         "subject": "Manufactured safety glazing parts",
@@ -19,7 +20,8 @@
         "quantities": [],
         "text": "Manufactured safety glazing parts shall bear the ECE Regulation No. 43 number allocated to the prime manufacturer.",
         "quote": "Manufactured parts shall bear the ECE Regulation No. 43 number allocated to the prime manufacturer",
-        "kind": "marking"
+        "kind": "marking",
+        "role": "design_rule"
       },
       {
         "subject": "The marking on the safety glazing material",
@@ -28,7 +30,8 @@
         "quantities": [],
         "text": "The marking on the safety glazing material shall be clearly legible and indelible.",
         "quote": "The marking shall be clearly legible and indelible.",
-        "kind": "marking"
+        "kind": "marking",
+        "role": "design_rule"
       }
     ]
   },
@@ -49,7 +52,8 @@
         ],
         "text": "When a device to project the ball is used in the ball test, the tolerance on velocity shall be ±1 per cent of the velocity equivalent to that obtained by the free fall.",
         "quote": "When a device to project the ball is used, the tolerance on velocity shall be ±1 per cent of the velocity equivalent to that obtained by the free fall.",
-        "kind": "test"
+        "kind": "test",
+        "role": "procedure"
       }
     ]
   },
@@ -70,7 +74,8 @@
         ],
         "text": "Parts of the locking system to be fitted in the passenger compartment shall provide the degree of protection IP 40 in accordance with IEC Publication 529 1989.",
         "quote": "IP 40 for parts to be fitted in the passenger compartment",
-        "kind": "design"
+        "kind": "design",
+        "role": "outcome"
       },
       {
         "subject": "Parts of the locking system fitted in the passenger compartment of roadsters/convertibles and cars with moveable roof-panels",
@@ -85,7 +90,8 @@
         ],
         "text": "Parts of the locking system to be fitted in the passenger compartment of roadsters/convertibles and cars with moveable roof-panels shall provide the degree of protection IP 42 in accordance with IEC Publication 529 1989 if the installation location requires a higher degree of protection than IP 40.",
         "quote": "IP 42 for parts to be fitted in the passenger compartment of roadsters/convertibles and cars with moveable roof-panels if the installation location requires a higher degree of protection than IP 40",
-        "kind": "design"
+        "kind": "design",
+        "role": "outcome"
       },
       {
         "subject": "All other parts of the locking system",
@@ -100,7 +106,8 @@
         ],
         "text": "All other parts of the locking system shall provide the degree of protection IP 54 in accordance with IEC Publication 529 1989.",
         "quote": "IP 54 for all other parts",
-        "kind": "design"
+        "kind": "design",
+        "role": "outcome"
       },
       {
         "subject": "The locking system manufacturer",
@@ -109,7 +116,8 @@
         "quantities": [],
         "text": "The locking system manufacturer shall specify in the installation instructions any restrictions on the positioning of any part of the installation with respect to dust, water and temperature.",
         "quote": "The locking system manufacturer shall specify in the installation instructions any restrictions on the positioning of any part of the installation with respect to dust, water and temperature.",
-        "kind": "documentation"
+        "kind": "documentation",
+        "role": "design_rule"
       }
     ]
   },

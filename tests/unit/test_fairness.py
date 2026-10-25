@@ -28,3 +28,26 @@ def test_no_golden_text_in_prompts():
 
 def test_agent_modules_found():
     assert len(list(iter_agent_modules())) >= 2
+
+
+def test_prompts_name_no_regulation_paragraph_or_count_target():
+    """Agent instructions stay general: no regulation numbers, paragraph numbers or target counts that
+    would tune them to the worked example."""
+    import re
+
+    pattern = re.compile(r"\bUN R\s?\d|\bR\s?\d{1,3}\b|Regulation No\.? ?\d|paragraph \d|§\s?\d|\b\d{2,} requirements")
+    offenders = {m.__name__: pattern.findall(m.INSTRUCTION) for m in iter_agent_modules() if pattern.search(m.INSTRUCTION)}
+    assert offenders == {}
+
+
+# Agents that run on every case: they must not carry the worked example's product into their rules.
+PIPELINE_AGENTS = ("product_analyst", "profile_verifier", "scope_narrower", "recall_auditor", "obligation_extractor",
+                   "extraction_verifier", "requirement_matcher", "match_reviewer", "output_auditor")
+DEV_CASE_NOUNS = ("lamp", "bumper", "bezel", "photometr", "illuminant", "reflector", "reversing", "headlight")
+
+
+def test_pipeline_prompts_name_no_dev_case_product():
+    modules = {m.__name__.rsplit(".", 1)[1]: m for m in iter_agent_modules()}
+    offenders = {name: [w for w in DEV_CASE_NOUNS if w in modules[name].INSTRUCTION.casefold()]
+                 for name in PIPELINE_AGENTS}
+    assert {k: v for k, v in offenders.items() if v} == {}

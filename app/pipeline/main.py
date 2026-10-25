@@ -33,7 +33,7 @@ from app.matching.assemble import assemble
 from app.matching.case_loader import load_case
 from app.matching.collect import SectionCandidates, collect_candidates
 from app.matching.extraction import make_extraction_batches
-from app.matching.match import make_match_batches
+from app.matching.match import make_match_batches, role_decisions
 from app.matching.repair import apply_output_review
 from app.matching.submission import score_submission, to_submission, validate_submission
 from app.models import CaseInput, Issue, MatchDecision, Obligation, RegulationCard, RegulationVersion, Review
@@ -41,7 +41,7 @@ from app.pipeline.calls import AgentCall, bind_call, gather_limited
 from app.pipeline.extraction import BATCH_SIZE, extract_verified, reextract
 from app.pipeline.match import match_verified
 from app.pipeline.profile import analyze_product
-from app.pipeline.scope import narrow_scope, placeholder_card
+from app.pipeline.scope import narrow_scope_voted, placeholder_card
 from app.pipeline.state import RunState
 from app.tools.corpus_tools import bind_store
 
@@ -143,12 +143,12 @@ async def step_scope(rc: RunContext) -> None:
 
     ctx = ScopeContext(profile=rc.state.profile, versions=rc.deps.base_versions, cards=rc.deps.cards,
                        store=rc.deps.store)
-    result, hits = await narrow_scope(ctx, rc.settings, rc.call, rc.ledger)
-    rc.state.scope_loop = result.summary()
+    plan, summary, hits = await narrow_scope_voted(ctx, rc.settings, rc.call, rc.ledger)
+    rc.state.scope_loop = summary
     rc.state.safety_hits = [h.__dict__ for h in hits[:60]]
-    if not result.resolved:
-        rc.state.give_ups.append(f"scope_plan: {'; '.join(i.reason for i in result.open_issues)[:300]}")
-    rc.state.plan = apply_pinned(result.output, rc.state.human_actions) if result.output else None
+    if not summary["resolved"]:
+        rc.state.give_ups.append(f"scope_plan: {'; '.join(i['reason'] for i in summary['open_issues'])[:300]}")
+    rc.state.plan = apply_pinned(plan, rc.state.human_actions) if plan else None
     if rc.state.plan is None:
         rc.state.error = "no scope plan could be produced"
 
@@ -189,11 +189,18 @@ def _by_provision(obligations: dict[str, Obligation]) -> dict[str, list[Obligati
 
 
 async def _match(rc: RunContext, cands: list[SectionCandidates], obligations: dict[str, Obligation]) -> list[MatchDecision]:
-    batches = make_match_batches(cands, _by_provision(obligations), rc.state.profile, rc.deps.cards, rc.deps.store,
+    by_provision = _by_provision(obligations)
+    filtered = role_decisions(cands, by_provision)
+    if filtered:
+        roles: dict[str, int] = {}
+        for oid in {d.obligation_id for d in filtered}:
+            roles[obligations[oid].role] = roles.get(obligations[oid].role, 0) + 1
+        rc.ledger.append("gate", "gate:role", None, None, {"not_product_requirements": roles})
+    batches = make_match_batches(cands, by_provision, rc.state.profile, rc.deps.cards, rc.deps.store,
                                  MATCH_BATCH_SIZE)
     results = await gather_limited([match_verified(b, rc.settings, rc.call, rc.ledger) for b in batches],
                                    rc.settings.concurrency)
-    return [d for r in results for d in r]
+    return filtered + [d for r in results for d in r]
 
 
 async def step_match(rc: RunContext) -> None:

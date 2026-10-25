@@ -11,19 +11,19 @@ from app.models import GroupMatchBatch, Review
 
 INSTRUCTION = """\
 You review a matcher's decisions on which obligations of one regulation section bind which parts of
-a product. You see the matcher's full context and its decisions. Flag only real errors:
-- "silent_spec": not_applicable that rests only on the spec being silent; proposed "uncertain".
-- "wrong_device": applicable for an obligation about another device type or function, or for a part
-  it does not bind; proposed "not_applicable".
-- "missed": not_applicable, or a part left out, for an obligation that does bind it; proposed
-  "applicable". These are correctly not_applicable, so do not flag them: the mechanics of how a
-  laboratory carries out a test (preparing, mounting, positioning or rotating the sample, masking,
-  instrument set-up, recording, calculation); the specification or certification of test equipment
-  (impactors, dummies, barriers, instruments); alternative test methods and tests that apply only at
-  the manufacturer's request; the approval and conformity-of-production procedure; entries that only
-  say whether the vehicle must carry the device; and categories or classes of a device the part
-  cannot belong to. Do flag as "missed" a not_applicable test condition (test voltage, measuring
-  field, illuminant, frequency range, test solution) or a feature the inputs do not exclude.
+a product. You see the matcher's full context and its decisions. Regulations prescribe outcomes, and a
+specification describes construction, so an obligation binds a part through the part's function,
+behaviour, role or installation; the specification's silence about an outcome is never a reason to
+exclude it. The matcher may exclude an obligation only as other_function, other_class,
+other_vehicle, shown_absent or presence_only. Flag only real errors:
+- "silent_spec": not_applicable that rests only on the specification not mentioning the outcome or
+  the feature; proposed "uncertain" or "applicable".
+- "wrong_function": applicable or uncertain for an obligation about another device type, function,
+  class or vehicle category, or for a part it does not bind; proposed "not_applicable" with the
+  exclusion that holds.
+- "bad_exclusion": not_applicable with an exclusion that does not hold for these parts (another
+  function that the part in fact performs, a class it could be, a feature the inputs do not show
+  absent); proposed "applicable" or "uncertain".
 - "unbacked_evidence": evidence_status met or not_met that no cited fact supports; proposed
   "evidence_needed".
 Each issue: target_id the obligation id, reason, evidence (fact or provision ids), proposed the
@@ -33,12 +33,13 @@ corrected value. Return verdict "pass" with no issues when the decisions are sou
 
 def create_match_reviewer(settings: Settings) -> AgentSpec:
     return make_agent(name="match_reviewer", description="Reviews the matcher's decisions",
-                      instruction=INSTRUCTION, output_schema=Review, tier="review", effort="high", settings=settings)
+                      instruction=INSTRUCTION, output_schema=Review, tier="match", effort="high", settings=settings)
 
 
 def build_match_review_prompt(batch: MatchInput, out: GroupMatchBatch) -> str:
-    decisions = "\n".join(f"[{d.obligation_id}] {d.state} parts={d.part_ids} / {d.evidence_status} "
-                          f"facts={d.fact_refs} — {d.reason}" for d in out.decisions)
+    decisions = "\n".join(f"[{d.obligation_id}] {d.state}{f' ({d.exclusion})' if d.exclusion else ''} "
+                          f"parts={d.part_ids} / {d.evidence_status} facts={d.fact_refs} — {d.reason}"
+                          for d in out.decisions)
     return render_prompt(task=f"Review the decisions for the parts {', '.join(batch.part_ids)}.",
                          context=[*match_context(batch), ("Matcher decisions", decisions)], untrusted=[],
                          payload={"part_ids": batch.part_ids})

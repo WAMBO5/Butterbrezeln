@@ -42,6 +42,8 @@ class Settings:
     prices_path: Path
     fake_llm: bool
     cost_mode: str = "full"  # "reduced": match_reviewer only on disputed batches, matcher at low effort
+    model_match: str | None = None  # requirement_matcher and match_reviewer; None = model_judgment
+    scope_samples: int = 3  # independent scope_narrower samples, merged by vote
 
     @property
     def catalog_path(self) -> Path:
@@ -100,4 +102,6 @@ def load_settings(env: Mapping[str, str] | None = None, *, fake_llm: bool = Fals
         prices_path=Path(env.get("CERTIVITY_PRICES") or _DEFAULT_PRICES),
         fake_llm=fake_llm,
         cost_mode=(_str(env, "CERTIVITY_COST_MODE") or "full").lower(),
+        model_match=_str(env, "ANTHROPIC_MODEL_MATCH") or judgment,
+        scope_samples=max(1, int(env.get("CERTIVITY_SCOPE_SAMPLES") or 3)),
     )

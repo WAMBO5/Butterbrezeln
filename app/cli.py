@@ -68,7 +68,8 @@ def _register_fakes(settings: Settings, deps) -> None:
 
 def cmd_doctor(args, settings: Settings) -> int:
     print(f"API key: {'set' if settings.api_key_present else 'missing'}")
-    print(f"models: judgment={settings.model_judgment} fast={settings.model_fast} review={settings.model_review}")
+    print(f"models: judgment={settings.model_judgment} fast={settings.model_fast} review={settings.model_review} "
+          f"match={settings.model_match}")
     texts = list(settings.text_root.rglob("*.txt")) if settings.text_root.exists() else []
     print(f"corpus text: {len(texts)} files")
     built = settings.catalog_path.exists()
