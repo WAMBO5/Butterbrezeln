@@ -1,8 +1,14 @@
 {
   "iso3": "CHN",
   "name": "China",
-  "covers": {"products": ["rear lamp", "tail lamp", "rear combination lamp", "rear reflector", "heckleuchte", "rückleuchte"],
-             "regulations": ["UN R148", "UN R150"], "product": "rear lamps and retro-reflectors"},
+  "covers": [
+    {"id": "rear_lamp", "products": ["rear lamp", "tail lamp", "rear combination lamp", "rear reflector", "heckleuchte", "rückleuchte"],
+     "regulations": ["UN R148", "UN R150"], "product": "rear lamps and retro-reflectors"},
+    {"id": "front_bumper", "products": ["bumper", "front bumper", "stoßfänger", "frontstoßfänger"],
+     "regulations": ["UN R10", "UN R42", "UN R48", "UN R127", "UN R148"], "product": "front bumpers",
+     "summary": "For a front bumper (M1) the regulatory map establishes no bumper-specific certification route in China. The assembly is assessed through vehicle-level standards – low-speed protection (GB 17354 family; replacement designation and transition unresolved) and pedestrian protection (GB 24550-2024, implementation 1 Jan 2025) – and through function-specific standards for what is integrated in it: lighting (GB 5920-2024, GB 4599-2024, installation GB 4785-2019), the licence-plate bracket (GB 15741-1995), the towing device (GB 32087) and the LiDAR (GB 44703-2024). Radio, EMC, driver-assistance and EV charge-port requirements are still open. All of this is a screening reference from a research draft that was not independently reverified, not a compliance result.",
+     "certification": {"scheme": "Not established for the bumper assembly", "type": "vehicle-level assessment; no component-level route established in the regulatory map", "marking": "not established", "summary": "The regulatory map names no compulsory-certification or self-declaration route for a front-bumper assembly in China (the CCC rule found for rear lamps does not cover it). Integrated lamps are certified as lighting devices; the rest is assessed at vehicle level."}}
+  ],
   "summary": "China is not a party to the UNECE 1958 Agreement and does not recognise E approvals; rear lamps need mandatory CCC certification under CNCA-C11-07:2026 (type testing in a designated Chinese lab, factory inspection, ongoing surveillance) and a CCC mark on the product. Since 1 Jul 2025 the technical basis is the consolidated standards GB 5920-2024 (light-signalling devices, incl. tail, stop and reversing lamps) and GB 11564-2024 (retro-reflectors); installation on the vehicle follows GB 4785-2019. For stop and reversing lamps, GB 5920-2024 applies to new types from the 19th month after it took effect, and to existing approvals from the 37th month.",
   "standards": [
     {
@@ -34,6 +40,60 @@
       "title": "汽车及挂车倒车灯配光性能 / Photometric characteristics of reversing lamps for power-driven vehicles",
       "scope": "Previous standard for reversing lamps (in force from 1 Jun 2008); withdrawn according to the SAMR portal (废止), content moved into GB 5920-2024.",
       "url": "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=A35CA7AF722ADF2C3F20A5552100E984"
+    },
+    {
+      "id": "GB 17354 family (legacy GB 17354-1998)",
+      "title": "Front and rear protective devices for passenger cars (low-speed protection)",
+      "scope": "Bumper standard. An official project record identifies a replacement, but the final designation, effective edition and transition are unresolved (verification required, GAP-001).",
+      "url": "https://std.samr.gov.cn/gb/search/gbDetailed?id=E116673EC888A3B7E05397BE0A0AC6BF"
+    },
+    {
+      "id": "GB 24550-2024",
+      "title": "Protection of motor vehicle for pedestrians in the event of a collision",
+      "scope": "Mandatory national standard, implementation 1 Jan 2025. Whole-vehicle performance to which fascia, absorber and lower stiffener contribute; M1/N1 scope is subject to exclusions and transition clauses. Pedestrian-impact sensors are in scope where they are part of the vehicle's pedestrian-protection system.",
+      "url": "https://www.codeofchina.com/standard/GB24550-2024.html"
+    },
+    {
+      "id": "GB 11551-2014",
+      "title": "Protection of occupants in frontal collision",
+      "scope": "Whole-vehicle reference for the crash-energy-management structure, not a standalone approval of fascia or absorber. The current edition requires confirmation: the source cited is related official context, not direct verification of this edition (GAP-020).",
+      "url": "https://std.samr.gov.cn/gb/search/gbDetailed?id=8531C702DB986551E05397BE0A0ACD16"
+    },
+    {
+      "id": "GB 15741-1995",
+      "title": "Licence plates/brackets and their position on motor vehicles and trailers",
+      "scope": "Mandatory national standard. Applies to the front licence-plate bracket and position.",
+      "url": "https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=A535F01DC2C23BEFBE80517AAF1AE5C5"
+    },
+    {
+      "id": "GB 32087",
+      "title": "Light vehicle towing devices",
+      "scope": "Screening reference only: designation, current edition and cover-related implications are not established (verification required, GAP-021). The source is a policy listing, not the standard text.",
+      "url": "https://www.ncsti.gov.cn/zcfg/zcwj/202412/P020241225536583733430.pdf"
+    },
+    {
+      "id": "GB 4599-2024",
+      "title": "Road illumination devices and systems for motor vehicles",
+      "scope": "Mandatory national standard with a function-specific transition (certificates of previously certified products to be converted by 1 Jul 2028 according to the CQC notice). Applies to front fog or other road-illumination lamps integrated in the bumper.",
+      "url": "https://www.cqc.com.cn/www/col68/598399.html"
+    },
+    {
+      "id": "GB 44703-2024",
+      "title": "General requirements for optical radiation safety",
+      "scope": "Mandatory national standard, implementation 1 Oct 2026. Scope screening needed for an integrated LiDAR.",
+      "url": "https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=BAD778366DDDA8770924AE7B62A89D91"
+    },
+    {
+      "id": "GB/T 7247.1-2024",
+      "title": "Safety of laser products – Part 1: Equipment classification and requirements",
+      "scope": "Recommended national standard (not mandatory by itself), implementation 1 Apr 2025. Assessment reference for laser classification and safety of a LiDAR.",
+      "url": "https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=2F9BB6879FC20AE55B3A49CAF7FF98E8"
+    },
+    {
+      "id": "GB/T 30512-2014",
+      "title": "Requirements for prohibited substances on automobiles",
+      "scope": "Recommended national standard; mandatory status is not inferred. Screens vehicles and parts for lead, mercury, cadmium, hexavalent chromium, PBBs and PBDEs, with limits and exemptions. Applies as a screening reference to rear lamps and front bumpers.",
+      "url": "https://www.chinesestandard.us/products/gbt30512-2014"
     }
   ],
   "certification": {
@@ -47,6 +107,7 @@
   "deviations": [
     {
       "id": "CHN-01",
+      "applies_to": ["rear_lamp"],
       "topic": "Mandatory CCC certification instead of E approval",
       "un_reference": "UN R148",
       "national_requirement": "Exterior lamps and light-signalling devices for vehicles of categories M, N, O and L are subject to Chinese compulsory certification under CNCA-C11-07:2026 (valid from 1 Jul 2026). Certification model: type testing in a designated lab + initial factory inspection (quality assurance capability and product conformity) + surveillance after the certificate is issued. Testing covers all applicable points of the test standard (GB 5920, GB 11564). For light-signalling devices, 2 sample lamps including light sources must be submitted. An E approval under UN R148 does not replace the CCC; China is not a party to the 1958 Agreement and the rule does not provide for recognising foreign approvals.",
@@ -59,6 +120,7 @@
     },
     {
       "id": "CHN-02",
+      "applies_to": ["rear_lamp"],
       "topic": "CCC mark on the lamp",
       "un_reference": "UN R148",
       "national_requirement": "The applicant must print or mould the CCC mark in a clearly visible place on the outer surface of the product or on the type plate. It must be permanent and stay recognisable when installed, without damaging the vehicle or the product (CNCA-C11-07:2026, section 18). The E approval mark required by UN R148 does not meet this obligation.",
@@ -71,6 +133,7 @@
     },
     {
       "id": "CHN-03",
+      "applies_to": ["rear_lamp"],
       "topic": "Integrated retro-reflector: separate test standard GB 11564-2024",
       "un_reference": "UN R150",
       "national_requirement": "Retro-reflectors fall under GB 11564-2024 (in force since 1 Jul 2025). Under CNCA-C11-07:2026, certification units are formed separately per test standard (GB 5920 for light-signalling devices, GB 11564 for retro-reflective devices). For combination lamps with an integrated retro-reflector, 10 additional retro-reflector samples must be submitted. The test report covers, among other things, the coefficient of luminous intensity (CIL), colour, temperature resistance, water and dust tightness, resistance to fuel and lubricating oil, impact strength and corrosion. Type, class, shape, dimensions, material and colour of the retro-reflector must be stated in the product description. Separately moulded stand-alone retro-reflectors are outside the scope of the rule.",
@@ -83,6 +146,7 @@
     },
     {
       "id": "CHN-04",
+      "applies_to": ["rear_lamp"],
       "topic": "Test standard GB 5920-2024 and transition periods",
       "un_reference": "UN R148",
       "national_requirement": "GB 5920-2024 (in force since 1 Jul 2025) replaces, among others, GB 5920-2019 (position and stop lamps) and GB 15235-2007 (reversing lamps); according to the SAMR standards portal both old standards are withdrawn. Under section 11 of the standard, it applies to new types of position lamps from the date it took effect, to new types of stop and reversing lamps from the 19th month (i.e. from 1 Jan 2027) and to already type-approved devices from the 37th month (i.e. from 1 Jul 2028). When a standard changes, the CCC certificate must be switched over within the deadline set by the authority (CNCA-C11-07:2026, 17.2.1).",
@@ -95,6 +159,7 @@
     },
     {
       "id": "CHN-05",
+      "applies_to": ["rear_lamp"],
       "topic": "Documentation of materials and key parts (outer lens)",
       "un_reference": null,
       "national_requirement": "The CCC application requires a product description covering, among other things, the material and coating of the outer lens, light colour, light source type or LED modules, reflector material, and a list of key parts and raw materials with name, type, specification and supplier (CNCA-C11-07:2026, annex 3). The test samples must match production in key parts and raw materials. Technical changes to safety-relevant key parts or raw materials require an approved certificate change; without it the products may not be delivered, sold or imported (17.2.1). The certification body decides which parts count as key parts (13.3).",
@@ -107,6 +172,7 @@
     },
     {
       "id": "CHN-06",
+      "applies_to": ["rear_lamp"],
       "topic": "Factory inspection and conformity control plan",
       "un_reference": null,
       "national_requirement": "The initial factory inspection checks quality assurance capability and product conformity. The inspection team has at least 2 people, the lamp must be in production during the inspection, and top management must attend the opening and closing meetings. The manufacturer must draw up a conformity control plan (一致性控制计划) and submit a yearly report on how it is implemented. After certification there are follow-up inspections and/or spot checks at the factory, the port or in the market (CNCA-C11-07:2026, sections 7, 12, 14 and annex 1).",
@@ -116,6 +182,149 @@
       "check": {"type": "always"},
       "source_url": "https://www.cnca.gov.cn/zwxx/gg/2026/art/2026/art_28b7746f4ad74ad3b7ca104b124e4ac9.html",
       "verified": true
+    },
+    {
+      "id": "CHN-07",
+      "applies_to": ["front_bumper"],
+      "topic": "Low-speed bumper protection: GB 17354 family, replacement unresolved",
+      "un_reference": null,
+      "national_requirement": "Front and rear protective devices of passenger cars are covered by the GB 17354 family (legacy edition GB 17354-1998, low-speed protection). The official project record names a replacement, but the final designation, effective edition and transition have not been established (regulatory map GAP-001, status verification_required).",
+      "effort": "testing",
+      "spec_section": "Function",
+      "suggestion": "Confirm with the certification body or the vehicle maker which GB 17354 edition applies to the vehicle programme and from when, and plan the low-speed impact verification of fascia, absorber and lower stiffener against that edition.",
+      "check": {"type": "always"},
+      "source_url": "https://std.samr.gov.cn/gb/search/gbDetailed?id=E116673EC888A3B7E05397BE0A0AC6BF",
+      "verified": false
+    },
+    {
+      "id": "CHN-08",
+      "applies_to": ["front_bumper"],
+      "topic": "Pedestrian protection: GB 24550-2024",
+      "un_reference": null,
+      "national_requirement": "GB 24550-2024 (protection of motor vehicles for pedestrians in a collision; mandatory, implementation 1 Jan 2025) applies to the whole vehicle, and fascia, absorber and lower stiffener contribute to the result. M1/N1 scope is subject to exclusions and transition clauses. Pedestrian-impact sensors count only where they are part of the vehicle's pedestrian-protection system.",
+      "effort": "testing",
+      "spec_section": "Function",
+      "suggestion": "Give the vehicle maker the pedestrian-impact data of fascia, absorber and lower stiffener (energy absorption, stiffness), say whether the pedestrian-impact sensors belong to the pedestrian-protection system, and confirm the exclusions and transition clauses of GB 24550-2024 for the target vehicle.",
+      "check": {"type": "spec_contains", "keywords": ["pedestrian"]},
+      "source_url": "https://www.codeofchina.com/standard/GB24550-2024.html",
+      "verified": false
+    },
+    {
+      "id": "CHN-09",
+      "applies_to": ["front_bumper"],
+      "topic": "Frontal occupant protection: GB 11551 edition unconfirmed",
+      "un_reference": null,
+      "national_requirement": "GB 11551-2014 (protection of occupants in a frontal collision) is a whole-vehicle reference for the crash-energy-management structure, not a standalone approval of fascia or absorber. The current edition has not been confirmed from a direct authoritative text (GAP-020).",
+      "effort": "documentation",
+      "spec_section": "Function",
+      "suggestion": "Confirm the current GB 11551 edition with the vehicle maker and document the crash-energy-management structure (absorber, lower stiffener) so it can be integrated in the vehicle assessment.",
+      "check": {"type": "spec_contains", "keywords": ["energy", "absorber", "stiffener"]},
+      "source_url": "https://std.samr.gov.cn/gb/search/gbDetailed?id=8531C702DB986551E05397BE0A0ACD16",
+      "verified": false
+    },
+    {
+      "id": "CHN-10",
+      "applies_to": ["front_bumper"],
+      "topic": "Front licence-plate bracket and position: GB 15741-1995",
+      "un_reference": null,
+      "national_requirement": "GB 15741-1995 (mandatory) sets requirements for licence plates, their brackets and their position on motor vehicles and trailers; it applies to the front plate holder in the bumper.",
+      "effort": "documentation",
+      "spec_section": "Main Parts",
+      "suggestion": "Check the front plate holder (bracket and position) against GB 15741-1995 together with the vehicle maker.",
+      "check": {"type": "spec_contains", "keywords": ["licence plate", "license plate", "number plate"]},
+      "source_url": "https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=A535F01DC2C23BEFBE80517AAF1AE5C5",
+      "verified": false
+    },
+    {
+      "id": "CHN-11",
+      "applies_to": ["front_bumper"],
+      "topic": "Towing-device cover: GB 32087 unconfirmed",
+      "un_reference": null,
+      "national_requirement": "GB 32087 (light vehicle towing devices) is only a screening reference: designation, current edition and cover-related implications are not confirmed (GAP-021). The actual accessibility and operation of the towing device behind the cover must be checked.",
+      "effort": "documentation",
+      "spec_section": "Main Parts",
+      "suggestion": "Verify the designation and edition of GB 32087 and check that the towing-device cover does not impede access to or use of the towing device.",
+      "check": {"type": "spec_contains", "keywords": ["towing"]},
+      "source_url": "https://www.ncsti.gov.cn/zcfg/zcwj/202412/P020241225536583733430.pdf",
+      "verified": false
+    },
+    {
+      "id": "CHN-12",
+      "applies_to": ["front_bumper"],
+      "topic": "Integrated lighting: classification by function (GB 5920-2024, GB 4599-2024, GB 4785-2019)",
+      "un_reference": "UN R148",
+      "national_requirement": "Lamps integrated in the bumper are classified by their actual function. Signalling functions (daytime running or position lamp, side signalling) fall under GB 5920-2024 with its function-specific transition, front fog or other road-illumination lamps under GB 4599-2024, and installation under GB 4785-2019. The luminous-logo provisions of GB 5920-2024 are not a blanket permission for decorative lighting. The plastic lens is assessed as part of the finished lighting device, not by its resin designation (PC, PMMA) alone.",
+      "effort": "testing",
+      "spec_section": "Main Parts",
+      "suggestion": "Classify each integrated lamp by function (signalling, road illumination, decorative), assign it to GB 5920-2024 or GB 4599-2024, check its installation against GB 4785-2019, and do not rely on the PC lens grade alone.",
+      "check": {"type": "spec_contains", "keywords": ["lighting", "lamp", "light"]},
+      "source_url": "https://www.cqc.com.cn/www/col68/598399.html",
+      "verified": false
+    },
+    {
+      "id": "CHN-13",
+      "applies_to": ["front_bumper"],
+      "topic": "LiDAR: optical-radiation safety (GB 44703-2024)",
+      "un_reference": null,
+      "national_requirement": "GB 44703-2024 (general requirements for optical radiation safety; mandatory, implementation 1 Oct 2026) needs a scope screening for the integrated LiDAR. GB/T 7247.1-2024 (laser product safety, classification) is the recommended assessment reference, not a standalone mandatory law.",
+      "effort": "testing",
+      "spec_section": "Main Parts",
+      "suggestion": "Screen the LiDAR against the scope of GB 44703-2024, classify it under GB/T 7247.1-2024 and ask the sensor supplier for its optical-safety classification report.",
+      "check": {"type": "spec_contains", "keywords": ["lidar"]},
+      "source_url": "https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=BAD778366DDDA8770924AE7B62A89D91",
+      "verified": false
+    },
+    {
+      "id": "CHN-14",
+      "applies_to": ["front_bumper"],
+      "topic": "Radio, EMC and driver-assistance functions of the sensors: instruments not identified",
+      "un_reference": "UN R10",
+      "national_requirement": "The regulatory map identifies no precise Chinese instrument for the radio authorisation of the radar (operating band and transmitter configuration still to be determined, GAP-004), the keyless-entry aerial (passive antenna, receiver and transmitter to be classified separately, GAP-012), the EMC of the electronic subassemblies (GAP-006) or driver-assistance/AEB functions that use radar or camera (GAP-007, GAP-008). No identified instrument does not mean the function is unregulated.",
+      "effort": "documentation",
+      "spec_section": "Main Parts",
+      "suggestion": "List operating band and transmitter configuration of the radar and the keyless-entry aerial, and which sensors feed driver-assistance functions, and have the applicable Chinese radio, EMC and driver-assistance requirements identified before the design is frozen.",
+      "check": {"type": "spec_contains", "keywords": ["radar", "keyless", "aerial", "camera"]},
+      "source_url": null,
+      "verified": false
+    },
+    {
+      "id": "CHN-15",
+      "applies_to": ["front_bumper"],
+      "topic": "EV charge port: Chinese interface and vehicle electrical-safety requirements not verified",
+      "un_reference": null,
+      "national_requirement": "The Chinese inlet, charging-interface and vehicle electrical-safety requirements for the EV charge port are not sufficiently verified (GAP-015). A cosmetic charge-port door or cover is distinct from the inlet, interlock and high-voltage hardware.",
+      "effort": "documentation",
+      "spec_section": "Main Parts",
+      "suggestion": "Separate the cosmetic charge-port cover from inlet, interlock and high-voltage hardware in the specification and have the Chinese charging-interface and EV electrical-safety requirements identified for the vehicle.",
+      "check": {"type": "spec_contains", "keywords": ["fuel filler", "charge port", "charging"]},
+      "source_url": null,
+      "verified": false
+    },
+    {
+      "id": "CHN-16",
+      "applies_to": ["front_bumper"],
+      "topic": "Exterior projections of fascia and grille: applicable standard not identified",
+      "un_reference": null,
+      "national_requirement": "The standard, edition and clauses that apply to exterior projections of the fascia and grille were not conclusively established (GAP-002).",
+      "effort": "documentation",
+      "spec_section": "Main Parts",
+      "suggestion": "Identify the applicable standard, edition and clauses for exterior projections of fascia and grille before design freeze.",
+      "check": {"type": "spec_contains", "keywords": ["fascia", "grill"]},
+      "source_url": null,
+      "verified": false
+    },
+    {
+      "id": "CHN-17",
+      "applies_to": ["rear_lamp", "front_bumper"],
+      "topic": "Prohibited substances screening: GB/T 30512-2014",
+      "un_reference": null,
+      "national_requirement": "GB/T 30512-2014 (requirements for prohibited substances on automobiles) is a recommended national standard: it screens vehicles and parts for lead, mercury, cadmium, hexavalent chromium, PBBs and PBDEs, including limits and exemptions. Its mandatory status is not inferred, and an OEM specification is not a standalone law.",
+      "effort": "documentation",
+      "spec_section": "Materials",
+      "suggestion": "Collect substance declarations (lead, mercury, cadmium, hexavalent chromium, PBB, PBDE) from the material suppliers for the bill of materials and check them against the limits and exemptions of GB/T 30512-2014 and the customer's specification.",
+      "check": {"type": "always"},
+      "source_url": "https://www.chinesestandard.us/products/gbt30512-2014",
+      "verified": false
     }
   ],
   "sources": [
@@ -129,6 +338,17 @@
     {"title": "CNCA 国家认监委2026年第4号公告: 熔断体等11项强制性产品认证实施规则 (incl. annex 6: CNCA-C11-07:2026 机动车外部照明及光信号装置（试行）, PDF)", "url": "https://www.cnca.gov.cn/zwxx/gg/2026/art/2026/art_28b7746f4ad74ad3b7ca104b124e4ac9.html", "retrieved": "2026-10-25"},
     {"title": "EU SME Centre (2011): Guideline CCC for automotive parts & components (designated certification bodies in China, type testing in Chinese labs)", "url": "https://eusmecentre.org.cn/sites/default/files/attach/CCC%20for%20automotive%20parts.pdf", "retrieved": "2026-10-25"},
     {"title": "UN Treaty Collection XI-B-16: Participants of the 1958 Agreement (China not listed)", "url": "https://treaties.un.org/Pages/ViewDetails.aspx?src=TREATY&mtdsg_no=XI-B-16&chapter=11&clang=_en", "retrieved": "2026-10-25"},
-    {"title": "TÜV Rheinland: China draft national standard on light-signaling devices and systems (WTO G/TBT/N/CHN/1656)", "url": "https://www.tuv.com/regulations-and-standards/en/china-draft-national-standard-on-light-signaling-devices-and-systems-for-vehicles-and-their-trailers.html", "retrieved": "2026-10-25"}
+    {"title": "TÜV Rheinland: China draft national standard on light-signaling devices and systems (WTO G/TBT/N/CHN/1656)", "url": "https://www.tuv.com/regulations-and-standards/en/china-draft-national-standard-on-light-signaling-devices-and-systems-for-vehicles-and-their-trailers.html", "retrieved": "2026-10-25"},
+    {"title": "CQC: transition notice for GB 5920-2024, GB 11564-2024 and GB 4599-2024 (function-specific cut-over dates) [via regulatory-map-cn-us.md (assessment 2026-10-25, not independently reverified)]", "url": "https://www.cqc.com.cn/www/col68/598399.html"},
+    {"title": "SAMR: replacement project record for the GB 17354 family (front and rear protective devices) [via regulatory-map-cn-us.md (assessment 2026-10-25, not independently reverified)]", "url": "https://std.samr.gov.cn/gb/search/gbDetailed?id=E116673EC888A3B7E05397BE0A0AC6BF"},
+    {"title": "Code of China: GB 24550-2024 pedestrian protection (standard metadata) [via regulatory-map-cn-us.md (assessment 2026-10-25, not independently reverified)]", "url": "https://www.codeofchina.com/standard/GB24550-2024.html"},
+    {"title": "SAMR: related official standard context for GB 11551 (not direct verification of the current edition) [via regulatory-map-cn-us.md (assessment 2026-10-25, not independently reverified)]", "url": "https://std.samr.gov.cn/gb/search/gbDetailed?id=8531C702DB986551E05397BE0A0ACD16"},
+    {"title": "SAMR: GB 15741-1995 licence plates, brackets and their position [via regulatory-map-cn-us.md (assessment 2026-10-25, not independently reverified)]", "url": "https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=A535F01DC2C23BEFBE80517AAF1AE5C5"},
+    {"title": "NCSTI: policy listing cited for GB 32087 light vehicle towing devices (not the standard text) [via regulatory-map-cn-us.md (assessment 2026-10-25, not independently reverified)]", "url": "https://www.ncsti.gov.cn/zcfg/zcwj/202412/P020241225536583733430.pdf"},
+    {"title": "SAMR: GB 44703-2024 general requirements for optical radiation safety [via regulatory-map-cn-us.md (assessment 2026-10-25, not independently reverified)]", "url": "https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=BAD778366DDDA8770924AE7B62A89D91"},
+    {"title": "SAMR: GB/T 7247.1-2024 safety of laser products, equipment classification and requirements [via regulatory-map-cn-us.md (assessment 2026-10-25, not independently reverified)]", "url": "https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=2F9BB6879FC20AE55B3A49CAF7FF98E8"},
+    {"title": "ChineseStandard.us: GB/T 30512-2014 prohibited substances on automobiles (scope) [via regulatory-map-cn-us.md (assessment 2026-10-25, not independently reverified)]", "url": "https://www.chinesestandard.us/products/gbt30512-2014"},
+    {"title": "ChineseStandard.net: GB/T 30512-2014 substance overview [via regulatory-map-cn-us.md (assessment 2026-10-25, not independently reverified)]", "url": "https://www.chinesestandard.net/PDF.aspx/GBT30512-2014"},
+    {"title": "chinastandards.org: GB 5920-2024 overview (whole-vehicle transition provisions) [via regulatory-map-cn-us.md (assessment 2026-10-25, not independently reverified)]", "url": "https://chinastandards.org/standards/gb-5920-2024"}
   ]
 }

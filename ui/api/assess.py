@@ -237,13 +237,34 @@ def _check_applies(check: dict[str, Any] | None, spec: ParsedSpec) -> bool:
     return True
 
 
-def _profile_fits(covers: dict[str, Any], spec: ParsedSpec, cited: list[str]) -> bool:
-    """A country profile is researched for one product: the spec's title must name it and the requirements
+def _covers_groups(covers: Any) -> list[dict[str, Any]]:
+    """`covers` of a country profile: one group, or a list of groups (one per product it was researched for)."""
+    if isinstance(covers, list):
+        return [g for g in covers if isinstance(g, dict)]
+    return [covers] if covers else []
+
+
+def _matching_groups(covers: Any, spec: ParsedSpec, cited: list[str]) -> list[dict[str, Any]]:
+    """The researched products this spec is: the spec's title must name the product and the requirements
     must cite one of its regulations (a front bumper with side lamps cites UN R148 but is no rear lamp)."""
-    products = [p.lower() for p in covers.get("products") or []]
-    regulations = covers.get("regulations") or []
-    return ((not products or any(p in spec.title.lower() for p in products))
-            and (not regulations or bool(set(regulations) & set(cited))))
+    out = []
+    for group in _covers_groups(covers):
+        products = [p.lower() for p in group.get("products") or []]
+        regulations = group.get("regulations") or []
+        if ((not products or any(p in spec.title.lower() for p in products))
+                and (not regulations or bool(set(regulations) & set(cited)))):
+            out.append(group)
+    return out
+
+
+def _profile_fits(covers: Any, spec: ParsedSpec, cited: list[str]) -> bool:
+    return bool(_matching_groups(covers, spec, cited)) or not _covers_groups(covers)
+
+
+def _applies_to_group(dev: dict[str, Any], groups: list[dict[str, Any]]) -> bool:
+    """A deviation tagged `applies_to: [group id, ...]` only counts for those products; untagged ones for all."""
+    tagged = dev.get("applies_to")
+    return not tagged or any(g.get("id") in tagged for g in groups)
 
 
 def _dataset_source(iso3: str, entry: dict[str, Any]) -> Source:
@@ -288,6 +309,7 @@ def assess_country(iso3: str, spec: ParsedSpec, requirements: list[Requirement],
                                           trace_ids=[step.id], **kw))
 
         covers = (prof or {}).get("covers") or {}
+        groups = _matching_groups(covers, spec, cited)
         if entry is None or (entry.get("regime") == "national" and prof is None):
             regime: Regime = "not_covered"
             reasons.append(f"We don't have any data for {name} yet – without a country profile we can't give a reliable answer.")
@@ -296,7 +318,8 @@ def assess_country(iso3: str, spec: ParsedSpec, requirements: list[Requirement],
         elif entry.get("regime") == "national" and not _profile_fits(covers, spec, cited):
             # the profile was researched for another product: its deviations would not fit this one
             regime = "not_covered"
-            reasons.append(f"Our country profile for {name} has so far only been researched for {covers.get('product', 'other products')} "
+            researched = " and ".join(g["product"] for g in _covers_groups(covers) if g.get("product")) or "other products"
+            reasons.append(f"Our country profile for {name} has so far only been researched for {researched} "
                            "– we don't have any data for this product yet.")
             sources.append(_dataset_source(iso3, entry))
         elif entry.get("regime") == "unece_1958" or (prof or {}).get("accepts_un_approvals"):
@@ -323,14 +346,19 @@ def assess_country(iso3: str, spec: ParsedSpec, requirements: list[Requirement],
             sources.append(_dataset_source(iso3, entry))
             sources.append(Source(kind="country_profile", label=f"Country profile {name} (research draft)",
                                   title=f"ui/data/country_profiles/{iso3}.json", in_certivity_corpus=False))
-            if prof.get("summary"):
-                reasons.append(prof["summary"])
-            cert = prof.get("certification") or {}
+            # a group's own summary and certification replace the profile's (which describe the first product)
+            own = groups[0] if len(groups) == 1 else {}
+            summary = own.get("summary") or prof.get("summary")
+            if summary:
+                reasons.append(summary)
+            cert = own.get("certification") or prof.get("certification") or {}
             if cert.get("summary"):
                 reasons.append(cert["summary"])
             for dev in prof.get("deviations", []):
                 if dev.get("un_reference") and dev["un_reference"] not in cited:
                     continue  # deviates from a regulation this product does not fall under
+                if not _applies_to_group(dev, groups):
+                    continue  # researched for another product of this profile
                 if not _check_applies(dev.get("check"), spec):
                     continue
                 src = _deviation_source(dev)

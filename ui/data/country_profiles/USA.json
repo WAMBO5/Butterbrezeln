@@ -1,8 +1,14 @@
 {
   "iso3": "USA",
   "name": "United States",
-  "covers": {"products": ["rear lamp", "tail lamp", "rear combination lamp", "rear reflector", "heckleuchte", "rückleuchte"],
-             "regulations": ["UN R148", "UN R150"], "product": "rear lamps and retro-reflectors"},
+  "covers": [
+    {"id": "rear_lamp", "products": ["rear lamp", "tail lamp", "rear combination lamp", "rear reflector", "heckleuchte", "rückleuchte"],
+     "regulations": ["UN R148", "UN R150"], "product": "rear lamps and retro-reflectors"},
+    {"id": "front_bumper", "products": ["bumper", "front bumper", "stoßfänger", "frontstoßfänger"],
+     "regulations": ["UN R10", "UN R42", "UN R48", "UN R127", "UN R148"], "product": "front bumpers",
+     "summary": "For a front bumper (M1) the United States has no component-level type approval. The regulatory map identifies the low-speed bumper standard 49 CFR Part 581 (vehicle scope to be confirmed under section 581.3), the whole-vehicle standards for occupant protection (FMVSS No. 208), automatic emergency braking (FMVSS No. 127) and electric-powertrain safety (FMVSS No. 305/305a), FMVSS No. 108 for integrated lighting, and the FDA laser-product rules for a LiDAR. Radio authorisation, EMC, state plate and lighting laws and chemical restrictions are not yet established. All of this is a screening reference from a research draft that was not independently reverified, not a compliance result.",
+     "certification": {"scheme": "Not established for the bumper assembly", "type": "vehicle-level standards; no component-level route established in the regulatory map", "marking": "not established", "summary": "The regulatory map names no component-level approval or certification route for a front-bumper assembly in the USA: Part 581 and the FMVSS listed here are vehicle-level standards, and integrated lamps fall under FMVSS No. 108 by their function."}}
+  ],
   "summary": "In the USA, lamps and retro-reflectors are governed by FMVSS No. 108 (49 CFR 571.108). There is no type approval: the manufacturer self-certifies compliance (49 U.S.C. 30115), and UN/ECE approvals are not recognised – a rear lamp built to ECE rules may only be sold once its functions are certified to FMVSS 108. Passenger cars also need red side marker lamps and red side retro-reflectors at the rear; plastic lenses require 3 years of outdoor weathering in Florida and Arizona.",
   "standards": [
     {
@@ -34,6 +40,42 @@
       "title": "Defect and noncompliance information report",
       "scope": "Report to NHTSA on every safety-related defect and every noncompliance with an FMVSS in original or replacement equipment, no later than 5 working days after it is determined.",
       "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-573/section-573.6"
+    },
+    {
+      "id": "49 CFR Part 581",
+      "title": "Bumper Standard",
+      "scope": "Low-speed front and rear impact protection. Vehicle-scope check required: confirm applicability under section 581.3.",
+      "url": "https://ecfr.io/Title-49/Part-581"
+    },
+    {
+      "id": "FMVSS No. 208 (49 CFR 571.208)",
+      "title": "Occupant crash protection",
+      "scope": "Whole-vehicle standard, separate from the low-speed Part 581. Integration reference for the crash-energy-management structure, not a bumper approval.",
+      "url": "https://www.law.cornell.edu/cfr/text/49/part-571/subpart-B"
+    },
+    {
+      "id": "FMVSS No. 127 (49 CFR 571.127)",
+      "title": "Automatic emergency braking systems for light vehicles",
+      "scope": "Whole-vehicle system standard; applies to the integrated AEB function, not to passive bumper energy absorption. Implementation timing, scope and amendments require a check (conditional).",
+      "url": "https://www.law.cornell.edu/cfr/text/49/part-571/subpart-B"
+    },
+    {
+      "id": "FMVSS No. 111 (49 CFR 571.111)",
+      "title": "Rear visibility",
+      "scope": "Whole-vehicle standard. The presence of a front camera does not by itself make it applicable to a front-bumper camera (not established).",
+      "url": "https://www.law.cornell.edu/cfr/text/49/part-571/subpart-B"
+    },
+    {
+      "id": "FMVSS No. 305 / 305a (49 CFR 571.305, 571.305a)",
+      "title": "Electric-powered vehicles: electrolyte spillage and electrical shock protection; electric powertrain integrity",
+      "scope": "Whole-vehicle electric-powertrain safety, applying to the charging inlet and high-voltage interface, not to a cosmetic cover. Mandatory applicability of 305a is identified from 1 Sep 2027 in the regulatory map; vehicle scope, exceptions and current amendments must be confirmed (conditional).",
+      "url": "https://www.law.cornell.edu/cfr/text/49/part-571/subpart-B"
+    },
+    {
+      "id": "21 CFR 1040.10",
+      "title": "FDA/CDRH laser products; LiDAR product code RFC",
+      "scope": "Federal laser-product framework. Whether reporting is required, and the annual report, depend on the product classification (conditional).",
+      "url": "https://www.ecfr.gov/current/title-21/chapter-I/subchapter-J/part-1040/section-1040.10"
     }
   ],
   "certification": {
@@ -47,6 +89,7 @@
   "deviations": [
     {
       "id": "USA-01",
+      "applies_to": ["rear_lamp"],
       "topic": "Self-certification to FMVSS 108 instead of UN approval",
       "un_reference": "UN R148",
       "national_requirement": "Equipment that does not meet all applicable FMVSS may not be imported or sold. According to an NHTSA interpretation (letter to Hella, 1998), a rear lamp that meets the ECE requirements for passenger cars counts as 'motor vehicle equipment'. It may only be sold once the manufacturer has certified that all lamp functions comply with FMVSS 108. NHTSA does not grant type approval. The manufacturer self-certifies under 49 U.S.C. 30115 and must exercise 'reasonable care' in doing so.",
@@ -59,6 +102,7 @@
     },
     {
       "id": "USA-02",
+      "applies_to": ["rear_lamp"],
       "topic": "Rear side marker lamp and rear side retro-reflector (red)",
       "un_reference": "UN R48",
       "national_requirement": "FMVSS 108 Table I-a requires every passenger car to have one red side marker lamp per side, as far to the rear as practicable (mounting height at least 15 in, approx. 381 mm). It must be switched on together with the headlamps or parking lamps. In addition, one red side retro-reflector per side (15–60 in, approx. 381–1524 mm). Photometry: Table X (red, at least 0.25 cd at the test points) and Table XVI-a respectively.",
@@ -71,6 +115,7 @@
     },
     {
       "id": "USA-03",
+      "applies_to": ["rear_lamp"],
       "topic": "Photometry and stop-to-tail lamp ratio per FMVSS 108",
       "un_reference": "UN R148",
       "national_requirement": "Photometry is demonstrated at the test points of the FMVSS tables: Table VIII (tail lamp), Table IX (stop lamp), Table XII (reversing lamp), Table XVI-a (retro-reflector; red at least 420 mcd/lux at 0.2° observation and 0° entrance angle), each per S14.2. If the tail lamp is combined with the stop lamp, the stop lamp must reach at least the tail lamp's luminous intensity times the factor from Table IX at every test point (S7.3.12). Dual-filament bulbs require an indexed base and an indexed socket (S7.3.15).",
@@ -83,6 +128,7 @@
     },
     {
       "id": "USA-04",
+      "applies_to": ["rear_lamp"],
       "topic": "Plastic optical materials: 3 years of outdoor weathering in Florida and Arizona",
       "un_reference": "UN R148",
       "national_requirement": "Every plastic material used for optical parts (coated and uncoated) needs 3 years of outdoor weathering in Florida and Arizona. Accelerated weathering is not permitted (S14.4.2). Sample thicknesses: 1.6, 2.3, 3.2 and 6.4 mm. Limits after weathering: haze or loss of gloss at most 30 % for outer lenses and at most 7 % for retro-reflectors and lenses in front of retro-reflectors; luminous transmittance changes by at most 25 %; no colour bleeding, crazing or cracking; colour requirement still met. Plus a heat test: 2 h at 79 ± 3 °C.",
@@ -95,6 +141,7 @@
     },
     {
       "id": "USA-05",
+      "applies_to": ["rear_lamp"],
       "topic": "DOT marking and manufacturer registration with NHTSA",
       "un_reference": "UN R148",
       "national_requirement": "Signal lamps and retro-reflectors may be marked 'DOT'. This then counts as certification of compliance with FMVSS 108 (S6.5.1.2, optional). According to the NHTSA handbook, certification is usually shown with 'DOT' on the part or on the shipping container. An E mark has no certification effect in the USA. Foreign manufacturers must appoint a US agent for service of process before selling (49 CFR Part 551 Subpart D) and register with NHTSA no later than 30 days after production starts (49 CFR Part 566).",
@@ -107,6 +154,7 @@
     },
     {
       "id": "USA-06",
+      "applies_to": ["rear_lamp"],
       "topic": "Minimum lit area of the stop lamp",
       "un_reference": "UN R148",
       "national_requirement": "Stop lamps on passenger cars (vehicle width under 2032 mm) need an effective projected luminous lens area of at least 5000 mm² if they have only one compartment. With several compartments or lamps, at least 2200 mm² per compartment and 5000 mm² in total are required (FMVSS 108 S6.4.1, Table IV-a).",
@@ -116,6 +164,136 @@
       "check": {"type": "always"},
       "source_url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-571/subpart-B/section-571.108",
       "verified": true
+    },
+    {
+      "id": "USA-07",
+      "applies_to": ["front_bumper"],
+      "topic": "Low-speed bumper standard: 49 CFR Part 581",
+      "un_reference": null,
+      "national_requirement": "49 CFR Part 581 (Bumper Standard) sets low-speed front and rear impact protection for the vehicle. Applicability must be confirmed under section 581.3 (status conditional).",
+      "effort": "testing",
+      "spec_section": "Function",
+      "suggestion": "Confirm that Part 581 applies to the vehicle class under section 581.3 and plan the low-speed impact verification of the bumper system.",
+      "check": {"type": "always"},
+      "source_url": "https://ecfr.io/Title-49/Part-581",
+      "verified": false
+    },
+    {
+      "id": "USA-08",
+      "applies_to": ["front_bumper"],
+      "topic": "Occupant crash protection: FMVSS No. 208 integration",
+      "un_reference": null,
+      "national_requirement": "FMVSS No. 208 is a whole-vehicle occupant-protection standard, separate from the low-speed protection of Part 581. For the bumper it is an integration reference for the crash-energy-management structure, not a standalone approval of the fascia or absorber.",
+      "effort": "documentation",
+      "spec_section": "Function",
+      "suggestion": "Document the crash-energy-management structure (absorber, lower stiffener) for the vehicle maker's FMVSS No. 208 assessment.",
+      "check": {"type": "spec_contains", "keywords": ["energy", "absorber", "stiffener"]},
+      "source_url": "https://www.law.cornell.edu/cfr/text/49/part-571/subpart-B",
+      "verified": false
+    },
+    {
+      "id": "USA-09",
+      "applies_to": ["front_bumper"],
+      "topic": "Front licence-plate holder: no complete federal rule, state check",
+      "un_reference": null,
+      "national_requirement": "FMVSS No. 108 S6.6.3 addresses rear licence-plate holders, not a complete front-holder rule (status not established). Front-plate installation rules depend on the intended registration states (GAP-017).",
+      "effort": "documentation",
+      "spec_section": "Main Parts",
+      "suggestion": "Check the front-plate requirements of the intended registration states and design the plate holder accordingly.",
+      "check": {"type": "spec_contains", "keywords": ["licence plate", "license plate", "number plate"]},
+      "source_url": "https://www.law.cornell.edu/cfr/text/49/571.108",
+      "verified": false
+    },
+    {
+      "id": "USA-10",
+      "applies_to": ["front_bumper"],
+      "topic": "Integrated lighting under FMVSS No. 108",
+      "un_reference": "UN R48",
+      "national_requirement": "Lamps integrated in the bumper (daytime running or position lamp, side signalling, fog lamp, decorative lighting) are classified by their actual function; FMVSS No. 108 then sets activation, mounting, visibility and marking requirements. S6.2.1 prohibits added equipment from impairing required lighting, which also applies to decorative lighting; state laws on colours and operating modes are a separate check (GAP-018). Plastic optical parts of covered lamps fall under S14.4.2 (grade, colour, coating, weathering).",
+      "effort": "testing",
+      "spec_section": "Main Parts",
+      "suggestion": "Classify each integrated lamp by function, check the FMVSS No. 108 requirements for that function, make sure decorative lighting cannot impair required lamps, have the lens grade, colour and coating of covered lamps checked against S14.4.2, and check state law on colours and operating modes.",
+      "check": {"type": "spec_contains", "keywords": ["lighting", "lamp", "light"]},
+      "source_url": "https://www.law.cornell.edu/cfr/text/49/571.108",
+      "verified": false
+    },
+    {
+      "id": "USA-11",
+      "applies_to": ["front_bumper"],
+      "topic": "LiDAR: FDA/CDRH laser-product rules",
+      "un_reference": null,
+      "national_requirement": "A LiDAR is a laser product under the FDA/CDRH framework (21 CFR 1040.10; product code RFC). Whether the product needs reporting, and the annual report, depend on its classification (status conditional).",
+      "effort": "documentation",
+      "spec_section": "Main Parts",
+      "suggestion": "Ask the LiDAR supplier for the laser classification and FDA/CDRH product report and clarify who files the annual report.",
+      "check": {"type": "spec_contains", "keywords": ["lidar"]},
+      "source_url": "https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfPCD_RH/classification.cfm?PCD=RFC",
+      "verified": false
+    },
+    {
+      "id": "USA-12",
+      "applies_to": ["front_bumper"],
+      "topic": "Radar and camera: AEB (FMVSS No. 127) and rear visibility (FMVSS No. 111)",
+      "un_reference": null,
+      "national_requirement": "FMVSS No. 127 addresses the integrated automatic emergency braking function of the vehicle, not the passive energy absorption of the bumper; its implementation timing, scope and current amendments must be confirmed (GAP-009). The presence of a front camera does not by itself bring in FMVSS No. 111 (rear visibility).",
+      "effort": "documentation",
+      "spec_section": "Function",
+      "suggestion": "Tell the vehicle maker which bumper-mounted sensors feed AEB so FMVSS No. 127 timing and scope can be assessed, and do not assume FMVSS No. 111 for the front camera.",
+      "check": {"type": "spec_contains", "keywords": ["radar", "camera"]},
+      "source_url": "https://www.law.cornell.edu/cfr/text/49/part-571/subpart-B",
+      "verified": false
+    },
+    {
+      "id": "USA-13",
+      "applies_to": ["front_bumper"],
+      "topic": "EV charge port: FMVSS No. 305 / 305a",
+      "un_reference": null,
+      "national_requirement": "FMVSS No. 305 and 305a (electric-powertrain safety) are whole-vehicle standards for the charging inlet and high-voltage interface, not for the cosmetic cover. The map identifies mandatory applicability of 305a from 1 Sep 2027; vehicle scope, exceptions and current amendments must be confirmed (GAP-016).",
+      "effort": "documentation",
+      "spec_section": "Main Parts",
+      "suggestion": "Separate the cosmetic charge-port cover from inlet, interlock and high-voltage hardware in the specification and confirm the FMVSS No. 305/305a scope and dates for the vehicle.",
+      "check": {"type": "spec_contains", "keywords": ["fuel filler", "charge port", "charging"]},
+      "source_url": "https://www.law.cornell.edu/cfr/text/49/part-571/subpart-B",
+      "verified": false
+    },
+    {
+      "id": "USA-14",
+      "applies_to": ["front_bumper"],
+      "topic": "Radar, keyless-entry aerial and EMC: authorisation route not identified",
+      "un_reference": "UN R10",
+      "national_requirement": "The regulatory map identifies no precise US instrument for the radio authorisation of the radar (operating band and transmitter configuration to be determined, GAP-005), the keyless-entry aerial (passive antenna, receiver and transmitter to be classified separately, GAP-012) or the EMC of the electronic subassemblies (GAP-006). No identified instrument does not mean the function is unregulated.",
+      "effort": "documentation",
+      "spec_section": "Main Parts",
+      "suggestion": "List operating band and transmitter configuration of the radar and the keyless-entry aerial and have the applicable US radio authorisation and EMC requirements identified before design freeze.",
+      "check": {"type": "spec_contains", "keywords": ["radar", "keyless", "aerial"]},
+      "source_url": null,
+      "verified": false
+    },
+    {
+      "id": "USA-15",
+      "applies_to": ["front_bumper"],
+      "topic": "Fascia, grille and towing-device cover: no corresponding federal framework verified",
+      "un_reference": null,
+      "national_requirement": "No directly corresponding federal framework for exterior projections of fascia and grille was verified (GAP-003), and no separate towing-cover standard (GAP-014). Federal and state provisions have to be determined, not assumed to be equivalent to other markets; the cover's effect on the bumper requirements must be assessed.",
+      "effort": "documentation",
+      "spec_section": "Main Parts",
+      "suggestion": "Determine the federal and state provisions for fascia and grille projections and assess the effect of the towing-device cover on the bumper requirements.",
+      "check": {"type": "spec_contains", "keywords": ["grill", "towing"]},
+      "source_url": null,
+      "verified": false
+    },
+    {
+      "id": "USA-16",
+      "applies_to": ["rear_lamp", "front_bumper"],
+      "topic": "Chemical restrictions: federal and state screen not performed",
+      "un_reference": null,
+      "national_requirement": "No complete US chemical-law assessment was performed (MAT-US-002, GAP-019). The federal and state screen of the materials is still open.",
+      "effort": "documentation",
+      "spec_section": "Materials",
+      "suggestion": "Obtain formulation-level declarations for resins, pigments, coatings, solders and additives from the suppliers and complete the federal and state chemical-law screen.",
+      "check": {"type": "always"},
+      "source_url": null,
+      "verified": false
     }
   ],
   "sources": [
@@ -125,6 +303,11 @@
     {"title": "NHTSA Interpretation nht94-1.79 (16 March 1994) – FMVSS 108 does not incorporate ECE Reg. 20 (headlamps)", "url": "https://www.nhtsa.gov/interpretations/nht94-179", "retrieved": "2026-10-25"},
     {"title": "eCFR: 49 CFR Part 566 – Manufacturer Identification", "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-566", "retrieved": "2026-10-25"},
     {"title": "eCFR: 49 CFR Part 551 Subpart D – Service of Process on Foreign Manufacturers and Importers", "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-551/subpart-D", "retrieved": "2026-10-25"},
-    {"title": "eCFR: 49 CFR 573.6 – Defect and noncompliance information report", "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-573/section-573.6", "retrieved": "2026-10-25"}
+    {"title": "eCFR: 49 CFR 573.6 – Defect and noncompliance information report", "url": "https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-573/section-573.6", "retrieved": "2026-10-25"},
+    {"title": "eCFR: 49 CFR Part 581 – Bumper Standard [via regulatory-map-cn-us.md (assessment 2026-10-25, not independently reverified)]", "url": "https://ecfr.io/Title-49/Part-581"},
+    {"title": "Cornell LII: 49 CFR Part 571 Subpart B – FMVSS index (208, 111, 127, 305, 305a) [via regulatory-map-cn-us.md (assessment 2026-10-25, not independently reverified)]", "url": "https://www.law.cornell.edu/cfr/text/49/part-571/subpart-B"},
+    {"title": "Cornell LII: 49 CFR 571.108 – FMVSS No. 108 (S6.2.1, S6.6.3, S14.4.2) [via regulatory-map-cn-us.md (assessment 2026-10-25, not independently reverified)]", "url": "https://www.law.cornell.edu/cfr/text/49/571.108"},
+    {"title": "eCFR: 21 CFR 1040.10 – laser products [via regulatory-map-cn-us.md (assessment 2026-10-25, not independently reverified)]", "url": "https://www.ecfr.gov/current/title-21/chapter-I/subchapter-J/part-1040/section-1040.10"},
+    {"title": "FDA: LiDAR product classification, product code RFC [via regulatory-map-cn-us.md (assessment 2026-10-25, not independently reverified)]", "url": "https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfPCD_RH/classification.cfm?PCD=RFC"}
   ]
 }

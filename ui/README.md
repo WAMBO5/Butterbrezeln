@@ -69,6 +69,17 @@ Country data lives in `data/countries.json` (UNECE 1958 contracting parties, wit
 `data/country_profiles/<ISO3>.json` (national rules outside the Certivity corpus, marked as such in UI
 and trace). Both are a research draft (retrieved 2026-10-25), not legal advice, and the UI says so.
 
+A profile is only used for the products it was researched for. `covers` is one group or a list of groups
+(`id`, `products` matched against the spec title, `regulations` of which the run must cite one, `product`
+for the message); a group may carry its own `summary` and `certification` that replace the profile's. A
+deviation with `applies_to: ["<group id>"]` only counts for those products, so lamp rules such as CCC or
+DOT never show up for a bumper. CHN and USA cover rear lamps and front bumpers. The bumper items, the
+shared materials screening (CHN-17, USA-16) and the standards behind them come from
+`data/sources/regulatory-map-cn-us.md` (assessment 2026-10-25, **not independently reverified**): they carry
+`verified: false`, which the UI shows as "source not verified", and they are only documentation or testing
+steps because the map names no known design gap. Where the map is weaker than an earlier, sourced entry
+(e.g. the CCC rule for rear lamps, GAP-022), the earlier entry stays.
+
 ## Traceability
 
 Each run writes `runs/<run_id>/result.json` and `runs/<run_id>/trace.jsonl`: agent, action, inputs,
