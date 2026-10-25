@@ -6,5 +6,6 @@ ui/runs/
 ui/web/node_modules/
 ui/web/dist/
 *.tsbuildinfo
+.env
 # regulation PDFs: hackathon use only, no redistribution (industrial-ai-hackathon/LICENSE-DATA.md)
 industrial-ai-hackathon/regulations/pdf/

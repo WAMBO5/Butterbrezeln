@@ -112,7 +112,7 @@ export const UNSURE = {
   chip: "bg-amber-50 text-amber-700 ring-amber-600/25",
 };
 
-/** A logged human decision; old runs logged it in German. */
+/** A logged human decision (runs saved by older versions logged it in German). */
 export const isAccepted = (action: string) => /accepted|accepted/i.test(action);
 
 /** How a logged step was done, in words a non-engineer understands. */

@@ -7,11 +7,11 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 SourceKind = Literal["spec", "un_regulation", "country_profile", "external", "dataset"]
-FindingStatus = Literal["erfuellt", "offen", "konflikt"]
-Effort = Literal["doku_kennzeichnung", "pruefung_zertifizierung", "design"]
+FindingStatus = Literal["met", "open", "conflict"]
+Effort = Literal["documentation", "testing", "design"]
 VerdictStatus = Literal["green", "yellow", "red", "grey"]
 Regime = Literal["unece_1958", "national", "not_covered"]
-Decision = Literal["offen", "akzeptiert", "verworfen"]
+Decision = Literal["open", "accepted", "rejected"]
 EventStatus = Literal["running", "ok", "fallback", "error"]
 
 
@@ -63,10 +63,10 @@ class Finding(BaseModel):
     requirement_id: str
     regulation: str
     status: FindingStatus
-    effort: Effort | None = None  # only for konflikt
+    effort: Effort | None = None  # only for conflict
     spec_lines: list[int] | None = None
     explanation: str
-    suggestion: str | None = None  # concrete spec change, for konflikt
+    suggestion: str | None = None  # concrete spec change, for conflict
     trace_ids: list[str] = Field(default_factory=list)
 
 
@@ -89,12 +89,12 @@ class Suggestion(BaseModel):
     effort: Effort
     sources: list[Source] = Field(default_factory=list)
     trace_ids: list[str] = Field(default_factory=list)
-    decision: Decision = "offen"
+    decision: Decision = "open"
 
 
 class CountryVerdict(BaseModel):
     iso3: str
-    name_de: str
+    name: str
     status: VerdictStatus
     regime: Regime
     reasons: list[str] = Field(default_factory=list)
@@ -174,6 +174,26 @@ class PipelineRunInfo(BaseModel):
     replay_of: str | None = None  # tools/replay_from_match.py reused this run's profile and scope plan
     ledger: LedgerCheck | None = None
     label: str | None = None  # submission.provenance.json, e.g. "Unreviewed AI draft — not for compliance use"
+
+
+class PipelineJobStep(BaseModel):
+    step: str
+    label: str
+    state: Literal["pending", "running", "done"] = "pending"
+
+
+class PipelineJob(BaseModel):
+    """A certivity pipeline run started from the UI on an uploaded spec."""
+    id: str  # the run folder's name
+    status: Literal["running", "done", "failed", "cancelled"]
+    started_at: str
+    spec_sha256: str
+    fake_llm: bool = False
+    steps: list[PipelineJobStep] = Field(default_factory=list)
+    calls: int = 0
+    cost_usd: float = 0.0
+    error: str | None = None
+    log_tail: list[str] = Field(default_factory=list)
 
 
 class RunResult(BaseModel):

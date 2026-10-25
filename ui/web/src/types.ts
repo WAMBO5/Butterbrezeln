@@ -188,7 +188,27 @@ export interface Health {
   backend_mode: string;
   llm: { available: boolean; model: string; reason?: string | null };
   countries_loaded: number;
-  pipeline?: { root: string; finished_runs: number; cases: string[] } | null;
+  pipeline?: {
+    root: string;
+    finished_runs: number;
+    cases: string[];
+    /** Whether a certivity run can be started from the UI, and why not. */
+    launch: { available: boolean; reason?: string | null; fake_llm: boolean };
+  } | null;
+}
+
+/** A certivity pipeline run started from the UI on an uploaded spec. */
+export interface PipelineJob {
+  id: string;
+  status: "running" | "done" | "failed" | "cancelled";
+  started_at: string;
+  spec_sha256: string;
+  fake_llm: boolean;
+  steps: { step: string; label: string; state: "pending" | "running" | "done" }[];
+  calls: number;
+  cost_usd: number;
+  error?: string | null;
+  log_tail: string[];
 }
 
 // What the lineage drawer is showing

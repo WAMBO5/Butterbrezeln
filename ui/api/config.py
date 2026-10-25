@@ -30,10 +30,15 @@ PIPELINE_CHECKOUTS = [PIPELINE_ROOT, REPO.parent / "Brezel" / "Butterbrezeln", R
 PIPELINE_RUN_DIRS = [Path(p) for p in os.environ.get("PIPELINE_RUN_DIRS", "").split(os.pathsep) if p] or [
     d for c in PIPELINE_CHECKOUTS for d in (c / "data" / "runs", c.parent / "sunday-data")]
 PIPELINE_CASE_DIRS = [d for c in PIPELINE_CHECKOUTS for d in (c / "industrial-ai-hackathon" / "cases",
-                                                              c / "tools" / "evalkit" / "mockcases")] + [CASES_DIR]
+                                                              c / "tools" / "evalkit" / "mockcases")] + [
+    CASES_DIR, REPO / "testdata" / "fake-cases"]
 # run ids to show when several finished runs share a spec (e.g. the one whose submission was uploaded);
 # otherwise the latest one
 PIPELINE_RUN = [r.strip() for r in os.environ.get("PIPELINE_RUN", "").split(",") if r.strip()]
+# starting a run from the UI: the command that is the `certivity` CLI, run in PIPELINE_ROOT (default: this
+# Python with `-m app.cli`), and whether it uses the scripted stand-in model (free, offline, for demos)
+PIPELINE_CMD = os.environ.get("PIPELINE_CMD", "")
+PIPELINE_FAKE_LLM = os.environ.get("PIPELINE_FAKE_LLM", "").lower() in ("1", "true", "yes")
 
 # auto: use LLM when credentials resolve, otherwise fall back to the rule set; off: rules only
 LLM_MODE = os.environ.get("LLM_MODE", "auto")

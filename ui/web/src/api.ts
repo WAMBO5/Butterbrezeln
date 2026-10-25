@@ -1,4 +1,14 @@
-import type { CountryListing, Decision, Health, QAEntry, RunResult, Suggestion, TraceEvent } from "./types";
+import type { CountryListing, Decision, Health, PipelineJob, QAEntry, RunResult, Suggestion, TraceEvent } from "./types";
+
+/** A failed request; `status` tells e.g. a missing pipeline run (409) from other errors. */
+export class ApiError extends Error {
+  constructor(
+    readonly status: number,
+    readonly detail: string,
+  ) {
+    super(`${status}: ${detail}`);
+  }
+}
 
 async function json<T>(response: Response): Promise<T> {
   if (!response.ok) {
@@ -8,7 +18,7 @@ async function json<T>(response: Response): Promise<T> {
     } catch {
       /* not JSON */
     }
-    throw new Error(`${response.status}: ${detail}`);
+    throw new ApiError(response.status, detail);
   }
   return response.json() as Promise<T>;
 }
@@ -39,6 +49,16 @@ export const api = {
     if (image) form.append("image", image);
     return fetch("/api/runs", { method: "POST", body: form }).then(json<{ run_id: string }>);
   },
+
+  /** Starts the certivity pipeline on the spec; POST /api/runs finds its result once it has finished. */
+  startPipeline(spec: File, image?: File | null) {
+    const form = new FormData();
+    form.append("spec", spec);
+    if (image) form.append("image", image);
+    return fetch("/api/pipeline/jobs", { method: "POST", body: form }).then(json<PipelineJob>);
+  },
+  pipelineJob: (id: string) => fetch(`/api/pipeline/jobs/${id}`).then(json<PipelineJob>),
+  cancelPipelineJob: (id: string) => fetch(`/api/pipeline/jobs/${id}`, { method: "DELETE" }).then(json<PipelineJob>),
 
   run: (id: string) => fetch(`/api/runs/${id}`).then(json<RunResult>),
   trace: (id: string) => fetch(`/api/runs/${id}/trace`).then(json<TraceEvent[]>),

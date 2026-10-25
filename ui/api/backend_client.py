@@ -25,8 +25,8 @@ class BackendError(RuntimeError):
     """A failure the engineer can act on; its message is shown as is."""
 
 
-NO_RUN = ("There is no finished pipeline run for this product description yet. Start one in the pipeline repo "
-          "with `uv run certivity run <case folder>`; the result will then appear here.")
+NO_RUN = ("There is no finished pipeline run for this product description yet. Start one from here, or in the "
+          "pipeline repo with `uv run certivity run <case folder>`; the result will then appear here.")
 
 
 @dataclass
