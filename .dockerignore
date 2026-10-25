@@ -9,3 +9,4 @@ web/dist
 .pytest_cache
 **/__pycache__
 industrial-ai-hackathon/regulations/pdf
+ui
