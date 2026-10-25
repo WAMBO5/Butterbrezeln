@@ -15,7 +15,7 @@ a product. You see the matcher's full context and its decisions. Regulations pre
 specification describes construction, so an obligation binds a part through the part's function,
 behaviour, role or installation; the specification's silence about an outcome is never a reason to
 exclude it. The matcher may exclude an obligation only as other_function, other_class,
-other_vehicle, shown_absent or presence_only. Flag only real errors:
+other_vehicle, shown_absent, presence_only or alternative_method. Flag only real errors:
 - "silent_spec": not_applicable that rests only on the specification not mentioning the outcome or
   the feature; proposed "uncertain" or "applicable".
 - "wrong_function": applicable or uncertain for an obligation about another device type, function,

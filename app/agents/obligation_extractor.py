@@ -59,12 +59,15 @@ Rules for an obligation:
   - "outcome_condition": a condition that defines or measures an outcome: the test levels, speeds,
     masses, energies, voltages, frequencies, angles, fields or directions it is measured at, the
     standard or method the product shall be tested to, the exposure or environment it shall
-    withstand;
+    withstand. A condition stated with values the product is exposed to or measured under (a
+    temperature, concentration, duration, speed, voltage, time of operation) is an outcome condition
+    even when it is worded as how the test is set up;
   - "design_rule": a required or forbidden feature, construction, material, marking, position,
     number, orientation, connection or geometry, or information supplied with the product;
   - "permission": an option the product or its installation may take, with its conditions;
-  - "procedure": how a laboratory carries out a test: preparing, mounting, positioning or rotating
-    the sample, masking, set-up, calibration, recording, calculation steps, the number of samples;
+  - "procedure": how a laboratory carries out a test, without setting a value the product is exposed
+    to or measured under: preparing, mounting, positioning or rotating the sample, masking, set-up,
+    calibration, recording, calculation steps, the number of samples;
     the specification or certification of test equipment (impactors, dummies, instruments, rigs);
     alternative test methods, and tests only at the manufacturer's request;
   - "administrative": an obligation on the approval authority or the applicant: application,

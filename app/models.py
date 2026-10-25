@@ -18,7 +18,8 @@ ProvisionKind = Literal[
 ]
 DecisionState = Literal["applicable", "uncertain", "not_applicable"]
 # The only grounds on which the matcher may exclude an obligation from a part (spec silence is not one).
-ExclusionReason = Literal["other_function", "other_class", "other_vehicle", "shown_absent", "presence_only"]
+ExclusionReason = Literal["other_function", "other_class", "other_vehicle", "shown_absent", "presence_only",
+                          "alternative_method"]
 EvidenceStatus = Literal["met", "not_met", "evidence_needed"]
 
 

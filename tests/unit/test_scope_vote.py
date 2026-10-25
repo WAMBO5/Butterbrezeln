@@ -1,4 +1,4 @@
-from app.matching.scope_vote import majority, merge_plans
+from app.matching.scope_vote import majority, merge_plans, within
 from app.models import PartSections, RegulationDecision, ScopePlan
 
 
@@ -46,3 +46,13 @@ def test_the_union_is_kept_when_no_section_reaches_a_majority():
              for n in (1, 2, 3)]
     merged, _ = merge_plans(plans)
     assert merged.decisions[0].sections[0].section_ids == ["A#1", "A#2", "A#3"]
+
+
+def test_a_containing_section_votes_for_its_subsections():
+    assert within("R@1#5.1", "R@1#5") and within("R@1#Annex 6 Part 4", "R@1#Annex 6")
+    assert not within("R@1#50", "R@1#5") and not within("R@1#5", "R@1#5.1") and not within("Q@1#5.1", "R@1#5")
+    plans = [ScopePlan(decisions=[d("A", "applicable", {"p1": ids})], parts_without_regulation=[])
+             for ids in (["A#5"], ["A#5.1", "A#5.3"], ["A#5.1"])]
+    merged, _ = merge_plans(plans)
+    # "5" was chosen by one sample only; 5.1 by two directly plus one through "5", 5.3 by one plus "5"
+    assert merged.decisions[0].sections[0].section_ids == ["A#5.1", "A#5.3"]

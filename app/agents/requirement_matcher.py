@@ -43,7 +43,11 @@ Return exactly one decision per obligation id, ids copied exactly:
     for. Do not infer this from rules elsewhere about which vehicles may carry a device: a rule for
     optional or additional devices of the part's own function is "uncertain";
   - "shown_absent": it needs a feature the inputs show is absent; cite that fact in fact_refs;
-  - "presence_only": it only says whether the vehicle must or may carry the device at all.
+  - "presence_only": it only says whether the vehicle must or may carry the device at all;
+  - "alternative_method": it belongs to one of several test methods the regulation offers as
+    alternatives, of which the laboratory or applicant chooses one (its specific set-up, field
+    generation or equipment); limits and conditions that hold whichever method is used stay
+    applicable.
 - exclusion: null unless the state is "not_applicable".
 - reason: one sentence naming the function, attribute or fact the decision turns on.
 - fact_refs: ids of the parts' facts you relied on.

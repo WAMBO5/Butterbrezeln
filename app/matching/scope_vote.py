@@ -4,7 +4,8 @@ The scope draw is the run's largest random factor, so several `scope_narrower` s
 independently and code merges them: a regulation is kept when a majority of the samples keep it
 (one wrong regulation can add a hundred false requirements), and is `applicable` when a majority say
 so, otherwise `uncertain`. A section is kept the same way, when a majority of the samples chose it
-(for any part), and goes to every part a sample gave it to. On the rear-lamp dev run, requirements
+or a section containing it (for any part; "5" contains "5.1", "Annex 6" contains "Annex 6 Part 4"),
+and goes to every part a sample gave it to. On the rear-lamp dev run, requirements
 from sections only 1 of 3 samples chose were 7 % on expert paragraphs, below F2's break-even of about
 15 %; 2 of 3 gave 37 %. If no section of a kept regulation reaches a majority, the union is kept.
 """
@@ -23,11 +24,21 @@ def majority(n: int) -> int:
     return n // 2 + 1
 
 
+def within(child: str, parent: str) -> bool:
+    """`UN R48@9.3.0#5.1` is within `UN R48@9.3.0#5`; `#Annex 6 Part 4` within `#Annex 6`; `#50` is not within `#5`."""
+    if child == parent:
+        return True
+    reg, _, label = child.partition("#")
+    preg, _, plabel = parent.partition("#")
+    return reg == preg and label.startswith(plabel) and label[len(plabel):len(plabel) + 1] in (".", " ")
+
+
 def _sections(decisions: list[RegulationDecision], need: int) -> list[PartSections]:
-    """Sections chosen by at least `need` of the samples, each with every part a sample gave it to;
-    the union when none reaches `need`."""
-    votes = Counter(sid for d in decisions for sid in {i for s in d.sections for i in s.section_ids})
-    keep = {sid for sid, n in votes.items() if n >= need} or set(votes)
+    """Sections that at least `need` samples chose, directly or through a section containing them,
+    each with every part a sample gave it to; the union when none reaches `need`."""
+    chosen = [{i for s in d.sections for i in s.section_ids} for d in decisions]
+    support = {sid: sum(any(within(sid, c) for c in sample) for sample in chosen) for sid in set().union(*chosen)}
+    keep = {sid for sid, n in support.items() if n >= need} or set(support)
     by_part: dict[str, list[str]] = {}
     for d in decisions:
         for s in d.sections:

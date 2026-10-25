@@ -12,7 +12,7 @@ from pathlib import Path
 from app.corpus.parser import normalize
 from app.models import Obligation, Provision, ProvisionObligations
 
-EXTRACTOR_VERSION = "x6"  # x5: role tag; x6: permissions about how to test are procedure
+EXTRACTOR_VERSION = "x7"  # x5: role tag; x6: permissions about how to test are procedure; x7: exposure values
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS obligations (
