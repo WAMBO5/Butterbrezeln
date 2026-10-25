@@ -24,6 +24,7 @@ from app.pipeline.calls import AgentCall, bind_call, gather_limited
 from app.pipeline.loop import LoopSpec, run_verified
 
 BATCH = 20
+CITED = 12000  # characters of pair text a claim cites
 HEADER_RE = re.compile(r"^(UN .+?), version (\S+) \| page \d+ of \d+$", re.M)
 
 
@@ -35,6 +36,8 @@ class SubgoalInput:
     requirements_old: list[dict]
     pairs: list[dict] = field(default_factory=list)
     challenge_dir: Path = Path("industrial-ai-hackathon")
+    regulation: str = "UN R?"
+    versions: tuple[str, str] = ("old", "new")
 
 
 def describe_change(old: str, new: str) -> str:
@@ -125,7 +128,8 @@ def load_subgoal(subgoal_dir: Path, settings: Settings) -> SubgoalInput:
     # split stays next to the parts split off from it.
     pairs.sort(key=lambda p: _label_order(p["new_paragraph"] or p["old_paragraph"]))
     return SubgoalInput(case_id=f"subgoal-{subgoal_dir.name}", old_text=old_text, new_text=new_text,
-                        requirements_old=reqs, pairs=pairs, challenge_dir=settings.challenge_dir)
+                        requirements_old=reqs, pairs=pairs, challenge_dir=settings.challenge_dir, regulation=reg,
+                        versions=(old_label, new_label))
 
 
 def _label_order(label: str | None) -> tuple:
@@ -152,13 +156,25 @@ def _batches(pairs: list[dict], size: int) -> list[list[dict]]:
     return batches
 
 
+def _cited(inp: SubgoalInput, pair: dict) -> str:
+    """A pair as a claim cites it: both paragraphs with their pages and versions, the edit, both texts."""
+    return (f"{inp.regulation}, {pair['status']}: paragraph {pair['old_paragraph']} (page {pair['old_page']}) of "
+            f"version {inp.versions[0]} -> paragraph {pair['new_paragraph']} (page {pair['new_page']}) of version "
+            f"{inp.versions[1]}\nedit: {str(pair['edit'])[:1500]}\nold: {pair['old_text']}\nnew: {pair['new_text']}")
+
+
 def change_claims(inp: SubgoalInput, out: ChangeOutput) -> list[Claim]:
-    by_para = {paragraph_key(p["new_paragraph"] or p["old_paragraph"]): p for p in inp.pairs}
+    """Each reason, citing the pair at its source paragraph and the pair its requirement is linked to."""
+    by_req = {r["id"]: p for p in inp.pairs for r in p["linked"]}
+    by_new = {paragraph_key(p["new_paragraph"]): p for p in inp.pairs if p["new_paragraph"]}
+    by_old = {paragraph_key(p["old_paragraph"]): p for p in inp.pairs if p["old_paragraph"]}
     claims = []
     for n, c in enumerate(out.changes):
-        pair = by_para.get(paragraph_key(c.source.paragraph), {})
-        cited = f"edit: {pair.get('edit')}\nold: {pair.get('old_text')}\nnew: {pair.get('new_text')}"
-        claims.append(Claim(claim_id=f"change:{n}", text=c.reason, cited_text=cited[:4000]))
+        key = paragraph_key(c.source.paragraph)
+        first, second = (by_old, by_new) if c.change == "removed" else (by_new, by_old)
+        pairs = [p for p in (first.get(key) or second.get(key), by_req.get(c.requirement_id)) if p]
+        cited = "\n\n".join(_cited(inp, p) for i, p in enumerate(pairs) if p not in pairs[:i])
+        claims.append(Claim(claim_id=f"change:{n}", text=c.reason, cited_text=cited[:CITED]))
     return claims
 
 
@@ -166,7 +182,8 @@ async def analyse_changes(inp: SubgoalInput, settings: Settings, call: AgentCall
                           ledger: Ledger | None) -> list[SubgoalChange]:
     batches = [replace(inp, pairs=b) for b in _batches(inp.pairs, BATCH)]
     loop = LoopSpec(name="subgoal_changes", producer=create_change_analyst(settings), output_schema=ChangeOutput,
-                    build_prompt=lambda b, fb: build_change_prompt(b.pairs, b.case_id, fb), gate=change_gate,
+                    build_prompt=lambda b, fb: build_change_prompt(b.pairs, b.case_id, fb, b.regulation, b.versions),
+                    gate=change_gate,
                     verifier=create_grounding_verifier(settings),
                     build_review_prompt=lambda b, out: build_grounding_prompt(change_claims(b, out)),
                     max_retries=settings.max_retries)

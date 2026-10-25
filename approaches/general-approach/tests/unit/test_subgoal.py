@@ -66,10 +66,30 @@ def test_split_provisions_stay_in_one_batch_in_paragraph_order():
         ["5.9", "5.10", "6.4", "6.5", "6.5.1", "6.5.2"], ["Annex 2 1.1"]]
 
 
+def test_claims_cite_the_linked_pair_and_the_source_pair_with_their_labels():
+    from app.pipeline.subgoal import change_claims
+
+    split = {"paragraph": "6.5", "status": "modified", "old_paragraph": "6.5", "new_paragraph": "6.5", "old_page": 8,
+             "new_page": 10, "edit": "...", "old_text": "The offset shall be at most 0.2 m.", "new_text": "Offset",
+             "linked": [{"id": "R-084", "text": "The offset shall be at most 0.2 m."}]}
+    part = {"paragraph": "6.5.2", "status": "added", "old_paragraph": None, "new_paragraph": "6.5.2", "old_page": None,
+            "new_page": 10, "edit": None, "old_text": None, "new_text": "The offset shall be at most the vehicle width.",
+            "linked": []}
+    inp = SubgoalInput(case_id="subgoal-x", old_text="", new_text="", requirements_old=[], pairs=[split, part],
+                       regulation="UN R175", versions=("0.1.0", "1.0.0"))
+    out = ChangeOutput(changes=[SubgoalChange(requirement_id="R-084", change="modified", new_text="n",
+                                              reason="Paragraph 6.5.2 (formerly 6.5) ...",
+                                              source=SubgoalSource(page=10, paragraph="6.5.2"))])
+    cited = change_claims(inp, out)[0].cited_text
+    assert "UN R175, modified: paragraph 6.5 (page 8) of version 0.1.0 -> paragraph 6.5 (page 10) of version 1.0.0" in cited
+    assert "-> paragraph 6.5.2 (page 10) of version 1.0.0" in cited and "the vehicle width" in cited
+
+
 @pytest.mark.skipif(not SUBGOAL.exists(), reason="challenge data missing")
 def test_load_subgoal_links_requirements(tmp_settings):
     inp = load_subgoal(SUBGOAL, tmp_settings)
     assert inp.case_id == "subgoal-dev" and len(inp.requirements_old) == 94
+    assert inp.regulation == "UN R175" and inp.versions == ("0.1.0", "1.0.0")
     statuses = {p["status"] for p in inp.pairs}
     assert {"modified", "added"} <= statuses and any(p["linked"] for p in inp.pairs if p["status"] == "modified")
 

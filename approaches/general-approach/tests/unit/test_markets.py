@@ -78,6 +78,29 @@ def test_align_provisions():
     assert ("6", "added") in changes and any(s == "modified" and par == "4" for par, s in changes)
 
 
+def test_align_provisions_follows_renumbering():
+    rule = "The system shall not initiate a manoeuvre if it would {}."
+    old = [p("6.1", rule.format("cause other road users to brake")), p("6.2", rule.format("be performed off a highway")),
+           p("6.3", rule.format("violate an instruction given by signage")),
+           p("6.4", rule.format("cross a lane marking that may not be crossed")),
+           p("7.2", "A manoeuvre shall not be initiated if an eyes-on-road request was given in the 7 seconds before it."),
+           p("7.2.1", "In addition, further strategies shall be implemented to ensure driver engagement before a manoeuvre."),
+           p("11.9", "Until 2028, Contracting Parties applying this Regulation shall continue to grant type approvals."),
+           p("11.19", "Until 2028, Contracting Parties applying this UN Regulation shall continue to grant type approvals.")]
+    new = [p("6.1", rule.format("cause other road users to brake")), p("6.2", rule.format("violate an instruction given by signage")),
+           p("6.3", rule.format("cross a lane marking that may not be crossed")),
+           p("6.4", "A collision-avoiding manoeuvre may be initiated notwithstanding paragraph 5.1."),
+           p("7.2", "The strategies shall be implemented to ensure driver engagement before a manoeuvre."),
+           p("11.9", "(Deleted)"),
+           p("11.19", "Contracting Parties applying this Regulation shall continue to grant type approvals until 2033.")]
+    changes = {c.old.paragraph: (c.status, c.new.paragraph if c.new else None) for c in align_provisions(old, new) if c.old}
+    assert changes["6.1"] == ("unchanged", "6.1") and changes["6.3"] == ("unchanged", "6.2")
+    assert changes["6.4"] == ("unchanged", "6.3") and changes["6.2"] == ("removed", None)
+    assert changes["7.2.1"] == ("modified", "7.2") and changes["7.2"] == ("removed", None)
+    assert changes["11.19"] == ("modified", "11.19") and changes["11.9"] == ("modified", "11.9")
+    assert [c.new.paragraph for c in align_provisions(old, new) if c.status == "added"] == ["6.4"]
+
+
 @pytest.mark.skipif(not INDEX.exists(), reason="challenge data missing")
 def test_align_r10_versions(real_store):
     changes = align_versions(real_store, "UN R10", "7.2.0", "7.3.0")

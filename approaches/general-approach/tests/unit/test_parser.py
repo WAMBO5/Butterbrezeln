@@ -73,6 +73,15 @@ def test_iter_pages_drops_header():
     assert not pages[1][1].startswith("UN R999, version")
 
 
+def test_extracted_sub_goal_pdf_loses_both_header_lines():
+    text = ("=== PDF page 1 ===\nsub-goal heldout new | page 1 of 2\nUN R1, version 2.0.0 | page 1 of 2\n1. Scope\n"
+            "1.1. This Regulation applies\n=== PDF page 2 ===\nsub-goal heldout new | page 2 of 2\n"
+            "UN R1, version 2.0.0 | page 2 of 2\nto vehicles of category M1.\n")
+    assert iter_pages(text) == [(1, "1. Scope\n1.1. This Regulation applies"), (2, "to vehicles of category M1.")]
+    by = {p.paragraph: p for p in parse_regulation(text, "UN R1", "2.0.0", "latest")}
+    assert normalize(by["1.1"].text) == "This Regulation applies to vehicles of category M1."
+
+
 def test_paragraph_key():
     assert paragraph_key("Annex 8, 2.1.") == paragraph_key("annex 8 2.1")
     assert paragraph_key("5.4.2.3") != paragraph_key("5.4.23")

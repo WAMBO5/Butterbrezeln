@@ -15,7 +15,8 @@ from typing import Literal
 from app.models import Provision
 
 PAGE_RE = re.compile(r"^=== PDF page (\d+) ===$", re.M)
-HEADER_RE = re.compile(r"^UN .+, version .+ \| page \d+ of \d+$")
+# the footer line, and the header line a text extracted from a sub-goal PDF has above it
+HEADER_RE = re.compile(r"^(?:UN .+, version .+|sub-goal .+) \| page \d+ of \d+$")
 PARA_RE = re.compile(r"^(\d+(?:\.\d+)*)(\.?)\s+(\S.*)$")
 ANNEX_RE = re.compile(r"^Annex (\d+)([A-Z]?)(?:\s*[-–]\s*Appendix (\d+))?(?:\s+(\S.*))?$")
 APPENDIX_RE = re.compile(r"^Appendix (\d+)(?:\s+(\S.*))?$")
@@ -58,13 +59,13 @@ def paragraph_key(label: object) -> str | None:
 
 
 def iter_pages(text: str) -> list[tuple[int, str]]:
-    """(page number, page text without its footer line), in file order."""
+    """(page number, page text without its footer and header lines), in file order."""
     pages: list[tuple[int, str]] = []
     matches = list(PAGE_RE.finditer(text))
     for i, m in enumerate(matches):
         end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
         lines = text[m.end():end].strip("\n").split("\n")
-        if lines and HEADER_RE.match(lines[0].strip()):
+        while lines and HEADER_RE.match(lines[0].strip()):
             lines = lines[1:]
         pages.append((int(m.group(1)), "\n".join(lines).strip("\n")))
     return pages
