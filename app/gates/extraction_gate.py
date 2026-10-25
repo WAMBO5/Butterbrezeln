@@ -9,6 +9,8 @@ from app.matching.extraction import ExtractionBatch
 from app.models import TEXT_LIMIT, ExtractionOutput, Issue, ProvisionObligations
 
 MODAL_RE = re.compile(r"\b(shall|must)\b", re.I)
+# An either/or list stays one obligation (no single item binds), however many shall clauses it holds.
+ALTERNATIVES_RE = re.compile(r"\beither\b|\bat least one of\b|[;,]\s*or\b|\bor\s*\((?:[a-z]|[ivx]{1,4})\)", re.I)
 # A list item marker at an item boundary: "(a) ", "(ii) " after the start, whitespace or ":" / ";".
 ITEM_RE = re.compile(r"(?:^|(?<=[\s:;]))\(([a-z]|[ivx]{1,4})\)\s+")
 ITEM_PREFIX = 40  # squashed characters of an item that some obligation's quote must contain
@@ -38,7 +40,7 @@ def item_issues(batch: ExtractionBatch, item: ProvisionObligations) -> list[Issu
                                  f"quote must be copied exactly from the provision text: {o.quote[:120]!r}"))
         if len(o.text) > TEXT_LIMIT:
             issues.append(_issue("too_long", target, f"text has {len(o.text)} characters; the limit is {TEXT_LIMIT}"))
-        if len(MODAL_RE.findall(o.text)) >= 3:
+        if len(MODAL_RE.findall(o.text)) >= 3 and not ALTERNATIVES_RE.search(o.text):
             issues.append(_issue("merged", target, "text holds 3 or more shall/must clauses; split it, one per obligation"))
     return issues
 

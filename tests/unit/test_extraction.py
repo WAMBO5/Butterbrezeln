@@ -189,3 +189,16 @@ async def test_a_valid_item_from_an_earlier_attempt_is_kept(tmp_path):
     cache = ObligationCache(tmp_path / "o.sqlite")
     got = await extract_verified(batch, cache, settings, call, None, verify=False)
     assert {o.provision_id for o in got} == {"UN R1@1#5.1", "UN R1@1#5.2"} and len(attempts) == 2
+
+
+def test_an_either_or_list_kept_whole_is_not_merged():
+    from app.gates.extraction_gate import item_issues
+
+    text = ("Lamps shall be installed such that: (a) either the area shall be not less than 60 per cent; or "
+            "(b) the distance shall not exceed 75 mm, and the lamp shall be marked.")
+    p = prov("UN R1@1#5.7", text=text)
+    batch = ExtractionBatch(section_id="UN R1@1#5", provisions=[p], definitions=[])
+    whole = obligation(quote=text, text=text)
+    assert item_issues(batch, item("UN R1@1#5.7", obs=[whole])) == []
+    merged = obligation(quote=text, text="The lamp shall be red. The lamp shall be round. The lamp shall be marked.")
+    assert [i.type for i in item_issues(batch, item("UN R1@1#5.7", obs=[merged]))] == ["merged"]
