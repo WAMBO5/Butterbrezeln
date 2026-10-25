@@ -12,17 +12,23 @@ from app.models import ChangeOutput, Issue
 
 INSTRUCTION = """\
 You compare two versions of a UN Regulation. Code has paired the provisions, marked each pair
-modified, added or removed, and described the textual edit. You also see the requirements derived
-from the old version that cite each paragraph. Return the changes:
-- "modified": a linked old requirement whose obligation the edit changes. requirement_id is its id;
-  new_text is the requirement rewritten to the new wording, one obligation, close to the source.
-- "removed": a linked old requirement whose provision was removed or no longer states it.
+modified, added or removed, and described the textual edit. The pairs come in paragraph order, so a
+provision is followed by the parts split off from it or added after it. You also see the requirements
+derived from the old version that cite each paragraph. Return the changes:
+- "modified": a linked old requirement whose obligation the edit changes, also when the obligation
+  moved to another provision shown. requirement_id is its id; new_text is the requirement rewritten
+  to the new wording, one obligation, close to the source.
+- "removed": a linked old requirement whose obligation no provision shown states any more. An
+  obligation that moved into a split-off or neighbouring provision is not removed.
 - "added": a new obligation that no old requirement covers (in an added provision, or a new clause in
-  a modified one). requirement_id is null; new_text states it, one obligation per change.
+  a modified one); text that only moved is not added. requirement_id is null; new_text states it,
+  one obligation per change.
 - reason: which paragraph changed and how, quoting the old and new words ("'x' became 'y'").
-- source: the page and paragraph of the new version (for removed: of the old version).
-Leave out linked requirements the edit does not affect, and editorial changes that change no
-obligation. Make no claim the texts do not support. If the payload lists feedback, fix every issue.
+- source: the page and paragraph of the new version where the obligation now is (for removed: of
+  the old version).
+Leave out linked requirements whose obligation is unchanged, also when it moved, and editorial
+changes that change no obligation. Make no claim the texts do not support. If the payload lists
+feedback, fix every issue.
 """
 
 

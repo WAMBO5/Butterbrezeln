@@ -19,7 +19,7 @@ from app.gates.change_gate import change_gate
 from app.llm import LLM, Budget, load_prices
 from app.markets.delta import align_provisions
 from app.matching.challenge_tools import load_tool
-from app.models import ChangeOutput, Claim, SubgoalChange
+from app.models import ChangeOutput, Claim, Provision, SubgoalChange
 from app.pipeline.calls import AgentCall, bind_call, gather_limited
 from app.pipeline.loop import LoopSpec, run_verified
 
@@ -68,6 +68,35 @@ def _identity(text: str, fallback: str) -> tuple[str, str]:
     return (m.group(1), m.group(2)) if m else ("UN R?", fallback)
 
 
+def link_requirements(reqs: list[dict], old: list[Provision]) -> dict[str, list[dict]]:
+    """Old requirements by the label of the old provision they come from: the provision with the cited
+    paragraph number whose pages hold the cited page, else the Introduction paragraph of that number, else
+    the provision on the cited page that shares most words with the requirement (for labels no parser
+    knows, such as table ids)."""
+    by_key: dict[str | None, list[Provision]] = {}
+    for p in old:
+        by_key.setdefault(paragraph_key(p.paragraph), []).append(p)
+
+    def distance(p: Provision, page: int | None) -> int:
+        """Pages between the cited page and the provision; 0 when the provision holds the page."""
+        return 0 if page is None else max(p.page_start - page, page - p.page_end, 0)
+
+    linked: dict[str, list[dict]] = {}
+    for r in reqs:
+        source = r.get("source") or {}
+        key, page = paragraph_key(source.get("paragraph")), source.get("page")
+        found = min(by_key.get(key, []) + by_key.get(f"introduction {key}", []),
+                    key=lambda p: distance(p, page), default=None)
+        if found is None or distance(found, page) > 1:
+            words = set(normalize(r.get("text", "")).casefold().split())
+            nearby = [p for p in old if distance(p, page) <= 1]
+            found = max(nearby, key=lambda p: (len(words & set(normalize(p.text).casefold().split())),
+                                                -distance(p, page)), default=None)
+        if found is not None:
+            linked.setdefault(found.paragraph, []).append(r)
+    return linked
+
+
 def load_subgoal(subgoal_dir: Path, settings: Settings) -> SubgoalInput:
     subgoal_dir = Path(subgoal_dir)
     old_text, new_text = _text(subgoal_dir, settings, "old"), _text(subgoal_dir, settings, "new")
@@ -77,14 +106,12 @@ def load_subgoal(subgoal_dir: Path, settings: Settings) -> SubgoalInput:
     _, new_label = _identity(new_text, "new")
     old = [p for p in parse_regulation(old_text, reg, old_label, "base") if p.paragraph != "Introduction"]
     new = [p for p in parse_regulation(new_text, reg, new_label, "latest") if p.paragraph != "Introduction"]
-    by_paragraph: dict[str | None, list[dict]] = {}
-    for r in reqs:
-        by_paragraph.setdefault(paragraph_key((r.get("source") or {}).get("paragraph")), []).append(r)
+    by_provision = link_requirements(reqs, old)
     pairs = []
     for c in align_provisions(old, new):
         if c.status == "unchanged":
             continue
-        linked = by_paragraph.get(paragraph_key(c.old.paragraph), []) if c.old else []
+        linked = by_provision.get(c.old.paragraph, []) if c.old else []
         pairs.append({
             "paragraph": c.paragraph, "status": c.status,
             "old_paragraph": c.old.paragraph if c.old else None, "new_paragraph": c.new.paragraph if c.new else None,
@@ -94,8 +121,35 @@ def load_subgoal(subgoal_dir: Path, settings: Settings) -> SubgoalInput:
             "new_text": " ".join(c.new.text.split())[:3000] if c.new else None,
             "linked": [{"id": r["id"], "text": r["text"]} for r in linked],
         })
+    # Paragraph order, not alignment order (which lists every added provision last): a provision that was
+    # split stays next to the parts split off from it.
+    pairs.sort(key=lambda p: _label_order(p["new_paragraph"] or p["old_paragraph"]))
     return SubgoalInput(case_id=f"subgoal-{subgoal_dir.name}", old_text=old_text, new_text=new_text,
                         requirements_old=reqs, pairs=pairs, challenge_dir=settings.challenge_dir)
+
+
+def _label_order(label: str | None) -> tuple:
+    """Sort key of a paragraph label: numbers compare as numbers ("5.10" after "5.9"), main text first."""
+    return tuple((0, int(t), "") if t.isdigit() else (1, 0, t) for t in re.findall(r"\d+|[a-z]+", str(label).casefold()))
+
+
+def _family(label: str | None) -> str:
+    """A paragraph and the parts below it share a family: "6.5", "6.5.1" and "6.5.2.3" are "6.5"."""
+    m = re.match(r"^(.*?)(\d+(?:\.\d+)*)$", label or "")
+    return m.group(1) + ".".join(m.group(2).split(".")[:2]) if m else str(label)
+
+
+def _batches(pairs: list[dict], size: int) -> list[list[dict]]:
+    """Consecutive pairs of about `size`, never splitting a family across two batches."""
+    batches: list[list[dict]] = []
+    family = None
+    for p in pairs:
+        f = _family(p["new_paragraph"] or p["old_paragraph"])
+        if not batches or (len(batches[-1]) >= size and f != family):
+            batches.append([])
+        batches[-1].append(p)
+        family = f
+    return batches
 
 
 def change_claims(inp: SubgoalInput, out: ChangeOutput) -> list[Claim]:
@@ -110,7 +164,7 @@ def change_claims(inp: SubgoalInput, out: ChangeOutput) -> list[Claim]:
 
 async def analyse_changes(inp: SubgoalInput, settings: Settings, call: AgentCall,
                           ledger: Ledger | None) -> list[SubgoalChange]:
-    batches = [replace(inp, pairs=inp.pairs[i:i + BATCH]) for i in range(0, len(inp.pairs), BATCH)]
+    batches = [replace(inp, pairs=b) for b in _batches(inp.pairs, BATCH)]
     loop = LoopSpec(name="subgoal_changes", producer=create_change_analyst(settings), output_schema=ChangeOutput,
                     build_prompt=lambda b, fb: build_change_prompt(b.pairs, b.case_id, fb), gate=change_gate,
                     verifier=create_grounding_verifier(settings),
