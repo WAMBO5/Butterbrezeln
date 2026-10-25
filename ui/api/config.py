@@ -35,6 +35,8 @@ PIPELINE_CASE_DIRS = [d for c in PIPELINE_CHECKOUTS for d in (c / "industrial-ai
 # otherwise the latest one
 PIPELINE_RUN = [r.strip() for r in os.environ.get("PIPELINE_RUN", "").split(",") if r.strip()]
 
-# auto: use LLM when credentials resolve, otherwise fall back to the rule set; off: rules only
-LLM_MODE = os.environ.get("LLM_MODE", "auto")
-LLM_MODEL = os.environ.get("LLM_MODEL", "claude-opus-5-5")
+# off (default): rule set only, no paid calls; on: use LLM for the spec check and country questions when
+# credentials resolve, falling back to the rule set on any error. The model comes from the environment, as
+# in the pipeline (AGENTS.md rule 3)
+LLM_MODE = os.environ.get("LLM_MODE", "off")
+LLM_MODEL = os.environ.get("LLM_MODEL") or os.environ.get("ANTHROPIC_MODEL", "")

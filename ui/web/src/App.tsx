@@ -67,7 +67,7 @@ export default function App() {
             </span>
             <span>
               <span className="block font-display font-bold leading-tight text-white">Marktfreigabe-Check</span>
-              <span className="hidden text-xs text-slate-500 sm:block">Darf mein Produkt dort verkauft werden?</span>
+              <span className="hidden text-xs text-slate-500 sm:block">Was muss sich pro Zielland ändern?</span>
             </span>
           </button>
           <Stepper current={runId ? 3 : step === "markets" ? 2 : 1} />
@@ -90,7 +90,7 @@ export default function App() {
       </main>
 
       <footer className="px-4 pb-8 pt-4 text-center text-xs text-slate-600">
-        Prototyp · Grundlage: UN-Fahrzeugvorschriften (UNECE) und recherchierte Länderprofile · Jede Aussage mit Quelle belegt
+        Prototyp · Unreviewed AI draft — not for compliance use · Grundlage: UN-Fahrzeugvorschriften (UNECE) und recherchierte Länderprofile (Entwurf)
       </footer>
     </div>
   );

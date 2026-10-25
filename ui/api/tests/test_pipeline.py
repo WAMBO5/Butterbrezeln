@@ -126,3 +126,41 @@ def test_ask_and_decide_are_logged(client):
     assert decided["decision"] == "akzeptiert"
     agents = [e["agent"] for e in client.get(f"/api/runs/{run_id}/trace").json()]
     assert "qa_agent" in agents and "human_review" in agents
+
+
+class ScriptedLLM:
+    """Stands in for LLM in the country Q&A: returns one fixed answer."""
+    available = True
+    model = "scripted"
+    disabled_reason = None
+
+    def __init__(self, data):
+        self.data = data
+
+    def json(self, **_):
+        return self.data, {"model": self.model, "prompt": "", "tokens": {"input": 0, "output": 0}}
+
+
+def test_llm_is_off_unless_switched_on_with_a_model():
+    from api.llm import LLM
+
+    assert not LLM(mode="off", model="some-model").available
+    assert not LLM(mode="on", model="").available
+
+
+def test_qa_drops_uncited_suggestions_and_flags_uncited_answers(client):
+    from api import main
+
+    run_id, _ = _run(client, "CHN")
+    suggestion = {"spec_section": "Zertifizierung", "change": "CCC-Prüfung beauftragen", "reason": "CCC",
+                  "effort": "pruefung_zertifizierung", "requirement_id": "", "deviation_id": "CHN-01"}
+    main.store.llm = ScriptedLLM({"answer": "CCC einplanen.", "cited_requirement_ids": [], "cited_deviation_ids": ["CHN-01"],
+                                  "suggestions": [suggestion, {**suggestion, "change": "Ohne Beleg", "deviation_id": ""}]})
+    qa = client.post(f"/api/runs/{run_id}/countries/CHN/ask", json={"question": "Was fehlt?"}).json()
+    added = [s for s in client.get(f"/api/runs/{run_id}").json()["verdicts"]["CHN"]["suggestions"] if s["id"] in qa["suggestion_ids"]]
+    assert [s["change"] for s in added] == ["CCC-Prüfung beauftragen"] and added[0]["sources"][0]["kind"] == "external"
+    assert "Ohne Quellenangabe" not in qa["answer"]
+
+    main.store.llm = ScriptedLLM({"answer": "Keine Ahnung.", "cited_requirement_ids": [], "cited_deviation_ids": [], "suggestions": []})
+    qa = client.post(f"/api/runs/{run_id}/countries/CHN/ask", json={"question": "Und sonst?"}).json()
+    assert "Ohne Quellenangabe" in qa["answer"] and not qa["sources"]

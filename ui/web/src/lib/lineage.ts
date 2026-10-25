@@ -1,5 +1,5 @@
 import type { Finding, LineageLink, LineageTarget, Requirement, RunResult, Source, Suggestion, TraceEvent } from "../types";
-import { EFFORT, FINDING, STATUS, regulationName } from "./labels";
+import { EFFORT, FINDING, STATUS, plural, regulationName } from "./labels";
 
 export interface ChainStep {
   key: string;
@@ -213,7 +213,7 @@ export function buildChain(target: LineageTarget, run: RunResult, trace: TraceEv
     },
     {
       key: "suggestions",
-      title: verdict.suggestions.length ? `${verdict.suggestions.length} Schritte bis zur Freigabe` : "Keine Schritte nötig",
+      title: verdict.suggestions.length ? `${plural(verdict.suggestions.length, "Schritt", "Schritte")} nötig` : "Keine Produktänderung nötig",
       links: verdict.suggestions.map((s) => ({ label: s.change, target: { kind: "suggestion", id: s.id } })),
     },
   ];

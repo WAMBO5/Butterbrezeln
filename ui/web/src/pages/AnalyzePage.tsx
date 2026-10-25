@@ -34,7 +34,7 @@ const EXAMPLE_NAMES: Record<string, string> = {
 
 const TRUST = [
   { icon: BookOpen, text: "Über 50 UN-Fahrzeugvorschriften" },
-  { icon: Link2, text: "Jede Aussage mit Fundstelle" },
+  { icon: Link2, text: "Jede Anforderung mit Fundstelle" },
   { icon: ShieldCheck, text: "Protokoll nach Vorbild des EU AI Act" },
 ];
 
@@ -152,10 +152,10 @@ export function AnalyzePage({ step, onStep, draft, onDraft, onStarted }: Props) 
               Agentenbasierte Marktfreigabe
             </span>
             <h1 className="mt-6 text-[2.75rem] font-bold leading-[1.05] tracking-tight sm:text-6xl">
-              Darf Ihr Produkt <span className="gradient-text">dort verkauft werden?</span>
+              Was braucht Ihr Produkt <span className="gradient-text">in jedem Zielland?</span>
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-slate-400">
-              Produktbeschreibung hochladen, Zielmärkte wählen – unsere Agenten prüfen die Vorschriften und zeigen pro Land, ob Sie verkaufen dürfen und was noch fehlt.
+              Produktbeschreibung hochladen, Zielmärkte wählen – unsere Agenten prüfen die Vorschriften und zeigen pro Land, was sich am Produkt ändern muss und welche Nachweise noch fehlen.
             </p>
 
             <label

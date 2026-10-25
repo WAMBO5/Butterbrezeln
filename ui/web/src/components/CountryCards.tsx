@@ -47,7 +47,7 @@ export function CountryCards({ verdicts, onSelect }: { verdicts: CountryVerdict[
                       </div>
                     </div>
                     <p className="relative mt-4 line-clamp-2 flex-1 text-sm text-slate-300">
-                      {top ? top.change : v.status === "green" ? "Nichts zu ändern – Ihr Produkt passt so, wie es ist." : st.desc}
+                      {top ? top.change : st.desc}
                     </p>
                     <div className="relative mt-4 flex items-center justify-between text-xs text-slate-400">
                       <span className="flex items-center gap-1.5">
@@ -59,7 +59,7 @@ export function CountryCards({ verdicts, onSelect }: { verdicts: CountryVerdict[
                             </span>
                           );
                         })}
-                        {v.suggestions.length ? plural(v.suggestions.length, "Schritt", "Schritte") : v.status === "grey" ? "Keine Daten" : "Nichts zu tun"}
+                        {v.suggestions.length ? plural(v.suggestions.length, "Schritt", "Schritte") : v.status === "grey" ? "Keine Daten" : "Keine Schritte"}
                       </span>
                       <span className="flex items-center font-semibold text-cyan-300 opacity-60 transition-opacity group-hover:opacity-100">
                         Details <ChevronRight size={14} className="transition-transform group-hover:translate-x-0.5" />

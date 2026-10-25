@@ -58,7 +58,7 @@ export function PipelineRun({ run }: { run: RunResult }) {
             <span className={`chip ring-1 ring-inset ${p.ledger.intact ? "bg-emerald-400/10 text-emerald-300 ring-emerald-400/20" : "bg-rose-400/10 text-rose-300 ring-rose-400/25"}`}
                   title={p.ledger.intact ? `Jeder Eintrag enthält den Hash des vorigen; nachgerechnet bis ${p.ledger.head?.slice(0, 12)}…` : p.ledger.problems.join("\n")}>
               {p.ledger.intact ? <ShieldCheck size={13} /> : <ShieldAlert size={13} />}
-              {p.ledger.intact ? `Protokoll unverändert (${p.ledger.records} Einträge nachgerechnet)` : "Protokoll verändert"}
+              {p.ledger.intact ? `Hash-Kette stimmig (${p.ledger.records} Einträge nachgerechnet)` : "Hash-Kette gebrochen"}
             </span>
           )}
         </div>

@@ -21,7 +21,6 @@ from .backend_client import NO_RUN
 from .config import BACKEND_MODE, CASES_DIR, PDF_DIR, PIPELINE_ROOT, ROOT
 from .models import AskRequest, DecisionRequest, QAEntry, RunResult, TraceEvent
 from .runs import RunState, RunStore
-from .sources import submission
 
 app = FastAPI(title="Butterbrezeln Compliance API")
 app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
@@ -139,13 +138,6 @@ async def stream_events(run_id: str) -> StreamingResponse:
     return StreamingResponse(gen(), media_type="text/event-stream", headers={"Cache-Control": "no-cache"})
 
 
-@app.get("/api/runs/{run_id}/submission")
-def get_submission(run_id: str) -> dict:
-    """The requirements in the platform's main-goal format, ready for tools/validate.py."""
-    result = _run(run_id).result
-    return submission(result.requirements, case_id=result.pipeline.case_id if result.pipeline else "upload")
-
-
 @app.post("/api/runs/{run_id}/countries/{iso3}/ask")
 def ask(run_id: str, iso3: str, body: AskRequest) -> QAEntry:
     state = _run(run_id)
@@ -184,7 +176,7 @@ def decide(run_id: str, suggestion_id: str, body: DecisionRequest) -> dict:
 def source_pdf(slug: str, role: str, filename: str) -> FileResponse:
     path = (PDF_DIR / slug / role / filename).resolve()
     if PDF_DIR.resolve() not in path.parents or path.suffix.lower() != ".pdf" or not path.is_file():
-        raise HTTPException(404, "PDF nicht vorhanden – tools/fetch_regulations.py ausführen")
+        raise HTTPException(404, "PDF nicht vorhanden – industrial-ai-hackathon/tools/fetch_regulations.py ausführen")
     return FileResponse(path, media_type="application/pdf",
                         headers={"Content-Disposition": f'inline; filename="{filename}"'})
 

@@ -25,8 +25,9 @@ class BackendError(RuntimeError):
     """A failure the engineer can act on; its message is shown as is."""
 
 
-NO_RUN = ("Für diese Produktbeschreibung gibt es noch keinen fertigen Pipeline-Lauf. Starten Sie ihn im Pipeline-Repo "
-          "mit `uv run certivity run <Fallordner>`; danach erscheint das Ergebnis hier.")
+NO_RUN = ("Für diese Produktbeschreibung gibt es noch keinen fertigen Pipeline-Lauf. Ein Lauf ist kostenpflichtig und "
+          "startet nur von Hand: `uv run certivity run <Fallordner>` im Wurzelverzeichnis des Repos; danach erscheint "
+          "das Ergebnis hier.")
 
 
 @dataclass

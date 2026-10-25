@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "motion/react";
-import { Check, ChevronDown, Flag, Info, PartyPopper, Send, X } from "lucide-react";
+import { Check, ChevronDown, ClipboardList, Flag, Info, Send, X } from "lucide-react";
 import type { Decision, Effort, LineageTarget, Regime, RunResult, Suggestion } from "../types";
 import { AGENTS } from "../lib/agents";
 import { countryName, flag } from "../lib/geo";
-import { EFFORT, EFFORT_ORDER, STATUS, byEffort, plural, sectionName } from "../lib/labels";
+import { COUNTRY_DATA_NOTE, EFFORT, EFFORT_ORDER, STATUS, byEffort, plural, sectionName } from "../lib/labels";
 import { useDrawer } from "../lib/useDrawer";
 import { AgentAvatar, AgentBot } from "./Agent";
-import { EffortChip } from "./Badges";
+import { DraftNotice, EffortChip } from "./Badges";
 import { SourceLink, SourceList } from "./SourceLink";
 
 interface Props {
@@ -149,6 +149,11 @@ export function CountryDrawer({ iso3, run, onClose, onAsk, onDecide, onLineage, 
             <div>
               <h2 className="text-2xl font-bold tracking-tight">{name}</h2>
               <p className="text-xs text-slate-400">{verdict ? REGIME[verdict.regime] : "Nicht Teil dieser Prüfung"}</p>
+              {verdict && (
+                <div className="mt-1.5">
+                  <DraftNotice compact />
+                </div>
+              )}
             </div>
           </div>
           <button type="button" className="btn-ghost !p-2" onClick={onClose} aria-label="Schließen">
@@ -207,7 +212,7 @@ export function CountryDrawer({ iso3, run, onClose, onAsk, onDecide, onLineage, 
 
               <section>
                 <h3 className="mb-4 font-display text-lg font-bold">
-                  {steps.length ? "Ihr Weg zur Freigabe" : "Was ist zu tun?"}{" "}
+                  {steps.length ? "Nötige Schritte" : "Was ist zu tun?"}{" "}
                   {steps.length > 0 && <span className="font-sans text-sm font-medium text-slate-500">· {plural(steps.length, "Schritt", "Schritte")}, größter Aufwand zuerst</span>}
                 </h3>
                 {steps.length ? (
@@ -216,18 +221,21 @@ export function CountryDrawer({ iso3, run, onClose, onAsk, onDecide, onLineage, 
                       <StepCard key={s.id} s={s} n={i + 1} onDecide={onDecide} onLineage={onLineage} />
                     ))}
                     <li className="flex items-center gap-3">
-                      <span className="grid h-9 w-9 place-items-center rounded-full bg-emerald-400/15 text-emerald-300 shadow-[0_0_20px_-6px_#34d399] ring-1 ring-inset ring-emerald-400/40">
+                      <span className="grid h-9 w-9 place-items-center rounded-full bg-white/[0.06] text-slate-300 ring-1 ring-inset ring-white/15">
                         <Flag size={16} />
                       </span>
-                      <span className="text-sm font-semibold text-emerald-200">Verkaufsbereit in {name}</span>
+                      <span className="text-sm font-semibold text-slate-300">
+                        Danach: Zulassung in {name}
+                        {verdict.open_evidence_count > 0 && ` mit ${plural(verdict.open_evidence_count, "Prüfnachweis", "Prüfnachweisen")}`}
+                      </span>
                     </li>
                   </ol>
                 ) : verdict.status === "grey" ? (
                   <p className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4 text-sm text-slate-400">Ohne Daten zu diesem Land können wir keine Schritte nennen.</p>
                 ) : (
                   <div className="flex items-center gap-3 rounded-2xl bg-emerald-400/10 p-4 text-emerald-200 ring-1 ring-inset ring-emerald-400/25">
-                    <PartyPopper size={24} />
-                    <p className="text-sm font-medium">Nichts zu tun – Ihr Produkt passt so, wie es ist.</p>
+                    <ClipboardList size={24} className="shrink-0" />
+                    <p className="text-sm font-medium">Keine Produktänderung gefunden. Für die Zulassung bleiben die üblichen Prüfnachweise (unten).</p>
                   </div>
                 )}
               </section>
@@ -253,6 +261,7 @@ export function CountryDrawer({ iso3, run, onClose, onAsk, onDecide, onLineage, 
                     Wie kam diese Bewertung zustande?
                   </button>
                 </div>
+                {verdict.regime !== "not_covered" && <p className="mt-2 text-xs text-slate-500">{COUNTRY_DATA_NOTE}</p>}
                 {verdict.regime !== "not_covered" && verdict.open_evidence_count > 0 && (
                   <div className="mt-4 overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02]">
                     <button type="button" className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm" onClick={() => setShowEvidence((v) => !v)}>
@@ -285,7 +294,7 @@ export function CountryDrawer({ iso3, run, onClose, onAsk, onDecide, onLineage, 
                   <AgentAvatar kind="assistant" size={44} active={!!pending} />
                   <div>
                     <h3 className="font-display text-lg font-bold">Fragen Sie den Assistenten</h3>
-                    <p className="text-xs text-slate-400">Antworten mit Quellen; neue Schritte erscheinen oben im Fahrplan.</p>
+                    <p className="text-xs text-slate-400">Antworten nennen ihre Quellen, wo es welche gibt; neue Schritte erscheinen oben in der Liste.</p>
                   </div>
                 </div>
                 <div className="mt-4 space-y-3">
@@ -296,7 +305,7 @@ export function CountryDrawer({ iso3, run, onClose, onAsk, onDecide, onLineage, 
                         <AgentAvatar kind="assistant" size={28} className="mt-1" />
                         <div className="min-w-0 space-y-2 rounded-2xl rounded-tl-md border border-white/[0.08] bg-white/[0.05] px-4 py-3 text-sm text-slate-200">
                           <p className="whitespace-pre-line">{entry.answer}</p>
-                          {entry.suggestion_ids.length > 0 && <p className="text-xs text-teal-300">{plural(entry.suggestion_ids.length, "neuer Schritt", "neue Schritte")} im Fahrplan ergänzt.</p>}
+                          {entry.suggestion_ids.length > 0 && <p className="text-xs text-teal-300">{plural(entry.suggestion_ids.length, "neuer Schritt", "neue Schritte")} oben ergänzt.</p>}
                           <SourceList sources={entry.sources.slice(0, 6)} />
                         </div>
                       </div>

@@ -25,8 +25,12 @@ class LLM:
     def __init__(self, mode: str = LLM_MODE, model: str = LLM_MODEL):
         self.mode = mode
         self.model = model
-        self.disabled_reason: str | None = "LLM_MODE=off" if mode == "off" else None
-        if self.disabled_reason is None and not _credentials_configured():
+        self.disabled_reason: str | None = None
+        if mode not in ("on", "auto"):  # "auto" is the old name of "on"
+            self.disabled_reason = "LLM_MODE=off (Standard; LLM_MODE=on schaltet LLM ein)"
+        elif not model:
+            self.disabled_reason = "Kein Modell gesetzt (ANTHROPIC_MODEL oder LLM_MODEL)"
+        elif not _credentials_configured():
             self.disabled_reason = "Keine LLM-Zugangsdaten (ANTHROPIC_API_KEY setzen oder `ant auth login`)"
         self._client = None
         self._lock = threading.Lock()
@@ -61,9 +65,6 @@ class LLM:
                 system=system,
                 messages=[{"role": "user", "content": user}],
                 output_config={"effort": effort, "format": {"type": "json_schema", "schema": schema}},
-                # on a policy decline the API re-runs the request on Anthropic's recommended fallback model
-                extra_headers={"anthropic-beta": "server-side-fallback-2026-07-01"},
-                extra_body={"fallbacks": "default"},
             )
         except (anthropic.AuthenticationError, anthropic.PermissionDeniedError) as exc:
             self.disabled_reason = f"Keine gültigen LLM-Zugangsdaten ({exc.__class__.__name__})"

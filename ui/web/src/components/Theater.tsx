@@ -132,7 +132,7 @@ export function Theater({ run, events, onDone }: Props) {
   const results = [
     parts.length ? `${plural(parts.length, "Bauteil", "Bauteile")} erkannt` : spec ? `${plural(spec.sections.length, "Abschnitt", "Abschnitte")} erkannt` : "gelesen",
     regulations.length ? `${plural(regulations.length, "Vorschrift", "Vorschriften")} gefunden` : "erledigt",
-    run ? `${run.requirements.length} Anforderungen belegt` : "erledigt",
+    run ? `${run.requirements.length} Anforderungen mit Fundstelle` : "erledigt",
     run ? `${findingCounts.erfuellt} erfüllt · ${findingCounts.konflikt} Widersprüche` : "erledigt",
     run ? `${plural(order.length, "Markt", "Märkte")} bewertet` : "erledigt",
   ];
@@ -313,7 +313,7 @@ export function Theater({ run, events, onDone }: Props) {
                       <p>Jede Anforderung mit Fundstelle: Vorschrift, Version, Seite.</p>
                       {run?.validation && (
                         <p className={`mt-1 flex items-center gap-1.5 font-semibold ${run.validation.ok ? "text-teal-300" : "text-amber-300"}`}>
-                          <Check size={15} /> {run.validation.ok ? "Alle Fundstellen bestätigt" : `${run.validation.problems.length} Fundstellen unklar`}
+                          <Check size={15} /> {run.validation.ok ? "Alle Fundstellen formal gültig" : `${run.validation.problems.length} Fundstellen formal ungültig`}
                         </p>
                       )}
                     </div>

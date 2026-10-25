@@ -12,9 +12,9 @@ const PREVIEW: Record<string, VerdictStatus> = { DEU: "green", FRA: "green", ESP
 
 const CARDS: { iso3: string; text: string; className: string; delay: number }[] = [
   // over Greenland and Siberia, clear of the pins and the agent
-  { iso3: "DEU", text: "Nichts zu ändern", className: "left-[30%] top-[3%]", delay: 0.5 },
-  { iso3: "CHN", text: "2 Schritte bis zur Freigabe", className: "right-[3%] top-[2%]", delay: 0.8 },
-  { iso3: "USA", text: "Produkt anpassen", className: "bottom-[10%] left-[6%]", delay: 1.1 },
+  { iso3: "DEU", text: "Keine Änderung nötig", className: "left-[30%] top-[3%]", delay: 0.5 },
+  { iso3: "CHN", text: "2 Schritte nötig", className: "right-[3%] top-[2%]", delay: 0.8 },
+  { iso3: "USA", text: "Produktänderung nötig", className: "bottom-[10%] left-[6%]", delay: 1.1 },
 ];
 
 /** Landing visual: a live-looking world map with the country agent at work. */

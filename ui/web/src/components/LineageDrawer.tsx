@@ -7,6 +7,7 @@ import { buildChain } from "../lib/lineage";
 import { actorOf } from "../lib/labels";
 import { useDrawer } from "../lib/useDrawer";
 import { AgentAvatar } from "./Agent";
+import { DraftNotice } from "./Badges";
 import { SourceList } from "./SourceLink";
 import { SpecView } from "./SpecView";
 
@@ -32,6 +33,9 @@ export function LineageDrawer({ target, run, trace, onClose, onNavigate, onOpenE
             <p className="eyebrow">Nachvollziehbarkeit</p>
             <h2 className="text-xl font-bold">Woher wissen wir das?</h2>
             <p className="text-sm text-slate-400">Die vollständige Kette – jeder Schritt mit Quelle und Urheber.</p>
+            <div className="mt-1.5">
+              <DraftNotice compact />
+            </div>
           </div>
           <button type="button" className="btn-ghost !p-2" onClick={onClose} aria-label="Schließen">
             <X size={20} />

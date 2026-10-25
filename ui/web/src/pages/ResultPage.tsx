@@ -8,6 +8,7 @@ import { centroid, corners } from "../lib/geo";
 import { RULE, STATUS, STATUS_ORDER, UNTESTED_FILL, plural } from "../lib/labels";
 import { money, totalCost, when } from "../lib/pipeline";
 import { summarizeSpec } from "../lib/specSummary";
+import { DraftNotice } from "../components/Badges";
 import { Blueprint } from "../components/Blueprint";
 import { CountryCards } from "../components/CountryCards";
 import { CountryDrawer } from "../components/CountryDrawer";
@@ -19,13 +20,13 @@ import { StoryView } from "../components/StoryView";
 import { Theater } from "../components/Theater";
 import { EUROPE_VIEW, FlagPin, MapPin, WorldMap, type Framing } from "../components/WorldMap";
 
-/** "In 2 Ländern ist Ihr Produkt sofort verkaufsbereit, in 1 Land …" */
+/** "In 2 Ländern ist am Produkt nichts zu ändern, in 1 Land …" */
 function summarySentence(counts: Record<VerdictStatus, number>): string {
   const land = (n: number, dativ: boolean) => `${n} ${n === 1 ? "Land" : dativ ? "Ländern" : "Länder"}`;
   const parts = [
-    counts.green && `in ${land(counts.green, true)} ist Ihr Produkt sofort verkaufsbereit`,
-    counts.yellow && `in ${land(counts.yellow, true)} fehlen nur noch Unterlagen oder Prüfungen`,
-    counts.red && `in ${land(counts.red, true)} muss das Produkt selbst angepasst werden`,
+    counts.green && `in ${land(counts.green, true)} ist am Produkt nichts zu ändern`,
+    counts.yellow && `in ${land(counts.yellow, true)} fehlen Unterlagen oder Prüfungen`,
+    counts.red && `in ${land(counts.red, true)} muss das Produkt selbst geändert werden`,
     counts.grey && `für ${land(counts.grey, false)} haben wir noch keine Daten`,
   ].filter(Boolean) as string[];
   if (!parts.length) return "";
@@ -121,9 +122,9 @@ export function ResultPage({ runId, replay, onNew, onOpenRun, onEditMarkets }: P
   const tooltipFor = useCallback((iso3: string) => {
     const v = run?.verdicts[iso3];
     if (!v) return "Nicht geprüft – anklicken zum Mitprüfen";
-    if (v.status === "green") return "Verkaufsbereit – nichts zu ändern";
+    if (v.status === "green") return "Keine Produktänderung nötig – Prüfnachweise offen";
     if (v.status === "grey") return "Noch keine Daten zu diesem Land";
-    return `${STATUS[v.status].label} · ${plural(v.suggestions.length, "Schritt", "Schritte")} bis zur Freigabe`;
+    return `${STATUS[v.status].label} · ${plural(v.suggestions.length, "Schritt", "Schritte")}`;
   }, [run]);
 
   if (error) return <Failure title="Das Ergebnis konnte nicht geladen werden" text={error} onNew={onNew} />;
@@ -184,8 +185,9 @@ export function ResultPage({ runId, replay, onNew, onOpenRun, onEditMarkets }: P
                   </span>
                 )}
                 {run.validation?.ok && (
-                  <span className="chip bg-emerald-400/10 !text-xs text-emerald-300 ring-1 ring-inset ring-emerald-400/20">
-                    <ShieldCheck size={13} /> Alle {run.requirements.length} Fundstellen belegt
+                  <span className="chip bg-emerald-400/10 !text-xs text-emerald-300 ring-1 ring-inset ring-emerald-400/20"
+                        title="validate.py: Vorschrift, Version und Seite jeder Fundstelle stehen im offiziellen Verzeichnis. Ob die Anforderung inhaltlich stimmt, prüft das nicht.">
+                    <ShieldCheck size={13} /> Alle {run.requirements.length} Fundstellen formal gültig
                   </span>
                 )}
                 {run.pipeline && (
@@ -230,6 +232,8 @@ export function ResultPage({ runId, replay, onNew, onOpenRun, onEditMarkets }: P
           </div>
         </div>
       </section>
+
+      <DraftNotice />
 
       {note && (
         <section className="flex gap-4 rounded-3xl border border-amber-300/20 bg-amber-300/[0.06] p-5">

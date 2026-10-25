@@ -18,8 +18,8 @@ function time(ts?: string | null): string {
 
 const PRINCIPLES: { icon: LucideIcon; article: string; title: string; text: string }[] = [
   { icon: ScrollText, article: "Art. 12", title: "Protokollierung", text: "Jeder Agentenschritt wird automatisch mit Zeit, Eingabe, Ergebnis und Quelle festgehalten." },
-  { icon: Eye, article: "Art. 13", title: "Transparenz", text: "Jede Aussage nennt ihre Fundstelle; KI-, Regel- und Menschen-Schritte sind gekennzeichnet." },
-  { icon: UserCheck, article: "Art. 14", title: "Menschliche Aufsicht", text: "Vorschläge gelten erst, wenn ein Mensch sie übernimmt – jede Entscheidung wird protokolliert." },
+  { icon: Eye, article: "Art. 13", title: "Transparenz", text: "Jede Anforderung nennt ihre Fundstelle; KI-, Regel- und Menschen-Schritte sind gekennzeichnet." },
+  { icon: UserCheck, article: "Art. 14", title: "Menschliche Aufsicht", text: "Ein Vorschlag wird erst übernommen, wenn ein Mensch zustimmt – das ersetzt keine fachliche Prüfung; jede Entscheidung wird protokolliert." },
 ];
 
 // ---------------------------------------------------------------- flow graph
@@ -252,7 +252,7 @@ function FlowGraph({ run, trace, onCountry, onLineage, onEvent }: GraphProps) {
           )}
         </div>
 
-        <div>{agentNode("review", "checker", "Prüf- & Abgleich-Agent", `${run.requirements.length} belegt · ${findingCounts.konflikt} Widersprüche`, assessorEvent, "matcher")}</div>
+        <div>{agentNode("review", "checker", "Prüf- & Abgleich-Agent", `${run.requirements.length} mit Fundstelle · ${findingCounts.konflikt} Widersprüche`, assessorEvent, "matcher")}</div>
 
         <div>{agentNode("scout", "scout", AGENTS.scout.name, plural(verdicts.length, "Markt", "Märkte"), countryEvent)}</div>
 
@@ -450,7 +450,7 @@ export function StoryView({ run, trace, focusId, onCountry, onLineage, onEvent }
             {run.validation && (
               <p className={`flex items-center gap-1.5 font-medium ${run.validation.ok ? "text-emerald-300" : "text-rose-300"}`}>
                 <CircleCheck size={16} />
-                {run.validation.ok ? "Alle Fundstellen automatisch gegen das offizielle Verzeichnis geprüft." : `${run.validation.problems.length} Fundstellen konnten nicht bestätigt werden.`}
+                {run.validation.ok ? "Alle Fundstellen formal gültig: automatisch gegen das offizielle Verzeichnis geprüft (Vorschrift, Version, Seite)." : `${run.validation.problems.length} Fundstellen sind formal ungültig.`}
               </p>
             )}
           </Step>

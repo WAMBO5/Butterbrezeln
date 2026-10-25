@@ -15,8 +15,8 @@ interface StatusStyle {
 
 export const STATUS: Record<VerdictStatus, StatusStyle> = {
   green: {
-    label: "Verkaufsbereit",
-    desc: "Ihr Produkt kann hier verkauft werden.",
+    label: "Keine Änderung nötig",
+    desc: "Am Produkt wurde kein Änderungsbedarf gefunden. Zulassung und Prüfnachweise stehen noch aus.",
     color: "#34d399",
     soft: "bg-emerald-400/10",
     ring: "ring-emerald-400/30",
@@ -24,8 +24,8 @@ export const STATUS: Record<VerdictStatus, StatusStyle> = {
     icon: CircleCheck,
   },
   yellow: {
-    label: "Fast verkaufsbereit",
-    desc: "Fast geschafft – es fehlen nur Unterlagen, Kennzeichnung oder Prüfungen.",
+    label: "Unterlagen & Prüfungen",
+    desc: "Das Produkt bleibt, wie es ist – es fehlen Unterlagen, Kennzeichnung oder zusätzliche Prüfungen.",
     color: "#fbbf24",
     soft: "bg-amber-400/10",
     ring: "ring-amber-400/30",
@@ -33,8 +33,8 @@ export const STATUS: Record<VerdictStatus, StatusStyle> = {
     icon: TriangleAlert,
   },
   red: {
-    label: "Produkt anpassen",
-    desc: "Damit es hier verkauft werden darf, muss das Produkt selbst geändert werden.",
+    label: "Produktänderung nötig",
+    desc: "Für dieses Land muss das Produkt selbst geändert werden.",
     color: "#fb7185",
     soft: "bg-rose-400/10",
     ring: "ring-rose-400/30",
@@ -62,11 +62,16 @@ export const SELECTED_FILL = "#22d3ee";
 
 /** What the colours mean, in one line each (map legend). */
 export const RULE: Record<VerdictStatus, string> = {
-  green: "Nichts zu ändern",
-  yellow: "Nur Unterlagen oder Prüfungen",
+  green: "nur die üblichen Prüfnachweise offen",
+  yellow: "Produkt bleibt, Nachweise fehlen",
   red: "Produkt muss geändert werden",
   grey: "Keine Daten",
 };
+
+/** The team's label for benchmark output (AGENTS.md), shown on every result view. */
+export const DRAFT_LABEL = "Unreviewed AI draft — not for compliance use";
+export const DRAFT_NOTE = "Ungeprüfter Entwurf – vor jeder Verwendung fachlich prüfen; keine Zulassungsentscheidung.";
+export const COUNTRY_DATA_NOTE = "Länderdaten: Recherche-Entwurf vom 25.10.2026, nicht rechtlich geprüft.";
 
 export const EFFORT: Record<Effort, { label: string; desc: string; icon: LucideIcon; color: string; chip: string; iconBg: string }> = {
   doku_kennzeichnung: {

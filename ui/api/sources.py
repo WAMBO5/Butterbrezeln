@@ -84,8 +84,9 @@ def _validator_module():
     return module
 
 
-def submission(requirements: list[Requirement], case_id: str, team_id: str = "butterbrezeln") -> dict[str, Any]:
-    """The requirements in the platform's main-goal format (schemas/submission_main.schema.json)."""
+def submission(requirements: list[Requirement], case_id: str, team_id: str = "ui-check") -> dict[str, Any]:
+    """The requirements in the platform's main-goal format (schemas/submission_main.schema.json), only for
+    validate.py; the submission to upload is the pipeline run's own submission.json and its provenance sidecar."""
     out = []
     for r in requirements:
         src = {"regulation": r.source.regulation, "version": r.source.version, "page": r.source.page}

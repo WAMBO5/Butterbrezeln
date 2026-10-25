@@ -1,4 +1,4 @@
-"""Country data: data/countries.json (UNECE 1958 membership) and data/country_profiles/<ISO3>.json."""
+"""Country data: ui/data/countries.json (UNECE 1958 membership) and ui/data/country_profiles/<ISO3>.json."""
 
 from __future__ import annotations
 

@@ -1,5 +1,24 @@
+import { TriangleAlert } from "lucide-react";
 import type { Effort, FindingStatus, VerdictStatus } from "../types";
-import { EFFORT, FINDING, STATUS } from "../lib/labels";
+import { COUNTRY_DATA_NOTE, DRAFT_LABEL, DRAFT_NOTE, EFFORT, FINDING, STATUS } from "../lib/labels";
+
+/** "Unreviewed AI draft — not for compliance use": a banner on the result page, a chip in the drawers. */
+export function DraftNotice({ compact = false }: { compact?: boolean }) {
+  if (compact)
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/10 px-2 py-0.5 text-[11px] font-semibold text-amber-200 ring-1 ring-inset ring-amber-400/25" title={`${DRAFT_NOTE} ${COUNTRY_DATA_NOTE}`}>
+        <TriangleAlert size={11} /> {DRAFT_LABEL}
+      </span>
+    );
+  return (
+    <section role="note" className="flex items-start gap-3 rounded-2xl border border-amber-300/25 bg-amber-300/[0.06] px-4 py-3 text-sm">
+      <TriangleAlert size={18} className="mt-0.5 shrink-0 text-amber-300" />
+      <p className="text-amber-100/75">
+        <b className="font-semibold text-amber-100">{DRAFT_LABEL}</b> · {DRAFT_NOTE} {COUNTRY_DATA_NOTE}
+      </p>
+    </section>
+  );
+}
 
 export function StatusPill({ status, size = "sm" }: { status: VerdictStatus; size?: "sm" | "lg" }) {
   const s = STATUS[status];
