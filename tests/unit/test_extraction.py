@@ -157,3 +157,35 @@ def test_gate_flags_list_items_without_an_obligation():
     whole = obligation(quote=text.split("such that ", 1)[1], text="The module shall meet (a) to (c).")
     assert missing_list_items(batch, item("UN R1@1#4.7", obs=[whole])) == []
     assert list_items("as required by paragraph 5.1.(a) only") == []
+
+
+def test_list_headings_ending_in_a_colon_need_no_obligation():
+    from app.gates.extraction_gate import missing_list_items
+
+    text = "Bear the following markings. (a) On the module: (i) The trade name; (ii) The rated voltage."
+    p = prov("UN R1@1#3.3", text=text)
+    batch = ExtractionBatch(section_id="UN R1@1#3", provisions=[p], definitions=[])
+    obs = [obligation(quote="The trade name", text="The module shall bear the trade name."),
+           obligation(quote="The rated voltage", text="The module shall bear the rated voltage.")]
+    assert missing_list_items(batch, item("UN R1@1#3.3", obs=obs)) == []
+
+
+async def test_a_valid_item_from_an_earlier_attempt_is_kept(tmp_path):
+    from app.config.settings import load_settings
+    from app.pipeline.extraction import extract_verified
+
+    settings = load_settings({"CERTIVITY_MAX_RETRIES": "1"}, fake_llm=True)
+    p1, p2 = prov("UN R1@1#5.1"), prov("UN R1@1#5.2", text="The lamp shall be red.")
+    batch = ExtractionBatch(section_id="UN R1@1#5", provisions=[p1, p2], definitions=[])
+    good2 = obligation(quote="The lamp shall be red.", text="The lamp shall be red.")
+    attempts = []
+
+    async def call(spec, prompt):
+        attempts.append(1)
+        if len(attempts) == 1:  # p2 fine, p1 bad
+            return out(item("UN R1@1#5.1", obs=[obligation(quote="not in source")]), item("UN R1@1#5.2", obs=[good2]))
+        return out(item("UN R1@1#5.1"), item("UN R1@1#5.2", obs=[obligation(quote="not in source either")]))
+
+    cache = ObligationCache(tmp_path / "o.sqlite")
+    got = await extract_verified(batch, cache, settings, call, None, verify=False)
+    assert {o.provision_id for o in got} == {"UN R1@1#5.1", "UN R1@1#5.2"} and len(attempts) == 2

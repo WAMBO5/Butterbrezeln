@@ -14,6 +14,7 @@ ITEM_RE = re.compile(r"(?:^|(?<=[\s:;]))\(([a-z]|[ivx]{1,4})\)\s+")
 ITEM_PREFIX = 40  # squashed characters of an item that some obligation's quote must contain
 ITEM_NAME = 20  # or: squashed characters of the item, without a leading article, that some obligation's text names
 ARTICLE_RE = re.compile(r"^(?:a|an|the|if|where|when)\s+", re.I)
+TAIL_RE = re.compile(r"[\s;,.:]*(?:\band/or|\band|\bor)?[\s;,.:]*$", re.I)  # "...; and/or" ending an item
 
 
 def _issue(type_: str, target: str, reason: str) -> Issue:
@@ -64,12 +65,14 @@ def missing_list_items(batch: ExtractionBatch, item: ProvisionObligations) -> li
     texts = [squash(o.text) for o in item.obligations]
 
     def covered(body: str) -> bool:
+        body = TAIL_RE.sub("", body)
         whole = squash(body)
         named = squash(ARTICLE_RE.sub("", body.strip()))[:ITEM_NAME]
         return (not whole or any(whole[:ITEM_PREFIX] in q for q in quotes)
                 or any(len(q) >= 15 and q in whole for q in quotes) or any(named in t for t in texts))
 
-    missing = [mark for mark, body in list_items(p.text) if not covered(body)]
+    # an item ending in ":" only heads a sub-list ("(a) On the module: (i) ... (ii) ..."); its sub-items count
+    missing = [mark for mark, body in list_items(p.text) if not body.rstrip().endswith(":") and not covered(body)]
     if not missing:
         return []
     return [_issue("missing_list_item", p.provision_id,
