@@ -1,0 +1,33 @@
+=== PDF page 1 ===
+UN R999, version 1.0.0 | page 1 of 3
+UN R999 (version 1.0.0)
+Introduction (for information)
+This Regulation combines the provisions of Regulations Nos. 7 and 23 into a single Regulation.
+1 Scope
+This Regulation applies to rear lamps of vehicles of categories M and N.
+2. Definitions
+For the purposes of this Regulation:
+2.1. "Lamp" means a device designed to illuminate the road or to emit a light signal.
+3. Administrative provisions
+3.1. The device shall bear the trade name.
+
+=== PDF page 2 ===
+UN R999, version 1.0.0 | page 2 of 3
+5. Specifications
+5.1. Each lamp shall emit red light and shall meet the requirements of paragraph 2.1. and Annex 3
+when tested with the light sources listed in the following table:
+
+=== PDF page 3 ===
+UN R999, version 1.0.0 | page 3 of 3
+Light source Power
+12 V 21 W
+5.2. (Reserved)
+5.3. The ﬁeld shall be measured.
+Annex 1 Communication
+1. Trade name:
+2. Approval number:
+Annex 3 Test procedure
+Part 1
+1. Test conditions
+1.1. The lamp shall be mounted on a goniometer.
+1.2. The test lamp shall be energised.

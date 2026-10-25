@@ -1,0 +1,6 @@
+# USD per million tokens, from the Anthropic SDK reference's model table (cached 2026-10-06).
+# cache_read null = unknown, priced as input. Cache writes are priced at 1.25 x input in code.
+claude-opus-5-5:   {input: 4.00, output: 20.00, cache_read: 0.20}
+claude-sonnet-5-5: {input: 2.00, output: 10.00, cache_read: 0.20}
+claude-haiku-5-5:  {input: 0.10, output: 0.50, cache_read: null}
+fake:              {input: 0.0, output: 0.0, cache_read: null}   # the --fake-llm stand-in

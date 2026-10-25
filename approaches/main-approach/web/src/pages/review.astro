@@ -1,0 +1,201 @@
+---
+import Base from "../layouts/Base.astro";
+---
+<Base title="Review" current="review">
+  <div class="page-head">
+    <div>
+      <h1 id="title">Review</h1>
+      <p id="subtitle">Loading…</p>
+    </div>
+    <div class="row">
+      <label for="reviewer" class="visually-hidden">Your name</label>
+      <input type="text" id="reviewer" placeholder="Your name" style="width: 14rem" />
+      <button class="button danger" type="button" id="stop">Stop this run</button>
+    </div>
+  </div>
+  <div id="notice"></div>
+  <div id="content"></div>
+</Base>
+
+<script>
+  import { api, runId, type Decision, type Run } from "../lib/api";
+  import { $, chip, citation, draftStamp, h, message } from "../lib/ui";
+
+  type Action = { action: string; target_id?: string | null; reason?: string | null; payload?: Record<string, unknown> | null };
+  const id = runId();
+  let run: Run | null = null;
+  const pending = new Map<string, Action>();
+
+  const reviewerInput = $<HTMLInputElement>("#reviewer");
+  try { reviewerInput.value = localStorage.getItem("certivity.reviewer") ?? ""; } catch { /* storage blocked */ }
+  reviewerInput.addEventListener("change", () => { try { localStorage.setItem("certivity.reviewer", reviewerInput.value); } catch { /* ignore */ } });
+  const reviewer = () => reviewerInput.value.trim();
+
+  function needName(): boolean {
+    if (reviewer()) return false;
+    message($("#notice"), "Enter your name first: every review decision is recorded with the reviewer's name.", "error");
+    reviewerInput.focus();
+    return true;
+  }
+
+  /** One decision row with a change form: the new state and a reason, which is required. */
+  function changeForm(target: string, options: [string, string][], current: string, label: string, payloadFor: (v: string) => Record<string, unknown>) {
+    const select = h("select", { "aria-label": `New decision for ${label}` }, ...options.map(([v, t]) => h("option", { value: v, selected: v === current }, t)));
+    const reason = h("input", { type: "text", placeholder: "Reason for the change (required)", "aria-label": `Reason for ${label}` });
+    const status = h("small", { class: "quiet" });
+    const form = h("form", {},
+      h("div", {}, reason), select,
+      h("button", { class: "button secondary small", type: "submit" }, "Record change"), status);
+    const fold = h("details", { class: "change" }, h("summary", {}, "Change this decision"), form);
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!reason.value.trim()) { status.textContent = "Give a reason; changes without one are not accepted."; reason.focus(); return; }
+      pending.set(target, { action: "override", target_id: target, reason: reason.value.trim(), payload: payloadFor(select.value) });
+      status.textContent = `Recorded. It is applied when you continue (${pending.size} change${pending.size === 1 ? "" : "s"} so far).`;
+    });
+    return fold;
+  }
+
+  function decisionRow(d: Decision, compact = false) {
+    const sections = [...new Set(d.sections.flatMap((s) => s.section_ids.map((x) => x.split("#")[1])))];
+    return h("div", { class: compact ? "decision compact" : "decision" },
+      h("div", {}, h("strong", {}, `${d.regulation} ${d.version_label}`), " ", h("span", { class: "quiet" }, d.path !== "none" ? `via ${d.path.replace("_", " ")}` : "")),
+      h("div", { class: "state" }, chip(d.state)),
+      h("p", { class: "why" }, d.reason, sections.length ? ` Sections: ${sections.join(", ")}.` : ""),
+      changeForm(d.regulation, [["applicable", "Applies"], ["uncertain", "Uncertain"], ["not_applicable", "Does not apply"]], d.state, d.regulation,
+        (v) => ({ state: v, version_label: d.version_label })));
+  }
+
+  function continueBar(checkpoint: string, label: string) {
+    const button = h("button", { class: "button", type: "button" }, label);
+    button.addEventListener("click", async () => {
+      if (needName()) return;
+      button.setAttribute("disabled", "");
+      const actions: Action[] = [...pending.values()];
+      if (!actions.length) actions.push({ action: "confirm" });
+      try {
+        await api.resume(id!, checkpoint, reviewer(), actions);
+        pending.clear();
+        window.location.href = `/run?id=${encodeURIComponent(id!)}`;
+      } catch (e) {
+        message($("#notice"), `Not accepted: ${(e as Error).message}`, "error");
+        button.removeAttribute("disabled");
+      }
+    });
+    return h("div", { class: "row", style: "margin-top: 1.5rem" }, button,
+      h("span", { class: "quiet" }, "Nothing is pre-approved: continuing records your confirmation of everything you did not change."));
+  }
+
+  function renderProfile(r: Run) {
+    const p = r.profile!;
+    return h("section", { class: "sheet stack" },
+      h("h2", {}, "Is this the product?"),
+      h("p", {}, `${p.product_type}. Vehicle categories: ${p.vehicle_categories.join(", ") || "not stated"}.`),
+      ...p.parts.map((part) => h("div", { class: "decision" },
+        h("div", {}, h("strong", {}, part.name), " ", h("span", { class: "quiet" }, part.part_id)),
+        h("div", {}),
+        h("div", { class: "why" },
+          part.functions.length ? h("p", {}, `Functions: ${part.functions.join(", ")}.`) : null,
+          part.properties.length ? h("p", {}, `Properties: ${part.properties.join(", ")}.`) : null,
+          part.materials.length ? h("p", {}, `Materials: ${part.materials.join(", ")}.`) : null,
+          h("ul", {}, ...part.facts.map((f) => h("li", {}, `${f.key}: ${f.value}${f.unit ? ` ${f.unit}` : ""} `, h("small", {}, `(${f.source}: “${f.quote}”)`))))),
+        changeForm(part.part_id, [["keep", "Keep this part"], ["remove", "Remove this part"]], "keep", part.name,
+          (v) => (v === "remove" ? { remove_part: true } : {})))),
+      p.unknowns.length ? h("div", {}, h("h3", {}, "Not in the inputs"), h("ul", {}, ...p.unknowns.map((u) => h("li", {}, u)))) : null,
+      continueBar("C1_profile", "Continue to the regulations"));
+  }
+
+  function renderScope(r: Run) {
+    const decisions = r.plan!.decisions;
+    const kept = decisions.filter((d) => d.state !== "not_applicable");
+    const excluded = decisions.filter((d) => d.state === "not_applicable");
+    const flagged = new Set(r.safety_hits.filter((s) => s.excluded && s.best_rank <= 2).map((s) => s.regulation));
+    excluded.sort((a, b) => Number(flagged.has(b.regulation)) - Number(flagged.has(a.regulation)));
+    return h("div", { class: "stack" },
+      h("section", { class: "sheet stack" }, h("h2", {}, `${kept.length} regulations apply`), ...kept.map((d) => decisionRow(d))),
+      h("section", { class: "sheet stack" }, h("h2", {}, `${excluded.length} were excluded`),
+        h("p", { class: "quiet" }, "Read these too: a missed regulation costs more than an extra one. Regulations that the full-text search ranked high for a part come first."),
+        ...excluded.map((d) => {
+          const row = decisionRow(d, true);
+          if (flagged.has(d.regulation)) row.append(h("p", { class: "banner", style: "grid-column: 1 / -1" }, "The full-text search ranked this regulation near the top for one of the parts; check that it really does not apply."));
+          return row;
+        })),
+      continueBar("C2_scope", "Continue to the requirements"));
+  }
+
+  function renderRequirements(r: Run) {
+    const open = new Set(r.open_items.map((o) => o.split(":")[0]));
+    const first = r.requirements.filter((q) => open.has(q.id));
+    const rest = r.requirements.filter((q) => !open.has(q.id));
+    const reqRow = (q: Run["requirements"][number]) => h("div", { class: "decision" },
+      h("div", {}, h("strong", {}, `${q.id} `), q.text),
+      h("div", { class: "row" }, chip(q.state, q.reason), chip(q.evidence_status)),
+      h("p", { class: "why" }, `${citation(q.source.regulation, q.source.page, q.source.paragraph)}. ${q.reason}`),
+      changeForm(q.id, [["applicable", "Applies"], ["not_applicable", "Does not apply"]], q.state === "uncertain" ? "applicable" : q.state, q.id,
+        (v) => ({ state: v })));
+    const giveUps = r.open_items.filter((o) => o.startsWith("G-"));
+    return h("div", { class: "stack" },
+      h("section", { class: "sheet stack" }, h("h2", {}, `${first.length + giveUps.length} items need your decision`),
+        h("p", { class: "quiet" }, "Uncertain requirements, disagreements between the matcher and its reviewer, and steps that gave up. Each needs a decision before sign-off."),
+        ...first.map(reqRow),
+        ...giveUps.map((g) => h("div", { class: "decision" }, h("div", {}, g), h("div", {}),
+          changeForm(g.split(":")[0], [["acknowledged", "Acknowledge"]], "acknowledged", g, () => ({}))))),
+      h("details", { class: "sheet" }, h("summary", {}, `The other ${rest.length} requirements`), ...rest.map(reqRow)),
+      continueBar("C3_requirements", "Finish the run"));
+  }
+
+  function renderSignoff(r: Run) {
+    const statement = h("textarea", { "aria-label": "Sign-off statement" });
+    (statement as HTMLTextAreaElement).value = "I reviewed the requirements of this run and accept them for engineering use.";
+    const button = h("button", { class: "button", type: "button" }, "Sign off");
+    const out = h("div");
+    button.addEventListener("click", async () => {
+      if (needName()) return;
+      try {
+        const s = await api.signoff(r.run_id, reviewer(), (statement as HTMLTextAreaElement).value);
+        message(out, `Signed off by ${s.reviewer}. The export now counts as reviewed.`);
+        draftStamp(null);
+      } catch (e) {
+        message(out, `Sign-off refused: ${(e as Error).message}`, "error");
+      }
+    });
+    return h("section", { class: "sheet stack" }, h("h2", {}, "Sign-off"),
+      r.review_status === "reviewed" ? h("p", {}, "This run is signed off and counts as reviewed.") :
+        h("div", { class: "stack" },
+          h("p", {}, r.open_items.length ? `${r.open_items.length} items are still open; sign-off is refused until each has a decision.` : "Every item has a decision. Your sign-off makes the export count as reviewed."),
+          statement, h("div", { class: "row" }, button), out));
+  }
+
+  async function load() {
+    if (!id) return message($("#content"), "No run selected.", "error");
+    try { run = await api.run(id); } catch (e) { return message($("#content"), `This run could not be loaded: ${(e as Error).message}`, "error"); }
+    draftStamp(run.label);
+    $("#title").textContent = `Review ${run.case_id}`;
+    const content = $("#content");
+    if (run.mode !== "assisted" && run.status !== "done") {
+      $("#subtitle").textContent = "Benchmark runs do not pause for review.";
+      return message(content, "This is a benchmark run. Its output stays an unreviewed AI draft; start an assisted run to review it step by step.");
+    }
+    if (run.status === "awaiting_review") {
+      const where: Record<string, string> = { C1_profile: "Step 1 of 3: the product profile", C2_scope: "Step 2 of 3: the regulations", C3_requirements: "Step 3 of 3: the requirements" };
+      $("#subtitle").textContent = where[run.checkpoint ?? ""] ?? "";
+      if (run.checkpoint_errors.length) message($("#notice"), run.checkpoint_errors.join(" "), "error");
+      content.replaceChildren(run.checkpoint === "C1_profile" ? renderProfile(run) : run.checkpoint === "C2_scope" ? renderScope(run) : renderRequirements(run));
+    } else if (run.status === "done") {
+      $("#subtitle").textContent = run.mode === "assisted" ? "The run is finished." : "Benchmark run: you can still sign off once nothing is open.";
+      content.replaceChildren(renderSignoff(run));
+    } else {
+      $("#subtitle").replaceChildren(chip(run.status), " Nothing to review right now.");
+      if (run.status === "running") setTimeout(load, 3000);
+    }
+    $<HTMLButtonElement>("#stop").disabled = !["running", "awaiting_review"].includes(run.status);
+  }
+
+  $("#stop").addEventListener("click", async () => {
+    if (needName()) return;
+    if (!confirm("Stop this run? It ends now and keeps what it has produced, marked as stopped.")) return;
+    try { await api.stop(id!, reviewer(), "stopped by the reviewer in the UI"); window.location.href = `/run?id=${encodeURIComponent(id!)}`; }
+    catch (e) { message($("#notice"), `The run could not be stopped: ${(e as Error).message}`, "error"); }
+  });
+  load();
+</script>

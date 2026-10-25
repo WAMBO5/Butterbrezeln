@@ -1,0 +1,130 @@
+[
+  {
+    "source": "UN R43 1.12.0, paragraph 4.1",
+    "provision_text": "Every piece of safety glazing material, including the samples and test pieces submitted for approval, shall bear a trade name or mark of the manufacturer as listed under item 3 of Annex 1. Manufactured parts shall bear the ECE Regulation No. 43 number allocated to the prime manufacturer. The marking shall be clearly legible and indelible.",
+    "obligations": [
+      {
+        "subject": "Every piece of safety glazing material, including samples and test pieces submitted for approval",
+        "condition": null,
+        "constraint": "bear a trade name or mark of the manufacturer as listed under item 3 of Annex 1",
+        "quantities": [],
+        "text": "Every piece of safety glazing material, including the samples and test pieces submitted for approval, shall bear a trade name or mark of the manufacturer as listed under item 3 of Annex 1.",
+        "quote": "Every piece of safety glazing material, including the samples and test pieces submitted for approval, shall bear a trade name or mark of the manufacturer as listed under item 3 of Annex 1",
+        "kind": "marking",
+        "role": "design_rule"
+      },
+      {
+        "subject": "Manufactured safety glazing parts",
+        "condition": null,
+        "constraint": "bear the ECE Regulation No. 43 number allocated to the prime manufacturer",
+        "quantities": [],
+        "text": "Manufactured safety glazing parts shall bear the ECE Regulation No. 43 number allocated to the prime manufacturer.",
+        "quote": "Manufactured parts shall bear the ECE Regulation No. 43 number allocated to the prime manufacturer",
+        "kind": "marking",
+        "role": "design_rule"
+      },
+      {
+        "subject": "The marking on the safety glazing material",
+        "condition": null,
+        "constraint": "be clearly legible and indelible",
+        "quantities": [],
+        "text": "The marking on the safety glazing material shall be clearly legible and indelible.",
+        "quote": "The marking shall be clearly legible and indelible.",
+        "kind": "marking",
+        "role": "design_rule"
+      }
+    ]
+  },
+  {
+    "source": "UN R43 1.12.0, Annex 3 paragraph 2.1.1.2",
+    "provision_text": "Means for dropping the ball freely from a height to be specified, or a means for giving the ball a velocity equivalent to that obtained by the free fall. When a device to project the ball is used, the tolerance on velocity shall be ±1 per cent of the velocity equivalent to that obtained by the free fall.",
+    "obligations": [
+      {
+        "subject": "The device used to project the ball in the ball test",
+        "condition": "When a device to project the ball is used instead of a free drop",
+        "constraint": "the tolerance on velocity is ±1 per cent of the velocity equivalent to that obtained by the free fall",
+        "quantities": [
+          {
+            "value": "1",
+            "unit": "per cent",
+            "comparator": "±"
+          }
+        ],
+        "text": "When a device to project the ball is used in the ball test, the tolerance on velocity shall be ±1 per cent of the velocity equivalent to that obtained by the free fall.",
+        "quote": "When a device to project the ball is used, the tolerance on velocity shall be ±1 per cent of the velocity equivalent to that obtained by the free fall.",
+        "kind": "test",
+        "role": "procedure"
+      }
+    ]
+  },
+  {
+    "source": "UN R161 0.5.0, Annex 6 paragraph 1.2",
+    "provision_text": "Degree of protection for installation\nThe following degrees of protection in accordance with IEC Publication 529 1989 shall be provided:\n(a) IP 40 for parts to be fitted in the passenger compartment,\n(b) IP 42 for parts to be fitted in the passenger compartment of roadsters/convertibles and cars with moveable\nroof-panels if the installation location requires a higher degree of protection than IP 40,\n(c) IP 54 for all other parts.\nThe locking system manufacturer shall specify in the installation instructions any restrictions on the positioning of\nany part of the installation with respect to dust, water and temperature.",
+    "obligations": [
+      {
+        "subject": "Parts of the locking system fitted in the passenger compartment",
+        "condition": null,
+        "constraint": "provide the degree of protection IP 40 in accordance with IEC Publication 529 1989",
+        "quantities": [
+          {
+            "value": "IP 40",
+            "unit": null,
+            "comparator": null
+          }
+        ],
+        "text": "Parts of the locking system to be fitted in the passenger compartment shall provide the degree of protection IP 40 in accordance with IEC Publication 529 1989.",
+        "quote": "IP 40 for parts to be fitted in the passenger compartment",
+        "kind": "design",
+        "role": "outcome"
+      },
+      {
+        "subject": "Parts of the locking system fitted in the passenger compartment of roadsters/convertibles and cars with moveable roof-panels",
+        "condition": "if the installation location requires a higher degree of protection than IP 40",
+        "constraint": "provide the degree of protection IP 42 in accordance with IEC Publication 529 1989",
+        "quantities": [
+          {
+            "value": "IP 42",
+            "unit": null,
+            "comparator": null
+          }
+        ],
+        "text": "Parts of the locking system to be fitted in the passenger compartment of roadsters/convertibles and cars with moveable roof-panels shall provide the degree of protection IP 42 in accordance with IEC Publication 529 1989 if the installation location requires a higher degree of protection than IP 40.",
+        "quote": "IP 42 for parts to be fitted in the passenger compartment of roadsters/convertibles and cars with moveable roof-panels if the installation location requires a higher degree of protection than IP 40",
+        "kind": "design",
+        "role": "outcome"
+      },
+      {
+        "subject": "All other parts of the locking system",
+        "condition": null,
+        "constraint": "provide the degree of protection IP 54 in accordance with IEC Publication 529 1989",
+        "quantities": [
+          {
+            "value": "IP 54",
+            "unit": null,
+            "comparator": null
+          }
+        ],
+        "text": "All other parts of the locking system shall provide the degree of protection IP 54 in accordance with IEC Publication 529 1989.",
+        "quote": "IP 54 for all other parts",
+        "kind": "design",
+        "role": "outcome"
+      },
+      {
+        "subject": "The locking system manufacturer",
+        "condition": null,
+        "constraint": "specify in the installation instructions any restrictions on the positioning of any part of the installation with respect to dust, water and temperature",
+        "quantities": [],
+        "text": "The locking system manufacturer shall specify in the installation instructions any restrictions on the positioning of any part of the installation with respect to dust, water and temperature.",
+        "quote": "The locking system manufacturer shall specify in the installation instructions any restrictions on the positioning of any part of the installation with respect to dust, water and temperature.",
+        "kind": "documentation",
+        "role": "design_rule"
+      }
+    ]
+  },
+  {
+    "source": "UN R43 1.12.0, paragraph 5.1",
+    "provision_text": "Approval for a type of glazing. If the samples submitted for approval meet the requirements of paragraphs 6. to 8. of this Regulation, approval of the pertinent type of safety glazing material shall be granted.",
+    "obligations": [],
+    "no_obligation_reason": "States when the authority grants approval; it sets no obligation on the product."
+  }
+]
