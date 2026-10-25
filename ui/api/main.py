@@ -15,11 +15,11 @@ from fastapi.responses import FileResponse, PlainTextResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from . import countries as country_data
-from . import pipeline_runs
+from . import pipeline_jobs, pipeline_runs
 from .assess import ask_country
 from .backend_client import NO_RUN
-from .config import BACKEND_MODE, CASES_DIR, PDF_DIR, PIPELINE_ROOT, ROOT
-from .models import AskRequest, DecisionRequest, QAEntry, RunResult, TraceEvent
+from .config import BACKEND_MODE, CASES_DIR, PDF_DIR, PIPELINE_FAKE_LLM, PIPELINE_ROOT, ROOT
+from .models import AskRequest, DecisionRequest, PipelineJob, QAEntry, RunResult, TraceEvent
 from .runs import RunState, RunStore
 from .sources import submission
 
@@ -27,24 +27,28 @@ app = FastAPI(title="Butterbrezeln Compliance API")
 app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
                    allow_methods=["*"], allow_headers=["*"])
 store = RunStore()
+DECISION_LABEL = {"open": "reopened", "accepted": "accepted", "rejected": "rejected"}
 
 
 def _run(run_id: str) -> RunState:
     state = store.get(run_id)
     if state is None:
-        raise HTTPException(404, f"Run {run_id} nicht gefunden")
+        raise HTTPException(404, f"Run {run_id} not found")
     return state
 
 
 @app.get("/api/health")
 def health() -> dict:
     finished = [r for r in pipeline_runs.runs() if r.finished] if BACKEND_MODE == "runs" else []
+    problem = pipeline_jobs.launch_problem()
     return {
         "backend_mode": BACKEND_MODE,
         "llm": {"available": store.llm.available, "model": store.llm.model, "reason": store.llm.disabled_reason},
         "countries_loaded": len(country_data.countries_data().get("countries", {})),
         "pipeline": {"root": str(PIPELINE_ROOT), "finished_runs": len(finished),
-                     "cases": sorted({r.case_id for r in finished})} if BACKEND_MODE == "runs" else None,
+                     "cases": sorted({r.case_id for r in finished}),
+                     "launch": {"available": problem is None, "reason": problem, "fake_llm": PIPELINE_FAKE_LLM},
+                     } if BACKEND_MODE == "runs" else None,
     }
 
 
@@ -54,9 +58,10 @@ def countries() -> dict:
 
 
 def _example_dirs() -> dict[str, Path]:
-    """Cases whose spec can be loaded with one click: in runs mode only those with a finished run."""
+    """Cases whose spec can be loaded with one click: in runs mode those with a finished run, or every case
+    when a run can be started from here."""
     if BACKEND_MODE == "runs":
-        return pipeline_runs.cases_with_runs()
+        return pipeline_runs.case_dirs() if pipeline_jobs.launch_problem() is None else pipeline_runs.cases_with_runs()
     return {p.parent.name: p.parent for p in sorted(CASES_DIR.glob("*/spec.md"))}
 
 
@@ -69,7 +74,7 @@ def examples() -> list[str]:
 def example(case: str) -> str:
     folder = _example_dirs().get(case)
     if folder is None:
-        raise HTTPException(404, f"Beispiel {case} nicht gefunden")
+        raise HTTPException(404, f"Example {case} not found")
     return (folder / "spec.md").read_text(encoding="utf-8")
 
 
@@ -78,7 +83,7 @@ def example_image(case: str) -> FileResponse:
     folder = _example_dirs().get(case)
     images = sorted(folder.glob("*.png")) if folder else []
     if not images:
-        raise HTTPException(404, f"Keine Zeichnung für {case}")
+        raise HTTPException(404, f"No drawing for {case}")
     return FileResponse(images[0], media_type="image/png")
 
 
@@ -87,15 +92,50 @@ async def create_run(spec: UploadFile = File(...), countries: str = Form(...),
                      image: UploadFile | None = File(None)) -> dict:
     text = (await spec.read()).decode("utf-8", errors="replace")
     if not text.strip():
-        raise HTTPException(400, "spec.md ist leer")
+        raise HTTPException(400, "spec.md is empty")
     selected = [c.strip().upper() for c in countries.split(",") if c.strip()]
     if not selected:
-        raise HTTPException(400, "Mindestens ein Land auswählen")
+        raise HTTPException(400, "Select at least one country")
     if BACKEND_MODE == "runs" and pipeline_runs.match(text) is None:
         raise HTTPException(409, NO_RUN)
     image_bytes = await image.read() if image is not None else None
     state = store.start(spec.filename or "spec.md", text, image_bytes or None, selected)
     return {"run_id": state.result.run_id}
+
+
+def _job(job_id: str) -> pipeline_jobs.Job:
+    job = pipeline_jobs.get(job_id)
+    if job is None:
+        raise HTTPException(404, f"Pipeline run {job_id} not found")
+    return job
+
+
+@app.post("/api/pipeline/jobs")
+async def start_pipeline(spec: UploadFile = File(...), image: UploadFile | None = File(None)) -> PipelineJob:
+    """Starts `certivity run` on the upload; when it has finished, POST /api/runs finds its result."""
+    if BACKEND_MODE != "runs":
+        raise HTTPException(400, f"Pipeline runs are only started in BACKEND_MODE=runs, not {BACKEND_MODE}")
+    data = await spec.read()
+    try:
+        if not data.decode("utf-8").strip():
+            raise HTTPException(400, "spec.md is empty")
+    except UnicodeDecodeError:
+        raise HTTPException(400, "spec.md is not UTF-8 text")
+    image_bytes = await image.read() if image is not None else None
+    try:
+        return pipeline_jobs.start(data, image_bytes or None, image.filename if image is not None else None)
+    except pipeline_jobs.JobError as exc:
+        raise HTTPException(409, str(exc))
+
+
+@app.get("/api/pipeline/jobs/{job_id}")
+def pipeline_job(job_id: str) -> PipelineJob:
+    return pipeline_jobs.status(_job(job_id))
+
+
+@app.delete("/api/pipeline/jobs/{job_id}")
+def cancel_pipeline_job(job_id: str) -> PipelineJob:
+    return pipeline_jobs.cancel(_job(job_id))
 
 
 @app.get("/api/runs/{run_id}")
@@ -107,7 +147,7 @@ def get_run(run_id: str) -> RunResult:
 def run_image(run_id: str) -> FileResponse:
     path = _run(run_id).dir / "image.png"
     if not path.is_file():
-        raise HTTPException(404, "Keine Zeichnung hochgeladen")
+        raise HTTPException(404, "No drawing uploaded")
     return FileResponse(path, media_type="image/png")
 
 
@@ -151,9 +191,9 @@ def ask(run_id: str, iso3: str, body: AskRequest) -> QAEntry:
     state = _run(run_id)
     iso3 = iso3.upper()
     if iso3 not in state.result.verdicts:
-        raise HTTPException(404, f"{iso3} wurde in diesem Run nicht bewertet")
+        raise HTTPException(404, f"{iso3} was not assessed in this run")
     if not body.question.strip():
-        raise HTTPException(400, "Frage ist leer")
+        raise HTTPException(400, "Question is empty")
     entry = ask_country(state.result, state.spec, iso3, body.question.strip(), store.llm, state.trace)
     with state.lock:
         state.result.qa.append(entry)
@@ -168,7 +208,7 @@ def decide(run_id: str, suggestion_id: str, body: DecisionRequest) -> dict:
         for suggestion in verdict.suggestions:
             if suggestion.id == suggestion_id:
                 event = state.trace.record(
-                    "human_review", f"Vorschlag {body.decision}: {suggestion_id}",
+                    "human_review", f"Suggestion {DECISION_LABEL[body.decision]}: {suggestion_id}",
                     inputs_summary=suggestion.change, outputs_summary=body.note or "",
                     tags={"country": suggestion.country, "suggestion": suggestion_id},
                 )
@@ -177,14 +217,14 @@ def decide(run_id: str, suggestion_id: str, body: DecisionRequest) -> dict:
                     suggestion.trace_ids.append(event.id)
                 state.save()
                 return suggestion.model_dump()
-    raise HTTPException(404, f"Vorschlag {suggestion_id} nicht gefunden")
+    raise HTTPException(404, f"Suggestion {suggestion_id} not found")
 
 
 @app.get("/api/sources/pdf/{slug}/{role}/{filename}")
 def source_pdf(slug: str, role: str, filename: str) -> FileResponse:
     path = (PDF_DIR / slug / role / filename).resolve()
     if PDF_DIR.resolve() not in path.parents or path.suffix.lower() != ".pdf" or not path.is_file():
-        raise HTTPException(404, "PDF nicht vorhanden – tools/fetch_regulations.py ausführen")
+        raise HTTPException(404, "PDF not available – run tools/fetch_regulations.py")
     return FileResponse(path, media_type="application/pdf",
                         headers={"Content-Disposition": f'inline; filename="{filename}"'})
 

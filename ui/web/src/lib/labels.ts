@@ -6,7 +6,7 @@ import { AGENTS, agentOf } from "./agents";
 interface StatusStyle {
   label: string;
   desc: string;
-  color: string; // map fill, dots and glow
+  color: string; // map fill and dots
   soft: string; // tinted background
   ring: string;
   text: string;
@@ -15,39 +15,39 @@ interface StatusStyle {
 
 export const STATUS: Record<VerdictStatus, StatusStyle> = {
   green: {
-    label: "Verkaufsbereit",
-    desc: "Ihr Produkt kann hier verkauft werden.",
-    color: "#34d399",
-    soft: "bg-emerald-400/10",
-    ring: "ring-emerald-400/30",
-    text: "text-emerald-300",
+    label: "Ready to sell",
+    desc: "Your product can be sold here.",
+    color: "#1fb381",
+    soft: "bg-emerald-50",
+    ring: "ring-emerald-600/20",
+    text: "text-emerald-700",
     icon: CircleCheck,
   },
   yellow: {
-    label: "Fast verkaufsbereit",
-    desc: "Fast geschafft – es fehlen nur Unterlagen, Kennzeichnung oder Prüfungen.",
-    color: "#fbbf24",
-    soft: "bg-amber-400/10",
-    ring: "ring-amber-400/30",
-    text: "text-amber-300",
+    label: "Almost ready",
+    desc: "Nearly there – only documents, labelling or tests are missing.",
+    color: "#f0b429",
+    soft: "bg-amber-50",
+    ring: "ring-amber-600/25",
+    text: "text-amber-700",
     icon: TriangleAlert,
   },
   red: {
-    label: "Produkt anpassen",
-    desc: "Damit es hier verkauft werden darf, muss das Produkt selbst geändert werden.",
-    color: "#fb7185",
-    soft: "bg-rose-400/10",
-    ring: "ring-rose-400/30",
-    text: "text-rose-300",
+    label: "Change product",
+    desc: "The product itself has to change before it may be sold here.",
+    color: "#f2545b",
+    soft: "bg-rose-50",
+    ring: "ring-rose-600/20",
+    text: "text-rose-700",
     icon: CircleX,
   },
   grey: {
-    label: "Keine Daten",
-    desc: "Für dieses Land haben wir noch keine Daten.",
-    color: "#64748b",
-    soft: "bg-slate-400/10",
-    ring: "ring-slate-400/20",
-    text: "text-slate-300",
+    label: "No data",
+    desc: "We have no data for this country yet.",
+    color: "#a0b9b7",
+    soft: "bg-mint-900/[0.05]",
+    ring: "ring-mint-900/10",
+    text: "text-mint-900/70",
     icon: CircleHelp,
   },
 };
@@ -55,119 +55,122 @@ export const STATUS: Record<VerdictStatus, StatusStyle> = {
 export const STATUS_ORDER: VerdictStatus[] = ["green", "yellow", "red", "grey"];
 
 /** Map fills outside the traffic light. */
-export const UNTESTED_FILL = "#141d33";
-export const KNOWN_FILL = "#1d2a47"; // we have data for this country
-export const PENDING_FILL = "#25406b"; // chosen, not assessed yet
-export const SELECTED_FILL = "#22d3ee";
+export const UNTESTED_FILL = "#dde6e5";
+export const KNOWN_FILL = "#c2d4d2"; // we have data for this country
+export const PENDING_FILL = "#93b6b2"; // chosen, not assessed yet
+export const SELECTED_FILL = "#11504b";
 
 /** What the colours mean, in one line each (map legend). */
 export const RULE: Record<VerdictStatus, string> = {
-  green: "Nichts zu ändern",
-  yellow: "Nur Unterlagen oder Prüfungen",
-  red: "Produkt muss geändert werden",
-  grey: "Keine Daten",
+  green: "Nothing to change",
+  yellow: "Only documents or tests",
+  red: "Product must change",
+  grey: "No data",
 };
 
 export const EFFORT: Record<Effort, { label: string; desc: string; icon: LucideIcon; color: string; chip: string; iconBg: string }> = {
-  doku_kennzeichnung: {
-    label: "Unterlagen & Kennzeichnung",
-    desc: "kleiner Aufwand",
+  documentation: {
+    label: "Documents & labelling",
+    desc: "small effort",
     icon: FileText,
-    color: "#38bdf8",
-    chip: "bg-sky-400/10 text-sky-300 ring-sky-400/25",
-    iconBg: "bg-sky-400/15 text-sky-300",
+    color: "#2f80c9",
+    chip: "bg-sky-50 text-sky-700 ring-sky-600/20",
+    iconBg: "bg-sky-100 text-sky-700",
   },
-  pruefung_zertifizierung: {
-    label: "Prüfung & Zertifikat",
-    desc: "mittlerer Aufwand",
+  testing: {
+    label: "Testing & certificate",
+    desc: "medium effort",
     icon: FlaskConical,
-    color: "#fbbf24",
-    chip: "bg-amber-400/10 text-amber-300 ring-amber-400/25",
-    iconBg: "bg-amber-400/15 text-amber-300",
+    color: "#d99a0b",
+    chip: "bg-amber-50 text-amber-700 ring-amber-600/25",
+    iconBg: "bg-amber-100 text-amber-700",
   },
   design: {
-    label: "Produktänderung",
-    desc: "großer Aufwand",
+    label: "Product change",
+    desc: "large effort",
     icon: Wrench,
-    color: "#fb7185",
-    chip: "bg-rose-400/10 text-rose-300 ring-rose-400/25",
-    iconBg: "bg-rose-400/15 text-rose-300",
+    color: "#e0444c",
+    chip: "bg-rose-50 text-rose-700 ring-rose-600/20",
+    iconBg: "bg-rose-100 text-rose-700",
   },
 };
 
 /** Biggest effort first: a product change is what blocks a market. */
-export const EFFORT_ORDER: Effort[] = ["design", "pruefung_zertifizierung", "doku_kennzeichnung"];
+export const EFFORT_ORDER: Effort[] = ["design", "testing", "documentation"];
 export const byEffort = <T extends { effort: Effort }>(a: T, b: T) => EFFORT_ORDER.indexOf(a.effort) - EFFORT_ORDER.indexOf(b.effort);
 
 export const FINDING: Record<FindingStatus, { label: string; chip: string; color: string }> = {
-  erfuellt: { label: "Erfüllt", chip: "bg-emerald-400/10 text-emerald-300 ring-emerald-400/25", color: "#34d399" },
-  offen: { label: "Nachweis nötig", chip: "bg-slate-400/10 text-slate-300 ring-slate-400/20", color: "#94a3b8" },
-  konflikt: { label: "Widerspruch", chip: "bg-rose-400/10 text-rose-300 ring-rose-400/25", color: "#fb7185" },
+  met: { label: "Met", chip: "bg-emerald-50 text-emerald-700 ring-emerald-600/20", color: "#1fb381" },
+  open: { label: "Evidence needed", chip: "bg-mint-900/[0.05] text-mint-900/75 ring-mint-900/10", color: "#a0b9b7" },
+  conflict: { label: "Conflict", chip: "bg-rose-50 text-rose-700 ring-rose-600/20", color: "#f2545b" },
 };
 
 /** How sure the pipeline is that a requirement applies; only the unsure case gets a badge. */
 export const UNSURE = {
-  label: "Gilt vielleicht",
-  desc: "Ob diese Anforderung gilt, hängt von Angaben ab, die in Ihrer Beschreibung fehlen.",
-  chip: "bg-amber-400/10 text-amber-300 ring-amber-400/25",
+  label: "May apply",
+  desc: "Whether this requirement applies depends on details missing from your description.",
+  chip: "bg-amber-50 text-amber-700 ring-amber-600/25",
 };
+
+/** A logged human decision; old runs logged it in German. */
+export const isAccepted = (action: string) => /accepted|accepted/i.test(action);
 
 /** How a logged step was done, in words a non-engineer understands. */
 export function actorOf(e: TraceEvent): { label: string; icon: LucideIcon } {
-  if (e.agent === "human_review") return { label: "Mensch", icon: User };
-  if (e.model || e.tags.source === "pipeline") return { label: "KI", icon: Sparkles };
+  if (e.agent === "human_review") return { label: "Human", icon: User };
+  if (e.model || e.tags.source === "pipeline") return { label: "AI", icon: Sparkles };
   if (e.status === "fallback" || e.agent === "spec_assessor" || e.agent === "country_assessor" || e.agent === "qa_agent")
-    return { label: "Regelprüfung", icon: ListChecks };
-  return { label: "Automatisch", icon: Cog };
+    return { label: "Rule check", icon: ListChecks };
+  return { label: "Automatic", icon: Cog };
 }
 
 export function agentLabel(agent: string): string {
-  return `${AGENTS[agentOf(agent)].name}${agent.includes("(mock)") ? " (Demo)" : ""}`;
+  return `${AGENTS[agentOf(agent)].name}${agent.includes("(mock)") ? " (demo)" : ""}`;
 }
 
-const REGULATION_DE: Record<string, string> = {
-  "UN R3": "Rückstrahler",
-  "UN R6": "Blinker",
-  "UN R7": "Begrenzungs-, Brems- und Umrissleuchten",
-  "UN R10": "Elektromagnetische Verträglichkeit",
-  "UN R19": "Nebelscheinwerfer",
-  "UN R23": "Rückfahrscheinwerfer",
-  "UN R26": "Vorstehende Außenkanten",
-  "UN R38": "Nebelschlussleuchten",
-  "UN R42": "Stoßfänger vorn und hinten",
-  "UN R43": "Sicherheitsglas",
-  "UN R48": "Anbau der Beleuchtung am Fahrzeug",
-  "UN R94": "Schutz beim Frontalaufprall",
-  "UN R104": "Reflektierende Markierungen",
-  "UN R123": "Adaptive Scheinwerfer",
-  "UN R127": "Fußgängerschutz",
-  "UN R128": "LED-Lichtquellen",
-  "UN R148": "Signalleuchten (Schluss-, Brems-, Rückfahrlicht)",
-  "UN R149": "Scheinwerfer",
-  "UN R150": "Rückstrahler & Reflexmarkierungen",
-  "UN R155": "Cybersicherheit",
-  "UN R156": "Software-Updates",
-  "UN GTR 9": "Fußgängerschutz (weltweite Regelung)",
+const REGULATION_EN: Record<string, string> = {
+  "UN R3": "Retro-reflectors",
+  "UN R6": "Direction indicators",
+  "UN R7": "Position, stop and end-outline lamps",
+  "UN R10": "Electromagnetic compatibility",
+  "UN R19": "Front fog lamps",
+  "UN R23": "Reversing lamps",
+  "UN R26": "External projections",
+  "UN R38": "Rear fog lamps",
+  "UN R42": "Front and rear protective devices",
+  "UN R43": "Safety glazing",
+  "UN R48": "Installation of lighting devices",
+  "UN R94": "Frontal collision protection",
+  "UN R104": "Retro-reflective markings",
+  "UN R123": "Adaptive front-lighting systems",
+  "UN R127": "Pedestrian safety",
+  "UN R128": "LED light sources",
+  "UN R148": "Light-signalling devices",
+  "UN R149": "Road illumination devices",
+  "UN R150": "Retro-reflective devices and markings",
+  "UN R155": "Cyber security",
+  "UN R156": "Software updates",
+  "UN GTR 9": "Pedestrian safety (global regulation)",
 };
 
-/** Plain German name of a UN Regulation, falling back to its English title. */
+/** Plain name of a UN Regulation, falling back to its official title. */
 export function regulationName(code: string | null | undefined, title?: string | null): string {
-  if (!code) return title ?? "Vorschrift";
-  return REGULATION_DE[code] ?? title ?? code;
+  if (!code) return title ?? "Regulation";
+  return REGULATION_EN[code] ?? title ?? code;
 }
 
-const SECTION_DE: Record<string, string> = {
-  "product type": "Produkttyp",
-  "vehicle category": "Fahrzeugklasse",
-  function: "Funktionen",
-  functions: "Funktionen",
-  "main parts": "Bauteile",
-  parts: "Bauteile",
-  materials: "Materialien",
+const SECTION_EN: Record<string, string> = {
+  "product type": "Product type",
+  "vehicle category": "Vehicle category",
+  function: "Functions",
+  functions: "Functions",
+  "main parts": "Parts",
+  parts: "Parts",
+  materials: "Materials",
 };
 
 export function sectionName(title: string): string {
-  return SECTION_DE[title.toLowerCase()] ?? title;
+  return SECTION_EN[title.toLowerCase()] ?? title;
 }
 
 export function plural(n: number, one: string, many: string): string {

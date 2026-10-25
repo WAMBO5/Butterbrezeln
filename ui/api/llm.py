@@ -27,7 +27,7 @@ class LLM:
         self.model = model
         self.disabled_reason: str | None = "LLM_MODE=off" if mode == "off" else None
         if self.disabled_reason is None and not _credentials_configured():
-            self.disabled_reason = "Keine LLM-Zugangsdaten (ANTHROPIC_API_KEY setzen oder `ant auth login`)"
+            self.disabled_reason = "No LLM credentials (set ANTHROPIC_API_KEY or run `ant auth login`)"
         self._client = None
         self._lock = threading.Lock()
 
@@ -41,7 +41,7 @@ class LLM:
                 try:
                     import anthropic
                 except ImportError:
-                    self.disabled_reason = "Paket 'anthropic' nicht installiert"
+                    self.disabled_reason = "Package 'anthropic' not installed"
                     raise LLMError(self.disabled_reason)
                 self._client = anthropic.Anthropic()
             return self._client
@@ -50,7 +50,7 @@ class LLM:
              max_tokens: int = 16000) -> tuple[Any, dict[str, Any]]:
         """Returns (parsed JSON, meta with model, prompt and token usage). Raises LLMError."""
         if not self.available:
-            raise LLMError(self.disabled_reason or "LLM nicht verfügbar")
+            raise LLMError(self.disabled_reason or "LLM not available")
         import anthropic
 
         client = self._get_client()
@@ -66,29 +66,29 @@ class LLM:
                 extra_body={"fallbacks": "default"},
             )
         except (anthropic.AuthenticationError, anthropic.PermissionDeniedError) as exc:
-            self.disabled_reason = f"Keine gültigen LLM-Zugangsdaten ({exc.__class__.__name__})"
+            self.disabled_reason = f"No valid LLM credentials ({exc.__class__.__name__})"
             raise LLMError(self.disabled_reason) from exc
         except TypeError as exc:  # raised when no credential source resolves at all
-            self.disabled_reason = f"Keine LLM-Zugangsdaten gefunden ({exc})"
+            self.disabled_reason = f"No LLM credentials found ({exc})"
             raise LLMError(self.disabled_reason) from exc
         except anthropic.RateLimitError as exc:
-            raise LLMError("Rate-Limit erreicht") from exc
+            raise LLMError("Rate limit reached") from exc
         except anthropic.APIStatusError as exc:
-            raise LLMError(f"API-Fehler {exc.status_code}") from exc
+            raise LLMError(f"API error {exc.status_code}") from exc
         except anthropic.APIConnectionError as exc:
-            raise LLMError("Keine Verbindung zur LLM API") from exc
+            raise LLMError("No connection to the LLM API") from exc
 
         if response.stop_reason == "refusal":
-            raise LLMError("Anfrage vom Modell abgelehnt")
+            raise LLMError("Request declined by the model")
         if response.stop_reason == "max_tokens":
-            raise LLMError("Antwort abgeschnitten (max_tokens)")
+            raise LLMError("Answer cut off (max_tokens)")
         text = next((b.text for b in response.content if b.type == "text"), None)
         if text is None:
-            raise LLMError("Keine Textantwort")
+            raise LLMError("No text answer")
         try:
             data = json.loads(text)
         except json.JSONDecodeError as exc:
-            raise LLMError("Ungültiges JSON in der Antwort") from exc
+            raise LLMError("Invalid JSON in the answer") from exc
         usage = response.usage
         meta = {
             "model": response.model,

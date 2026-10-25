@@ -1,12 +1,13 @@
 import countries from "i18n-iso-countries";
-import de from "i18n-iso-countries/langs/de.json";
+import en from "i18n-iso-countries/langs/en.json";
 import { geoArea, geoBounds, geoCentroid } from "d3-geo";
 import type { Feature, FeatureCollection, Geometry, Polygon } from "geojson";
 import { feature } from "topojson-client";
 import type { GeometryCollection, Topology } from "topojson-specification";
 import world from "world-atlas/countries-50m.json";
+import worldCoarse from "world-atlas/countries-110m.json";
 
-countries.registerLocale(de);
+countries.registerLocale(en);
 
 /** world-atlas features carry ISO 3166-1 numeric ids ("276"); the API speaks alpha-3 ("DEU"). */
 export function numericToIso3(id: string | number | undefined): string | undefined {
@@ -15,14 +16,14 @@ export function numericToIso3(id: string | number | undefined): string | undefin
 }
 
 export function countryName(iso3: string, fallback?: string): string {
-  return countries.getName(iso3, "de") ?? fallback ?? iso3;
+  return countries.getName(iso3, "en") ?? fallback ?? iso3;
 }
 
-/** Every ISO country with its German name, for search. */
+/** Every ISO country with its English name, for search. */
 export function allCountries(): { iso3: string; name: string }[] {
-  return Object.entries(countries.getNames("de", { select: "official" }))
+  return Object.entries(countries.getNames("en", { select: "official" }))
     .map(([alpha2, name]) => ({ iso3: countries.alpha2ToAlpha3(alpha2) ?? alpha2, name }))
-    .sort((a, b) => a.name.localeCompare(b.name, "de"));
+    .sort((a, b) => a.name.localeCompare(b.name, "en"));
 }
 
 /** Emoji flag from regional-indicator letters, e.g. DEU -> 🇩🇪. */
@@ -38,13 +39,19 @@ export interface CountryShape {
   feature: Feature<Geometry>;
 }
 
-const topology = world as unknown as Topology<{ countries: GeometryCollection }>;
+function shapes(atlas: unknown): CountryShape[] {
+  const topology = atlas as Topology<{ countries: GeometryCollection }>;
+  return (feature(topology, topology.objects.countries) as FeatureCollection).features.map((f, i) => ({
+    key: String(f.id ?? `x${i}`),
+    iso3: numericToIso3(f.id),
+    feature: f,
+  }));
+}
 
-export const COUNTRY_SHAPES: CountryShape[] = (feature(topology, topology.objects.countries) as FeatureCollection).features.map((f, i) => ({
-  key: String(f.id ?? `x${i}`),
-  iso3: numericToIso3(f.id),
-  feature: f,
-}));
+export const COUNTRY_SHAPES: CountryShape[] = shapes(world);
+
+/** Rougher outlines, light enough to redraw every frame while the globe turns. */
+export const COARSE_COUNTRY_SHAPES: CountryShape[] = shapes(worldCoarse);
 
 /** Centre, area and bounds of the largest landmass, so France sits in Europe and not off French Guiana. */
 function mainland(f: Feature<Geometry>): { centre: [number, number]; area: number; bounds: [[number, number], [number, number]] } {

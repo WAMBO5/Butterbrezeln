@@ -27,7 +27,7 @@
   },
   "countries": {
     "ALB": {
-      "name_de": "Albanien",
+      "name": "Albania",
       "name_en": "Albania",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -46,7 +46,7 @@
       "notes": "1958 Agreement: 6 Sep 2011 (accession) per UN Treaty Collection. Approval code E 54."
     },
     "AND": {
-      "name_de": "Andorra",
+      "name": "Andorra",
       "name_en": "Andorra",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -59,7 +59,7 @@
       "notes": "1958 Agreement: 11 Apr 2023 (accession) per UN Treaty Collection. Approval code E 41. Applies UN R148/R149/R150 since 23/09/2025 per WP.29/343/Rev.34/Add.1; does not apply R3/R6/R7/R23/R38/R48."
     },
     "ARM": {
-      "name_de": "Armenien",
+      "name": "Armenia",
       "name_en": "Armenia",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -78,7 +78,7 @@
       "notes": "1958 Agreement: 1 Mar 2018 (accession) per UN Treaty Collection. Approval code E 55."
     },
     "AUS": {
-      "name_de": "Australien",
+      "name": "Australia",
       "name_en": "Australia",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -97,7 +97,7 @@
       "notes": "1958 Agreement: 25 Feb 2000 (accession) per UN Treaty Collection. Approval code E 45."
     },
     "AUT": {
-      "name_de": "Österreich",
+      "name": "Austria",
       "name_en": "Austria",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -116,7 +116,7 @@
       "notes": "1958 Agreement: 12 Mar 1971 (accession) per UN Treaty Collection. Approval code E 12. EU member state; the EU is itself a Contracting Party (E 42)."
     },
     "AZE": {
-      "name_de": "Aserbaidschan",
+      "name": "Azerbaijan",
       "name_en": "Azerbaijan",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -129,7 +129,7 @@
       "notes": "1958 Agreement: 15 Apr 2002 (accession) per UN Treaty Collection. Approval code E 39. Applies only UN R148/R149/R150 of the checked lighting regulations (WP.29/343/Rev.34/Add.1)."
     },
     "BEL": {
-      "name_de": "Belgien",
+      "name": "Belgium",
       "name_en": "Belgium",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -148,7 +148,7 @@
       "notes": "1958 Agreement: 7 Jul 1959 (accession) per UN Treaty Collection. Approval code E 6. EU member state; the EU is itself a Contracting Party (E 42)."
     },
     "BGR": {
-      "name_de": "Bulgarien",
+      "name": "Bulgaria",
       "name_en": "Bulgaria",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -167,7 +167,7 @@
       "notes": "1958 Agreement: 22 Nov 1999 (accession) per UN Treaty Collection. Approval code E 34. EU member state; the EU is itself a Contracting Party (E 42)."
     },
     "BIH": {
-      "name_de": "Bosnien und Herzegowina",
+      "name": "Bosnia and Herzegovina",
       "name_en": "Bosnia and Herzegovina",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -186,7 +186,7 @@
       "notes": "1958 Agreement: 12 Jan 1994 (succession) per UN Treaty Collection. Approval code E 31."
     },
     "BLR": {
-      "name_de": "Belarus",
+      "name": "Belarus",
       "name_en": "Belarus",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -205,7 +205,7 @@
       "notes": "1958 Agreement: 3 May 1995 (accession) per UN Treaty Collection. Approval code E 28."
     },
     "BRA": {
-      "name_de": "Brasilien",
+      "name": "Brazil",
       "name_en": "Brazil",
       "regime": "national",
       "applied_regulations": [],
@@ -214,7 +214,7 @@
       "notes": "Not a Contracting Party to the 1958 Agreement (not listed in UN Treaty Collection XI-B-16). CONTRAN resolutions + CAT homologation, see profile."
     },
     "CAN": {
-      "name_de": "Kanada",
+      "name": "Canada",
       "name_en": "Canada",
       "regime": "national",
       "applied_regulations": [],
@@ -223,7 +223,7 @@
       "notes": "Not a Contracting Party to the 1958 Agreement (not listed in UN Treaty Collection XI-B-16). CMVSS 108 / TSD 108 self-certification, see profile."
     },
     "CHE": {
-      "name_de": "Schweiz",
+      "name": "Switzerland",
       "name_en": "Switzerland",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -241,7 +241,7 @@
       "notes": "1958 Agreement: 29 Jun 1973 (accession) per UN Treaty Collection. Approval code E 14. Does not apply UN R48 (no date of application in WP.29/343/Rev.34/Add.1)."
     },
     "CHN": {
-      "name_de": "China",
+      "name": "China",
       "name_en": "China",
       "regime": "national",
       "applied_regulations": [],
@@ -250,7 +250,7 @@
       "notes": "China is not a Contracting Party to the 1958 Agreement (not listed in UN Treaty Collection XI-B-16). National GB standards + CCC certification, see profile."
     },
     "CYP": {
-      "name_de": "Zypern",
+      "name": "Cyprus",
       "name_en": "Cyprus",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -269,7 +269,7 @@
       "notes": "Not listed as an individual party in the UN Treaty Collection; listed in ECE/TRANS/WP.29/343/Rev.34/Add.1 with approval code E 49 and dates of application, with the note that it applies the Regulations by virtue of accession to the Agreement by the European Union / its EU accession. EU member state."
     },
     "CZE": {
-      "name_de": "Tschechien",
+      "name": "Czech Republic",
       "name_en": "Czech Republic",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -288,7 +288,7 @@
       "notes": "1958 Agreement: 2 Jun 1993 (succession) per UN Treaty Collection. Approval code E 8. EU member state; the EU is itself a Contracting Party (E 42)."
     },
     "DEU": {
-      "name_de": "Deutschland",
+      "name": "Germany",
       "name_en": "Germany",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -307,7 +307,7 @@
       "notes": "1958 Agreement: signed 19 Jun 1958, ratified 29 Nov 1965 per UN Treaty Collection. Approval code E 1. EU member state; the EU is itself a Contracting Party (E 42)."
     },
     "DNK": {
-      "name_de": "Dänemark",
+      "name": "Denmark",
       "name_en": "Denmark",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -326,7 +326,7 @@
       "notes": "1958 Agreement: 21 Oct 1976 (accession) per UN Treaty Collection. Approval code E 18. EU member state; the EU is itself a Contracting Party (E 42)."
     },
     "EGY": {
-      "name_de": "Ägypten",
+      "name": "Egypt",
       "name_en": "Egypt",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -345,7 +345,7 @@
       "notes": "1958 Agreement: 5 Dec 2012 (accession) per UN Treaty Collection. Approval code E 62."
     },
     "ESP": {
-      "name_de": "Spanien",
+      "name": "Spain",
       "name_en": "Spain",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -364,7 +364,7 @@
       "notes": "1958 Agreement: 11 Aug 1961 (accession) per UN Treaty Collection. Approval code E 9. EU member state; the EU is itself a Contracting Party (E 42)."
     },
     "EST": {
-      "name_de": "Estland",
+      "name": "Estonia",
       "name_en": "Estonia",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -383,7 +383,7 @@
       "notes": "1958 Agreement: 2 Mar 1995 (accession) per UN Treaty Collection. Approval code E 29. EU member state; the EU is itself a Contracting Party (E 42)."
     },
     "FIN": {
-      "name_de": "Finnland",
+      "name": "Finland",
       "name_en": "Finland",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -402,7 +402,7 @@
       "notes": "1958 Agreement: 19 Jul 1976 (accession) per UN Treaty Collection. Approval code E 17. EU member state; the EU is itself a Contracting Party (E 42)."
     },
     "FRA": {
-      "name_de": "Frankreich",
+      "name": "France",
       "name_en": "France",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -421,7 +421,7 @@
       "notes": "1958 Agreement: 26 Jun 1958 (definitive signature) per UN Treaty Collection. Approval code E 2. EU member state; the EU is itself a Contracting Party (E 42)."
     },
     "GBR": {
-      "name_de": "Vereinigtes Königreich",
+      "name": "United Kingdom",
       "name_en": "United Kingdom",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -440,7 +440,7 @@
       "notes": "1958 Agreement: 15 Jan 1963 (accession) per UN Treaty Collection. Approval code E 11."
     },
     "GEO": {
-      "name_de": "Georgien",
+      "name": "Georgia",
       "name_en": "Georgia",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -459,7 +459,7 @@
       "notes": "1958 Agreement: 26 Mar 2015 (accession) per UN Treaty Collection. Approval code E 60."
     },
     "GRC": {
-      "name_de": "Griechenland",
+      "name": "Greece",
       "name_en": "Greece",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -478,7 +478,7 @@
       "notes": "1958 Agreement: 6 Oct 1992 (accession) per UN Treaty Collection. Approval code E 23. EU member state; the EU is itself a Contracting Party (E 42)."
     },
     "HRV": {
-      "name_de": "Kroatien",
+      "name": "Croatia",
       "name_en": "Croatia",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -497,7 +497,7 @@
       "notes": "1958 Agreement: 17 Mar 1994 (succession) per UN Treaty Collection. Approval code E 25. EU member state; the EU is itself a Contracting Party (E 42)."
     },
     "HUN": {
-      "name_de": "Ungarn",
+      "name": "Hungary",
       "name_en": "Hungary",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -516,7 +516,7 @@
       "notes": "1958 Agreement: signed 30 Jun 1958, ratified 3 May 1960 per UN Treaty Collection. Approval code E 7. EU member state; the EU is itself a Contracting Party (E 42)."
     },
     "IND": {
-      "name_de": "Indien",
+      "name": "India",
       "name_en": "India",
       "regime": "national",
       "applied_regulations": [],
@@ -525,7 +525,7 @@
       "notes": "Not a Contracting Party to the 1958 Agreement (not listed in UN Treaty Collection XI-B-16). CMVR + AIS standards, type approval by Indian test agencies, see profile."
     },
     "IRL": {
-      "name_de": "Irland",
+      "name": "Ireland",
       "name_en": "Ireland",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -544,7 +544,7 @@
       "notes": "Not listed as an individual party in the UN Treaty Collection; listed in ECE/TRANS/WP.29/343/Rev.34/Add.1 with approval code E 24 and dates of application, with the note that it applies the Regulations by virtue of accession to the Agreement by the European Union / its EU accession. EU member state."
     },
     "ITA": {
-      "name_de": "Italien",
+      "name": "Italy",
       "name_en": "Italy",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -563,7 +563,7 @@
       "notes": "1958 Agreement: signed 28 Mar 1958, ratified 25 Feb 1963 per UN Treaty Collection. Approval code E 3. EU member state; the EU is itself a Contracting Party (E 42)."
     },
     "JPN": {
-      "name_de": "Japan",
+      "name": "Japan",
       "name_en": "Japan",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -582,7 +582,7 @@
       "notes": "1958 Agreement: 25 Sep 1998 (accession) per UN Treaty Collection. Approval code E 43. WP.29/343/Rev.34/Add.1 note on UN R48 (E 43): 'Unnecessary for L-IWVTA'."
     },
     "KAZ": {
-      "name_de": "Kasachstan",
+      "name": "Kazakhstan",
       "name_en": "Kazakhstan",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -595,7 +595,7 @@
       "notes": "1958 Agreement: 9 Nov 2010 (accession) per UN Treaty Collection. Approval code E 35. Applies only UN R148/R149/R150 of the checked lighting regulations (WP.29/343/Rev.34/Add.1)."
     },
     "KGZ": {
-      "name_de": "Kirgisistan",
+      "name": "Kyrgyzstan",
       "name_en": "Kyrgyzstan",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -614,7 +614,7 @@
       "notes": "1958 Agreement: 1 Sep 2023 (accession) per UN Treaty Collection. Approval code E 68."
     },
     "KHM": {
-      "name_de": "Kambodscha",
+      "name": "Cambodia",
       "name_en": "Cambodia",
       "regime": "unece_1958",
       "applied_regulations": "unverified",
@@ -623,7 +623,7 @@
       "notes": "1958 Agreement: 3 Feb 2026 (accession) per UN Treaty Collection. Not yet listed in ECE/TRANS/WP.29/343/Rev.34/Add.1 (dated 10 March 2026, before/around this accession); applied lighting regulations unverified."
     },
     "KOR": {
-      "name_de": "Südkorea",
+      "name": "South Korea",
       "name_en": "Republic of Korea",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -636,7 +636,7 @@
       "notes": "1958 Agreement: 1 Nov 2004 (accession) per UN Treaty Collection. Approval code E 51. Applies only UN R148/R149/R150 of the checked lighting regulations, not R3/R6/R7/R23/R38/R48 (WP.29/343/Rev.34/Add.1)."
     },
     "LTU": {
-      "name_de": "Litauen",
+      "name": "Lithuania",
       "name_en": "Lithuania",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -655,7 +655,7 @@
       "notes": "1958 Agreement: 28 Jan 2002 (accession) per UN Treaty Collection. Approval code E 36. EU member state; the EU is itself a Contracting Party (E 42)."
     },
     "LUX": {
-      "name_de": "Luxemburg",
+      "name": "Luxembourg",
       "name_en": "Luxembourg",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -674,7 +674,7 @@
       "notes": "1958 Agreement: 13 Oct 1971 (accession) per UN Treaty Collection. Approval code E 13. EU member state; the EU is itself a Contracting Party (E 42)."
     },
     "LVA": {
-      "name_de": "Lettland",
+      "name": "Latvia",
       "name_en": "Latvia",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -693,7 +693,7 @@
       "notes": "1958 Agreement: 19 Nov 1998 (accession) per UN Treaty Collection. Approval code E 32. EU member state; the EU is itself a Contracting Party (E 42)."
     },
     "MDA": {
-      "name_de": "Republik Moldau",
+      "name": "Moldova",
       "name_en": "Republic of Moldova",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -712,7 +712,7 @@
       "notes": "1958 Agreement: 21 Sep 2016 (accession) per UN Treaty Collection. Approval code E 30."
     },
     "MKD": {
-      "name_de": "Nordmazedonien",
+      "name": "North Macedonia",
       "name_en": "North Macedonia",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -730,7 +730,7 @@
       "notes": "1958 Agreement: 1 Apr 1998 (succession) per UN Treaty Collection. Approval code E 40. WP.29/343/Rev.34/Add.1 note on UN R48: 'For O category only' (trailers) - therefore UN R48 is NOT listed here for passenger cars."
     },
     "MLT": {
-      "name_de": "Malta",
+      "name": "Malta",
       "name_en": "Malta",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -749,7 +749,7 @@
       "notes": "Not listed as an individual party in the UN Treaty Collection; listed in ECE/TRANS/WP.29/343/Rev.34/Add.1 with approval code E 50 and dates of application, with the note that it applies the Regulations by virtue of accession to the Agreement by the European Union / its EU accession. EU member state."
     },
     "MNE": {
-      "name_de": "Montenegro",
+      "name": "Montenegro",
       "name_en": "Montenegro",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -768,7 +768,7 @@
       "notes": "1958 Agreement: 23 Oct 2006 (succession) per UN Treaty Collection. Approval code E 56."
     },
     "MNG": {
-      "name_de": "Mongolei",
+      "name": "Mongolia",
       "name_en": "Mongolia",
       "regime": "unece_1958",
       "applied_regulations": "unverified",
@@ -777,7 +777,7 @@
       "notes": "1958 Agreement: 29 Apr 2026 (accession) per UN Treaty Collection. Not yet listed in ECE/TRANS/WP.29/343/Rev.34/Add.1 (dated 10 March 2026, before/around this accession); applied lighting regulations unverified."
     },
     "MYS": {
-      "name_de": "Malaysia",
+      "name": "Malaysia",
       "name_en": "Malaysia",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -796,7 +796,7 @@
       "notes": "1958 Agreement: 3 Feb 2006 (accession) per UN Treaty Collection. Approval code E 52."
     },
     "NGA": {
-      "name_de": "Nigeria",
+      "name": "Nigeria",
       "name_en": "Nigeria",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -815,7 +815,7 @@
       "notes": "1958 Agreement: 18 Oct 2018 (accession) per UN Treaty Collection. Approval code E 63."
     },
     "NLD": {
-      "name_de": "Niederlande",
+      "name": "Netherlands",
       "name_en": "Netherlands (Kingdom of the)",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -834,7 +834,7 @@
       "notes": "1958 Agreement: signed 30 Mar 1958, ratified 30 Jun 1960 per UN Treaty Collection. Approval code E 4. EU member state; the EU is itself a Contracting Party (E 42)."
     },
     "NOR": {
-      "name_de": "Norwegen",
+      "name": "Norway",
       "name_en": "Norway",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -853,7 +853,7 @@
       "notes": "1958 Agreement: 3 Feb 1975 (accession) per UN Treaty Collection. Approval code E 16."
     },
     "NZL": {
-      "name_de": "Neuseeland",
+      "name": "New Zealand",
       "name_en": "New Zealand",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -870,7 +870,7 @@
       "notes": "1958 Agreement: 27 Nov 2001 (accession) per UN Treaty Collection. Approval code E 48. Does not apply UN R38 and UN R48 (no date of application in WP.29/343/Rev.34/Add.1)."
     },
     "PAK": {
-      "name_de": "Pakistan",
+      "name": "Pakistan",
       "name_en": "Pakistan",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -889,7 +889,7 @@
       "notes": "1958 Agreement: 24 Feb 2020 (accession) per UN Treaty Collection. Approval code E 64."
     },
     "PHL": {
-      "name_de": "Philippinen",
+      "name": "Philippines",
       "name_en": "Philippines",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -908,7 +908,7 @@
       "notes": "1958 Agreement: 3 Nov 2022 (accession) per UN Treaty Collection. Approval code E 66."
     },
     "POL": {
-      "name_de": "Polen",
+      "name": "Poland",
       "name_en": "Poland",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -927,7 +927,7 @@
       "notes": "1958 Agreement: 12 Jan 1979 (accession) per UN Treaty Collection. Approval code E 20. EU member state; the EU is itself a Contracting Party (E 42)."
     },
     "PRT": {
-      "name_de": "Portugal",
+      "name": "Portugal",
       "name_en": "Portugal",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -946,7 +946,7 @@
       "notes": "1958 Agreement: 29 Jan 1980 (accession) per UN Treaty Collection. Approval code E 21. EU member state; the EU is itself a Contracting Party (E 42). WP.29/343/Rev.34/Add.1 note on UN R48 (E 21): applied for paragraph 6 except paras. 6.1, 6.2, 6.3, 6.22, 6.23 (note truncated in source); otherwise via EU accession."
     },
     "ROU": {
-      "name_de": "Rumänien",
+      "name": "Romania",
       "name_en": "Romania",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -965,7 +965,7 @@
       "notes": "1958 Agreement: 23 Dec 1976 (accession) per UN Treaty Collection. Approval code E 19. EU member state; the EU is itself a Contracting Party (E 42)."
     },
     "RUS": {
-      "name_de": "Russland",
+      "name": "Russia",
       "name_en": "Russian Federation",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -984,7 +984,7 @@
       "notes": "1958 Agreement: 19 Dec 1986 (accession) per UN Treaty Collection. Approval code E 22. WP.29/343/Rev.34/Add.1 note on UN R48 (E 22): for L-IWVTA the 04 series applies to new types only; for other types the 03 series."
     },
     "SMR": {
-      "name_de": "San Marino",
+      "name": "San Marino",
       "name_en": "San Marino",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -1003,7 +1003,7 @@
       "notes": "1958 Agreement: 27 Nov 2015 (accession) per UN Treaty Collection. Approval code E 57."
     },
     "SRB": {
-      "name_de": "Serbien",
+      "name": "Serbia",
       "name_en": "Serbia",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -1022,7 +1022,7 @@
       "notes": "1958 Agreement: 12 Mar 2001 (succession) per UN Treaty Collection. Approval code E 10."
     },
     "SVK": {
-      "name_de": "Slowakei",
+      "name": "Slovakia",
       "name_en": "Slovakia",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -1041,7 +1041,7 @@
       "notes": "1958 Agreement: 28 May 1993 (succession) per UN Treaty Collection. Approval code E 27. EU member state; the EU is itself a Contracting Party (E 42)."
     },
     "SVN": {
-      "name_de": "Slowenien",
+      "name": "Slovenia",
       "name_en": "Slovenia",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -1060,7 +1060,7 @@
       "notes": "1958 Agreement: 3 Nov 1992 (succession) per UN Treaty Collection. Approval code E 26. EU member state; the EU is itself a Contracting Party (E 42)."
     },
     "SWE": {
-      "name_de": "Schweden",
+      "name": "Sweden",
       "name_en": "Sweden",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -1079,7 +1079,7 @@
       "notes": "1958 Agreement: 21 Apr 1959 (accession) per UN Treaty Collection. Approval code E 5. EU member state; the EU is itself a Contracting Party (E 42)."
     },
     "THA": {
-      "name_de": "Thailand",
+      "name": "Thailand",
       "name_en": "Thailand",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -1092,7 +1092,7 @@
       "notes": "1958 Agreement: 2 Mar 2006 (accession) per UN Treaty Collection. Approval code E 53. Applies only UN R148/R149/R150 of the checked lighting regulations (WP.29/343/Rev.34/Add.1)."
     },
     "TUN": {
-      "name_de": "Tunesien",
+      "name": "Tunisia",
       "name_en": "Tunisia",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -1105,7 +1105,7 @@
       "notes": "1958 Agreement: 2 Nov 2007 (accession) per UN Treaty Collection. Approval code E 58. Applies only UN R148/R149/R150 of the checked lighting regulations (WP.29/343/Rev.34/Add.1)."
     },
     "TUR": {
-      "name_de": "Türkei",
+      "name": "Türkiye",
       "name_en": "Türkiye",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -1124,7 +1124,7 @@
       "notes": "1958 Agreement: 29 Dec 1995 (accession) per UN Treaty Collection. Approval code E 37."
     },
     "UGA": {
-      "name_de": "Uganda",
+      "name": "Uganda",
       "name_en": "Uganda",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -1143,7 +1143,7 @@
       "notes": "1958 Agreement: 23 Aug 2022 (accession) per UN Treaty Collection. Approval code E 65."
     },
     "UKR": {
-      "name_de": "Ukraine",
+      "name": "Ukraine",
       "name_en": "Ukraine",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -1162,7 +1162,7 @@
       "notes": "1958 Agreement: 1 May 2000 (accession) per UN Treaty Collection. Approval code E 46."
     },
     "USA": {
-      "name_de": "Vereinigte Staaten",
+      "name": "United States",
       "name_en": "United States of America",
       "regime": "national",
       "applied_regulations": [],
@@ -1171,7 +1171,7 @@
       "notes": "Not a Contracting Party to the 1958 Agreement (not listed in UN Treaty Collection XI-B-16). FMVSS 108 self-certification, see profile."
     },
     "UZB": {
-      "name_de": "Usbekistan",
+      "name": "Uzbekistan",
       "name_en": "Uzbekistan",
       "regime": "unece_1958",
       "applied_regulations": [
@@ -1190,7 +1190,7 @@
       "notes": "1958 Agreement: 20 Oct 2025 (accession) per UN Treaty Collection. Approval code E 44. Declared on accession it will not apply UN Regulations 0, 2, 5, 15, 32, 33, 68, 84, 92, 134, 146 (UNTC declaration). Date of application of the checked lighting regulations: 19/12/2025 (WP.29/343/Rev.34/Add.1)."
     },
     "VNM": {
-      "name_de": "Vietnam",
+      "name": "Vietnam",
       "name_en": "Viet Nam",
       "regime": "unece_1958",
       "applied_regulations": [],
@@ -1199,7 +1199,7 @@
       "notes": "1958 Agreement: 26 Jul 2023 (accession) per UN Treaty Collection. Approval code E 67. Declared on accession that it is not bound by any UN Regulation annexed to the Agreement (UNTC declaration, Art. 1(5)); WP.29/343/Rev.34/Add.1 lists no date of application for any of the checked lighting regulations."
     },
     "ZAF": {
-      "name_de": "Südafrika",
+      "name": "South Africa",
       "name_en": "South Africa",
       "regime": "unece_1958",
       "applied_regulations": [

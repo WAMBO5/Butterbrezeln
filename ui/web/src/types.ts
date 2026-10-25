@@ -1,11 +1,11 @@
 // Mirrors api/models.py
 
 export type SourceKind = "spec" | "un_regulation" | "country_profile" | "external" | "dataset";
-export type FindingStatus = "erfuellt" | "offen" | "konflikt";
-export type Effort = "doku_kennzeichnung" | "pruefung_zertifizierung" | "design";
+export type FindingStatus = "met" | "open" | "conflict";
+export type Effort = "documentation" | "testing" | "design";
 export type VerdictStatus = "green" | "yellow" | "red" | "grey";
 export type Regime = "unece_1958" | "national" | "not_covered";
-export type Decision = "offen" | "akzeptiert" | "verworfen";
+export type Decision = "open" | "accepted" | "rejected";
 
 export interface Source {
   kind: SourceKind;
@@ -86,7 +86,7 @@ export interface Suggestion {
 
 export interface CountryVerdict {
   iso3: string;
-  name_de: string;
+  name: string;
   status: VerdictStatus;
   regime: Regime;
   reasons: string[];
@@ -173,7 +173,7 @@ export interface RunResult {
 
 export interface CountryItem {
   iso3: string;
-  name_de: string;
+  name: string;
   regime: Regime;
   has_profile: boolean;
 }

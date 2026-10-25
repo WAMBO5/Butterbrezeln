@@ -1,4 +1,4 @@
-# Marktfreigabe-Check
+# Market Approval Check
 
 Upload a product spec (`spec.md`), pick target countries, and get a traffic-light verdict per country:
 green (shippable), yellow (almost, needs changes), red (needs a design change), grey (not covered).
@@ -45,7 +45,7 @@ Missing PDFs fall back to the remote `pdf_url` from `regulations/index.json`.
 ## Traffic-light rule (`api/assess.py: compute_status`)
 
 The LLM only classifies findings and the effort of each fix; the colour is computed by a fixed rule:
-any `design` fix → red; only `doku_kennzeichnung` / `pruefung_zertifizierung` fixes → yellow; nothing to
+any `design` fix → red; only `documentation` / `testing` fixes → yellow; nothing to
 fix → green (open evidence such as missing measurements is listed but does not change the colour).
 Countries without UNECE 1958 membership and without a curated profile are grey.
 

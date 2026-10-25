@@ -29,7 +29,7 @@ export const api = {
   /** A run's uploaded drawing as a file again, to start a follow-up run with it. */
   runImage: (id: string) =>
     fetch(`/api/runs/${id}/image`)
-      .then(async (r) => (r.ok ? new File([await r.blob()], "zeichnung.png", { type: "image/png" }) : null))
+      .then(async (r) => (r.ok ? new File([await r.blob()], "drawing.png", { type: "image/png" }) : null))
       .catch(() => null),
 
   startRun(spec: File, countries: string[], image?: File | null) {

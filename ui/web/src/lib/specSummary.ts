@@ -12,7 +12,7 @@ export interface SpecSummary {
 
 /** Turns a spec.md into a product card: title, bullet lists and table rows per section. */
 export function summarizeSpec(markdown: string): SpecSummary {
-  let title = "Ihr Produkt";
+  let title = "Your product";
   const sections: SpecSection[] = [];
   let current: SpecSection | null = null;
   let tableHeaderSeen = false;

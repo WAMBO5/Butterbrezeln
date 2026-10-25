@@ -25,8 +25,8 @@ class BackendError(RuntimeError):
     """A failure the engineer can act on; its message is shown as is."""
 
 
-NO_RUN = ("Für diese Produktbeschreibung gibt es noch keinen fertigen Pipeline-Lauf. Starten Sie ihn im Pipeline-Repo "
-          "mit `uv run certivity run <Fallordner>`; danach erscheint das Ergebnis hier.")
+NO_RUN = ("There is no finished pipeline run for this product description yet. Start one in the pipeline repo "
+          "with `uv run certivity run <case folder>`; the result will then appear here.")
 
 
 @dataclass
@@ -58,7 +58,7 @@ def _to_requirements(items: list[dict[str, Any]], trace: TraceRecorder, parent: 
     for regulation, group in groups.items():
         version = group[0]["source"].get("version")
         pages = sorted({g["source"].get("page") for g in group if g["source"].get("page")})
-        with trace.step(agent, f"Regelung ausgewählt: {regulation} – {regulation_title(regulation)}",
+        with trace.step(agent, f"Regulation selected: {regulation} – {regulation_title(regulation)}",
                         parent=parent, inputs_summary=how,
                         tags={"regulation": regulation}) as step:
             step.add_source(un_source(regulation, version))
@@ -69,8 +69,8 @@ def _to_requirements(items: list[dict[str, Any]], trace: TraceRecorder, parent: 
                     source=un_source(regulation, src.get("version"), src.get("page"), src.get("paragraph")),
                     trace_ids=[step.id],
                 ))
-            step.output(f"{len(group)} Anforderungen aus {regulation} v{version}, Seiten {pages[0]}–{pages[-1]}"
-                        if pages else f"{len(group)} Anforderungen aus {regulation}")
+            step.output(f"{len(group)} requirements from {regulation} v{version}, pages {pages[0]}–{pages[-1]}"
+                        if pages else f"{len(group)} requirements from {regulation}")
     return out
 
 
@@ -97,10 +97,10 @@ class MockBackend:
         case = next((p for p in sorted(CASES_DIR.iterdir()) if (p / "expected.json").is_file() and (p / "spec.md").is_file()
                      and _norm((p / "spec.md").read_text(encoding="utf-8")) == wanted), None)
         if case is None:
-            raise BackendError("Demo-Modus: Für diese Produktbeschreibung gibt es keine Musterlösung.")
+            raise BackendError("Demo mode: there is no reference answer for this product description.")
         expected = json.loads((case / "expected.json").read_text(encoding="utf-8"))
-        how = f"MOCK: Golden-Datei {case.name}/expected.json (Spec stimmt exakt überein)"
-        trace.record("requirements_engine", "Backend-Modus", parent=parent, outputs_summary=how,
+        how = f"MOCK: golden file {case.name}/expected.json (spec matches exactly)"
+        trace.record("requirements_engine", "Backend mode", parent=parent, outputs_summary=how,
                      sources=[Source(kind="dataset", label=f"{case.name}/expected.json", in_certivity_corpus=True)])
         requirements = _to_requirements(expected["requirements"], trace, parent, "requirements_engine (mock)", how)
         return Extraction(requirements, expected.get("case_id", case.name))
@@ -118,20 +118,20 @@ class RequirementsEngineClient:
 
     def __init__(self, entrypoint: str = ENGINE_ENTRYPOINT):
         if ":" not in entrypoint:
-            raise RuntimeError("BACKEND_MODE=engine braucht ENGINE_ENTRYPOINT='modul:funktion'")
+            raise RuntimeError("BACKEND_MODE=engine needs ENGINE_ENTRYPOINT='module:function'")
         module, func = entrypoint.split(":", 1)
         self._fn = getattr(importlib.import_module(module), func)
         self.entrypoint = entrypoint
 
     def extract_requirements(self, spec_md, image, trace, parent):
-        with trace.step("requirements_engine", "Backend aufrufen", parent=parent,
-                        inputs_summary=f"{self.entrypoint}(spec.md, image={'ja' if image else 'nein'})") as step:
+        with trace.step("requirements_engine", "Call backend", parent=parent,
+                        inputs_summary=f"{self.entrypoint}(spec.md, image={'yes' if image else 'no'})") as step:
             result = self._fn(spec_md, image)
             items = result["requirements"] if isinstance(result, dict) else result
-            step.output(f"{len(items)} Anforderungen erhalten")
+            step.output(f"{len(items)} requirements received")
         case_id = result.get("case_id", "upload") if isinstance(result, dict) else "upload"
         return Extraction(_to_requirements(items, trace, step.id, "requirements_engine",
-                                           f"Ausgabe von {self.entrypoint}"), case_id)
+                                           f"Output of {self.entrypoint}"), case_id)
 
 
 def make_backend(mode: str = BACKEND_MODE) -> BackendClient:

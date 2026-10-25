@@ -14,12 +14,12 @@ function modelName(id: string): string {
 function Weak({ title, items }: { title: string; items: string[] }) {
   if (!items.length) return null;
   return (
-    <details className="group rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06]">
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-2 text-sm text-slate-300">
+    <details className="group rounded-lg bg-flat-white/60 ring-1 ring-mint-900/[0.06]">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-2 text-sm text-mint-900">
         {title}
-        <ChevronDown size={15} className="shrink-0 text-slate-500 transition group-open:rotate-180" />
+        <ChevronDown size={15} className="shrink-0 text-mint-900/45 transition group-open:rotate-180" />
       </summary>
-      <ul className="max-h-56 list-inside list-disc space-y-1 overflow-y-auto border-t border-white/[0.06] px-3 py-2 text-xs text-slate-400">
+      <ul className="max-h-56 list-inside list-disc space-y-1 overflow-y-auto border-t border-mint-900/[0.06] px-3 py-2 text-xs text-mint-900/70">
         {items.map((item, i) => (
           <li key={i}>{item}</li>
         ))}
@@ -37,86 +37,85 @@ export function PipelineRun({ run }: { run: RunResult }) {
   const unsure = run.requirements.filter((r) => r.pipeline?.state === "uncertain").length;
   const cost = totalCost(p);
   const minutes = p.started_at && p.finished_at ? Math.max(1, Math.round((Date.parse(p.finished_at) - Date.parse(p.started_at)) / 60000)) : null;
-  const pct = (v?: number) => (v == null ? "–" : `${Math.round(v * 100)} %`);
+  const pct = (v?: number) => (v == null ? "–" : `${Math.round(v * 100)}%`);
 
   return (
-    <div className="glass relative overflow-hidden p-6">
-      <div className="pointer-events-none absolute -left-20 -top-24 h-64 w-64 rounded-full bg-teal-400/15 blur-3xl" aria-hidden />
-      <div className="relative flex flex-wrap items-start justify-between gap-4">
+    <div className="card p-6">
+      <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <p className="eyebrow flex items-center gap-1.5">
-            <Cpu size={14} /> Datenquelle
+            <Cpu size={14} /> Data source
           </p>
-          <h3 className="mt-1 text-2xl font-bold tracking-tight">Ein echter Lauf unserer Requirements-Pipeline</h3>
-          <p className="mt-1 break-all font-mono text-xs text-slate-500">{p.path}</p>
-          {p.replay_of && <p className="mt-1 text-xs text-slate-500">Replay: Abgleich und Zusammenstellung neu gerechnet; Produktanalyse, Eingrenzung und Zitate aus Lauf {p.replay_of}.</p>}
+          <h3 className="mt-1 text-2xl font-normal tracking-tight">A real run of our requirements pipeline</h3>
+          <p className="mt-1 break-all font-mono text-xs text-mint-900/50">{p.path}</p>
+          {p.replay_of && <p className="mt-1 text-xs text-mint-900/50">Replay: matching and assembly recomputed; product analysis, scoping and quotes taken from run {p.replay_of}.</p>}
         </div>
         <div className="flex flex-wrap gap-2 text-xs">
-          <span className="chip border border-white/10 bg-white/[0.04] text-slate-300">{when(p.finished_at)}{minutes ? ` · ${minutes} min` : ""}</span>
-          {cost != null && <span className="chip border border-white/10 bg-white/[0.04] text-slate-300" title={p.inherited_cost_usd ? `davon ${money(p.inherited_cost_usd)} für die übernommenen Schritte` : undefined}>{money(cost)} KI-Kosten</span>}
+          <span className="chip-soft">{when(p.finished_at)}{minutes ? ` · ${minutes} min` : ""}</span>
+          {cost != null && <span className="chip-soft" title={p.inherited_cost_usd ? `of which ${money(p.inherited_cost_usd)} for the reused steps` : undefined}>{money(cost)} AI cost</span>}
           {p.ledger && (
-            <span className={`chip ring-1 ring-inset ${p.ledger.intact ? "bg-emerald-400/10 text-emerald-300 ring-emerald-400/20" : "bg-rose-400/10 text-rose-300 ring-rose-400/25"}`}
-                  title={p.ledger.intact ? `Jeder Eintrag enthält den Hash des vorigen; nachgerechnet bis ${p.ledger.head?.slice(0, 12)}…` : p.ledger.problems.join("\n")}>
+            <span className={`chip ring-1 ring-inset ${p.ledger.intact ? "bg-emerald-50 text-emerald-700 ring-emerald-600/20" : "bg-rose-50 text-rose-700 ring-rose-600/20"}`}
+                  title={p.ledger.intact ? `Each entry contains the hash of the previous one; verified up to ${p.ledger.head?.slice(0, 12)}…` : p.ledger.problems.join("\n")}>
               {p.ledger.intact ? <ShieldCheck size={13} /> : <ShieldAlert size={13} />}
-              {p.ledger.intact ? `Protokoll unverändert (${p.ledger.records} Einträge nachgerechnet)` : "Protokoll verändert"}
+              {p.ledger.intact ? `Log unchanged (${p.ledger.records} entries verified)` : "Log was altered"}
             </span>
           )}
         </div>
       </div>
 
-      <div className="relative mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
         <div>
-          <p className="mb-3 text-sm font-semibold text-white">So grenzt die Pipeline ein</p>
+          <p className="mb-3 text-sm font-semibold text-mint-950">How the pipeline narrows down</p>
           <ol className="space-y-2">
             {stages.map((s, i) => {
               const value = p.funnel[s.key];
               const width = Math.max(4, (Math.log10(value + 1) / Math.log10(max + 1)) * 100); // log scale: 4 … 2,000+
               return (
                 <li key={s.key} className="grid grid-cols-[minmax(0,11rem)_minmax(0,1fr)] items-center gap-3 text-xs">
-                  <span className="truncate text-slate-400">{s.label}</span>
-                  <span className="relative h-7 overflow-hidden rounded-lg bg-white/[0.03]">
+                  <span className="truncate text-mint-900/65">{s.label}</span>
+                  <span className="relative h-7 overflow-hidden rounded-md bg-mint-900/[0.04]">
                     <motion.span
                       initial={{ width: 0 }}
                       whileInView={{ width: `${width}%` }}
                       viewport={{ once: true }}
                       transition={{ delay: i * 0.08, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                      className="absolute inset-y-0 left-0 rounded-lg bg-gradient-to-r from-teal-400/50 via-cyan-400/40 to-violet-400/40"
+                      className="absolute inset-y-0 left-0 rounded-md bg-mint-300/70"
                     />
-                    <CountUp value={value} className="absolute inset-y-0 left-2.5 flex items-center font-display text-sm font-bold text-white" />
+                    <CountUp value={value} className="absolute inset-y-0 left-2.5 flex items-center text-sm font-semibold text-mint-950" />
                   </span>
                 </li>
               );
             })}
           </ol>
-          <p className="mt-3 text-xs text-slate-500">
-            {plural(p.excluded.length, "Vorschrift", "Vorschriften")} ausgeschlossen, jede mit Begründung – z. B. {p.excluded[0] ? `${p.excluded[0].regulation}: „${p.excluded[0].reason}“` : "–"}
+          <p className="mt-3 text-xs text-mint-900/55">
+            {plural(p.excluded.length, "regulation", "regulations")} excluded, each with a reason – e.g. {p.excluded[0] ? `${p.excluded[0].regulation}: “${p.excluded[0].reason}”` : "–"}
           </p>
         </div>
 
         <div className="space-y-4">
           <div>
-            <p className="mb-2 text-sm font-semibold text-white">Wer gearbeitet hat</p>
+            <p className="mb-2 text-sm font-semibold text-mint-950">Who did the work</p>
             <div className="flex flex-wrap gap-1.5">
               {Object.entries(p.models).map(([agent, model]) => (
-                <span key={agent} className="rounded-full bg-white/[0.05] px-2.5 py-1 text-[11px] text-slate-300 ring-1 ring-white/[0.08]">
-                  {PIPELINE_AGENT[agent] ?? agent} <span className="text-slate-500">· {modelName(model)}</span>
+                <span key={agent} className="rounded-md bg-mint-900/[0.05] px-2 py-1 text-[11px] text-mint-900">
+                  {PIPELINE_AGENT[agent] ?? agent} <span className="text-mint-900/50">· {modelName(model)}</span>
                 </span>
               ))}
             </div>
           </div>
           <div>
-            <p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-white">
-              <TriangleAlert size={15} className="text-amber-300" /> Wo die Pipeline unsicher ist
+            <p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-mint-950">
+              <TriangleAlert size={15} className="text-amber-600" /> Where the pipeline is unsure
             </p>
             <div className="space-y-2">
-              {unsure > 0 && <p className="text-sm text-slate-300">{unsure} von {run.requirements.length} Anforderungen gelten vielleicht – das hängt von fehlenden Angaben ab.</p>}
-              <Weak title={`${plural(p.unknowns.length, "Punkt", "Punkte")}, die Ihre Beschreibung offen lässt`} items={p.unknowns} />
-              <Weak title={`${plural(p.open_issues.length, "Einwand", "Einwände")} der Gegenprüfung, nicht ausgeräumt`} items={p.open_issues} />
-              <Weak title={`${plural(p.give_ups.length, "Schritt", "Schritte")}, bei denen die Pipeline aufgegeben hat`} items={p.give_ups} />
-              {p.review_issues > 0 && <p className="text-xs text-slate-500">Die Schlussprüfung hat {plural(p.review_issues, "Hinweis", "Hinweise")} gegeben (z. B. Dubletten); die Pipeline hat danach nachgebessert.</p>}
+              {unsure > 0 && <p className="text-sm text-mint-900/85">{unsure} of {run.requirements.length} requirements may apply – that depends on missing details.</p>}
+              <Weak title={`${plural(p.unknowns.length, "point", "points")} your description leaves open`} items={p.unknowns} />
+              <Weak title={`${plural(p.open_issues.length, "cross-check objection", "cross-check objections")} not resolved`} items={p.open_issues} />
+              <Weak title={`${plural(p.give_ups.length, "step", "steps")} where the pipeline gave up`} items={p.give_ups} />
+              {p.review_issues > 0 && <p className="text-xs text-mint-900/55">The final audit raised {plural(p.review_issues, "issue", "issues")} (e.g. duplicates); the pipeline fixed them afterwards.</p>}
               {p.score?.page_level && (
-                <p className="text-xs text-slate-500">
-                  Gemessen an der Musterlösung dieses Übungsfalls: Vorschriften richtig {pct(p.score.regulation_level?.f1)}, Seiten richtig {pct(p.score.page_level.f1)} (F1).
+                <p className="text-xs text-mint-900/55">
+                  Measured against this practice case's reference solution: regulations {pct(p.score.regulation_level?.f1)} correct, pages {pct(p.score.page_level.f1)} correct (F1).
                 </p>
               )}
             </div>
@@ -124,7 +123,7 @@ export function PipelineRun({ run }: { run: RunResult }) {
         </div>
       </div>
 
-      {p.label && <p className="relative mt-5 text-xs text-slate-500">Kennzeichnung der Pipeline: „{p.label}“</p>}
+      {p.label && <p className="mt-5 text-xs text-mint-900/55">Pipeline label: “{p.label}”</p>}
     </div>
   );
 }

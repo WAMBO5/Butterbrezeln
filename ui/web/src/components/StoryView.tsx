@@ -3,8 +3,8 @@ import type { LucideIcon } from "lucide-react";
 import { ChevronDown, CircleCheck, Download, Eye, MousePointerClick, ScrollText, UserCheck } from "lucide-react";
 import type { FindingStatus, LineageTarget, RunResult, TraceEvent } from "../types";
 import { AGENTS, agentOf, type AgentKind } from "../lib/agents";
-import { flag } from "../lib/geo";
-import { FINDING, RULE, STATUS, STATUS_ORDER, actorOf, plural, regulationName, sectionName } from "../lib/labels";
+import { countryName, flag } from "../lib/geo";
+import { FINDING, RULE, STATUS, STATUS_ORDER, actorOf, isAccepted, plural, regulationName, sectionName } from "../lib/labels";
 import { summarizeSpec } from "../lib/specSummary";
 import { AgentAvatar } from "./Agent";
 import { FindingBar, StatusDot } from "./Badges";
@@ -13,13 +13,13 @@ import { SourceLink } from "./SourceLink";
 import { TraceView } from "./TraceView";
 
 function time(ts?: string | null): string {
-  return ts ? new Date(ts).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "";
+  return ts ? new Date(ts).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "";
 }
 
 const PRINCIPLES: { icon: LucideIcon; article: string; title: string; text: string }[] = [
-  { icon: ScrollText, article: "Art. 12", title: "Protokollierung", text: "Jeder Agentenschritt wird automatisch mit Zeit, Eingabe, Ergebnis und Quelle festgehalten." },
-  { icon: Eye, article: "Art. 13", title: "Transparenz", text: "Jede Aussage nennt ihre Fundstelle; KI-, Regel- und Menschen-Schritte sind gekennzeichnet." },
-  { icon: UserCheck, article: "Art. 14", title: "Menschliche Aufsicht", text: "Vorschläge gelten erst, wenn ein Mensch sie übernimmt – jede Entscheidung wird protokolliert." },
+  { icon: ScrollText, article: "Art. 12", title: "Record-keeping", text: "Every agent step is logged automatically with time, input, result and source." },
+  { icon: Eye, article: "Art. 13", title: "Transparency", text: "Every statement names its source; AI, rule and human steps are labelled." },
+  { icon: UserCheck, article: "Art. 14", title: "Human oversight", text: "Suggestions only count once a human accepts them – every decision is logged." },
 ];
 
 // ---------------------------------------------------------------- flow graph
@@ -38,7 +38,7 @@ interface GraphProps {
   onEvent: (id: string) => void;
 }
 
-/** Product -> agents -> regulations -> countries, drawn as connected nodes; hovering lights up one path. */
+/** Product -> agents -> regulations -> countries, drawn as connected nodes; hovering highlights one path. */
 function FlowGraph({ run, trace, onCountry, onLineage, onEvent }: GraphProps) {
   const box = useRef<HTMLDivElement>(null);
   const nodes = useRef(new Map<string, HTMLElement>());
@@ -52,7 +52,7 @@ function FlowGraph({ run, trace, onCountry, onLineage, onEvent }: GraphProps) {
     const map = new Map<string, { code: string; title?: string | null; reqs: string[]; counts: Record<FindingStatus, number> }>();
     run.requirements.forEach((r) => {
       const code = r.source.regulation ?? "?";
-      const entry = map.get(code) ?? { code, title: r.source.title, reqs: [], counts: { erfuellt: 0, offen: 0, konflikt: 0 } };
+      const entry = map.get(code) ?? { code, title: r.source.title, reqs: [], counts: { met: 0, open: 0, conflict: 0 } };
       entry.reqs.push(r.id);
       const status = findings.get(r.id);
       if (status) entry.counts[status] += 1;
@@ -60,11 +60,17 @@ function FlowGraph({ run, trace, onCountry, onLineage, onEvent }: GraphProps) {
     });
     return [...map.values()].sort((a, b) => b.reqs.length - a.reqs.length);
   }, [run]);
-  const verdicts = useMemo(() => Object.values(run.verdicts).sort((a, b) => STATUS_ORDER.indexOf(a.status) - STATUS_ORDER.indexOf(b.status) || a.name_de.localeCompare(b.name_de, "de")), [run]);
+  const verdicts = useMemo(
+    () =>
+      Object.values(run.verdicts)
+        .map((v) => ({ ...v, name: countryName(v.iso3, v.name) }))
+        .sort((a, b) => STATUS_ORDER.indexOf(a.status) - STATUS_ORDER.indexOf(b.status) || a.name.localeCompare(b.name, "en")),
+    [run],
+  );
   const grouped = verdicts.length > 12; // many markets: one node per colour instead of one per country
   const groups = useMemo(() => STATUS_ORDER.filter((s) => verdicts.some((v) => v.status === s)), [verdicts]);
   const findingCounts = useMemo(() => {
-    const c: Record<FindingStatus, number> = { erfuellt: 0, offen: 0, konflikt: 0 };
+    const c: Record<FindingStatus, number> = { met: 0, open: 0, conflict: 0 };
     run.findings.forEach((f) => (c[f.status] += 1));
     return c;
   }, [run.findings]);
@@ -160,8 +166,8 @@ function FlowGraph({ run, trace, onCountry, onLineage, onEvent }: GraphProps) {
         onFocus={() => setHot(id)}
         onBlur={() => setHot(null)}
         onClick={onClick}
-        className={`relative w-full rounded-2xl border bg-ink-900/90 text-left backdrop-blur transition duration-300 ${
-          dim ? "border-white/[0.05] opacity-30" : hot === id ? "border-white/30 shadow-[0_0_30px_-8px_rgba(103,232,249,0.6)]" : "border-white/[0.09] hover:border-white/20"
+        className={`relative w-full rounded-xl bg-white text-left ring-1 ring-inset transition duration-300 ${
+          dim ? "opacity-30 ring-mint-900/[0.06]" : hot === id ? "shadow-lift ring-mint-500/60" : "ring-mint-900/10 hover:ring-mint-900/25"
         } ${className}`}
       >
         {children}
@@ -175,13 +181,13 @@ function FlowGraph({ run, trace, onCountry, onLineage, onEvent }: GraphProps) {
       "flex flex-col items-center gap-2 px-2 py-3 text-center",
       <>
         <span className="flex -space-x-3">
-          <AgentAvatar kind={kind} size={48} active={hot === id} />
-          {second && <AgentAvatar kind={second} size={48} active={hot === id} />}
+          <AgentAvatar kind={kind} size={44} active={hot === id} className="bg-white" />
+          {second && <AgentAvatar kind={second} size={44} active={hot === id} className="bg-white" />}
         </span>
-        <span className="text-xs font-bold leading-tight text-white">{label}</span>
-        <span className="text-[11px] leading-tight text-slate-500">{text}</span>
+        <span className="text-xs font-semibold leading-tight text-mint-950">{label}</span>
+        <span className="text-[11px] leading-tight text-mint-900/55">{text}</span>
       </>,
-      "Klick öffnet den Protokolleintrag",
+      "Click to open the log entry",
     );
 
   const specEvent = trace.find((e) => e.agent === "spec_parser");
@@ -197,8 +203,8 @@ function FlowGraph({ run, trace, onCountry, onLineage, onEvent }: GraphProps) {
           const on = !lit || (lit.has(p.from) && lit.has(p.to));
           return (
             <g key={`${p.from}>${p.to}`} style={{ opacity: on ? 1 : 0.08, transition: "opacity 250ms" }}>
-              <path d={p.d} fill="none" stroke={p.color} strokeOpacity={0.22} strokeWidth={lit && on ? 3 : 1.6} />
-              <path d={p.d} fill="none" stroke={p.color} strokeWidth={lit && on ? 2.2 : 1.4} strokeDasharray="4 12" strokeLinecap="round" className="animate-dash" />
+              <path d={p.d} fill="none" stroke={p.color} strokeOpacity={lit && on ? 0.9 : 0.35} strokeWidth={lit && on ? 2 : 1.25} />
+              {lit && on && <path d={p.d} fill="none" stroke={p.color} strokeWidth={2} strokeDasharray="4 12" strokeLinecap="round" className="animate-dash" />}
             </g>
           );
         })}
@@ -212,24 +218,25 @@ function FlowGraph({ run, trace, onCountry, onLineage, onEvent }: GraphProps) {
             "p-4",
             <>
               <div className="flex items-center gap-3">
-                <AgentAvatar kind="reader" size={40} active={hot === "product"} />
+                <AgentAvatar kind="reader" size={36} active={hot === "product"} />
                 <div className="min-w-0">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-cyan-300">Ihr Produkt</p>
-                  <p className="truncate font-display font-bold text-white">{spec.title}</p>
+                  <p className="text-[11px] text-mint-600">Your product</p>
+                  <p className="truncate font-semibold text-mint-950">{spec.title}</p>
                 </div>
               </div>
               <div className="mt-3 flex flex-wrap gap-1">
                 {spec.sections.map((s) => (
-                  <span key={s.title} className="rounded-full bg-white/[0.06] px-2 py-0.5 text-[11px] text-slate-300">{sectionName(s.title)}</span>
+                  <span key={s.title} className="rounded bg-mint-900/[0.05] px-1.5 py-0.5 text-[11px] text-mint-900/75">
+                    {sectionName(s.title)}
+                  </span>
                 ))}
               </div>
-              <p className="mt-2 text-[11px] text-slate-500">gelesen vom Lese-Agenten</p>
             </>,
-            "Klick öffnet den Protokolleintrag",
+            "Click to open the log entry",
           )}
         </div>
 
-        <div>{agentNode("researcher", "researcher", AGENTS.researcher.name, plural(regs.length, "Vorschrift", "Vorschriften"), engineEvent)}</div>
+        <div>{agentNode("researcher", "researcher", AGENTS.researcher.name, plural(regs.length, "regulation", "regulations"), engineEvent)}</div>
 
         <div className={column}>
           {regs.map((r) =>
@@ -239,22 +246,22 @@ function FlowGraph({ run, trace, onCountry, onLineage, onEvent }: GraphProps) {
               "px-3 py-2",
               <>
                 <span className="flex items-center justify-between gap-2">
-                  <span className="truncate text-sm font-semibold text-white">{regulationName(r.code, r.title)}</span>
-                  <span className="shrink-0 text-[11px] text-slate-500">{r.reqs.length}</span>
+                  <span className="truncate text-sm font-medium text-mint-950">{regulationName(r.code, r.title)}</span>
+                  <span className="shrink-0 text-[11px] text-mint-900/50">{r.reqs.length}</span>
                 </span>
                 <span className="mt-1.5 flex items-center gap-2">
-                  <span className="shrink-0 font-mono text-[10px] text-violet-300">{r.code}</span>
+                  <span className="shrink-0 font-mono text-[10px] text-mint-900/50">{r.code}</span>
                   <FindingBar counts={r.counts} total={r.reqs.length} />
                 </span>
               </>,
-              `${r.reqs.length} Anforderungen · Klick zeigt die Herkunft`,
+              `${r.reqs.length} requirements · click to see where they come from`,
             ),
           )}
         </div>
 
-        <div>{agentNode("review", "checker", "Prüf- & Abgleich-Agent", `${run.requirements.length} belegt · ${findingCounts.konflikt} Widersprüche`, assessorEvent, "matcher")}</div>
+        <div>{agentNode("review", "checker", "Checker & Matcher", `${run.requirements.length} sourced · ${findingCounts.conflict} conflicts`, assessorEvent, "matcher")}</div>
 
-        <div>{agentNode("scout", "scout", AGENTS.scout.name, plural(verdicts.length, "Markt", "Märkte"), countryEvent)}</div>
+        <div>{agentNode("scout", "scout", AGENTS.scout.name, plural(verdicts.length, "market", "markets"), countryEvent)}</div>
 
         <div className={column}>
           {grouped
@@ -267,8 +274,8 @@ function FlowGraph({ run, trace, onCountry, onLineage, onEvent }: GraphProps) {
                   <>
                     <span className="flex items-center gap-2">
                       <StatusDot status={s} />
-                      <span className="text-sm font-semibold text-white">{plural(members.length, "Land", "Länder")}</span>
-                      <span className={`text-[11px] font-medium ${STATUS[s].text}`}>{STATUS[s].label}</span>
+                      <span className="text-sm font-medium text-mint-950">{plural(members.length, "country", "countries")}</span>
+                      <span className={`text-[11px] ${STATUS[s].text}`}>{STATUS[s].label}</span>
                     </span>
                     <span className="mt-1 block truncate text-base leading-none">{members.slice(0, 12).map((v) => flag(v.iso3)).join(" ")}</span>
                   </>,
@@ -282,12 +289,12 @@ function FlowGraph({ run, trace, onCountry, onLineage, onEvent }: GraphProps) {
                   <>
                     <span className="text-2xl leading-none">{flag(v.iso3)}</span>
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-semibold text-white">{v.name_de}</span>
-                      <span className={`block text-[11px] font-medium ${STATUS[v.status].text}`}>{STATUS[v.status].label}</span>
+                      <span className="block truncate text-sm font-medium text-mint-950">{v.name}</span>
+                      <span className={`block text-[11px] ${STATUS[v.status].text}`}>{STATUS[v.status].label}</span>
                     </span>
                     <StatusDot status={v.status} />
                   </>,
-                  "Klick öffnet das Land",
+                  "Click to open the country",
                 ),
               )}
         </div>
@@ -310,18 +317,18 @@ interface StepProps {
 function Step({ kind, title, event, actor, children, last }: StepProps) {
   const who = actor ?? (event ? actorOf(event).label : null);
   return (
-    <li className="relative pb-8 pl-16">
-      {!last && <span className="absolute bottom-0 left-[23px] top-14 w-px bg-gradient-to-b from-white/15 to-white/[0.03]" aria-hidden />}
-      <AgentAvatar kind={kind} size={48} className="absolute left-0 top-0" />
+    <li className="relative pb-8 pl-14">
+      {!last && <span className="absolute bottom-0 left-[19px] top-12 w-px bg-mint-900/10" aria-hidden />}
+      <AgentAvatar kind={kind} size={40} className="absolute left-0 top-0" />
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-        <h4 className="font-display text-base font-bold text-white">{title}</h4>
-        <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-[11px] font-semibold text-slate-300 ring-1 ring-white/10">
+        <h4 className="text-base">{title}</h4>
+        <span className="rounded-md bg-mint-900/[0.05] px-2 py-0.5 text-[11px] text-mint-900">
           {AGENTS[kind].name}
-          {who ? <span className="font-medium text-slate-500"> · {who}</span> : null}
+          {who ? <span className="text-mint-900/55"> · {who}</span> : null}
         </span>
-        {event && <span className="font-mono text-[11px] text-slate-500">{time(event.ts_start)}</span>}
+        {event && <span className="font-mono text-[11px] text-mint-900/45">{time(event.ts_start)}</span>}
       </div>
-      <div className="mt-2 space-y-2 text-sm text-slate-400">{children}</div>
+      <div className="mt-2 space-y-2 text-sm text-mint-900/70">{children}</div>
     </li>
   );
 }
@@ -335,7 +342,7 @@ interface Props {
   onEvent: (id: string) => void;
 }
 
-/** "How the result came about": the agents as a flow graph, the steps in plain language, the technical log on demand. */
+/** "How we got here": the agents as a flow graph, the steps in plain language, the technical log on demand. */
 export function StoryView({ run, trace, focusId, onCountry, onLineage, onEvent }: Props) {
   const [technical, setTechnical] = useState(!!focusId);
   const logRef = useRef<HTMLDivElement>(null);
@@ -345,7 +352,7 @@ export function StoryView({ run, trace, focusId, onCountry, onLineage, onEvent }
 
   const find = (pred: (e: TraceEvent) => boolean) => trace.find(pred);
   const specEvent = find((e) => e.agent === "spec_parser");
-  const engineEvent = find((e) => e.agent === "requirements_engine" && e.action === "Anforderungen ableiten");
+  const engineEvent = find((e) => e.agent === "requirements_engine" && /^(Anforderungen ableiten|Derive requirements)$/i.test(e.action));
   const regulationEvents = trace.filter((e) => agentOf(e.agent) === "researcher" && e.tags.regulation);
   const validatorEvent = find((e) => e.agent === "validator");
   const assessorEvent = find((e) => e.agent === "spec_assessor" && !e.tags.regulation);
@@ -359,7 +366,7 @@ export function StoryView({ run, trace, focusId, onCountry, onLineage, onEvent }
   const parts = run.pipeline?.parts ?? [];
 
   const sections = summarizeSpec(run.spec_text).sections.map((s) => sectionName(s.title));
-  const counts: Record<FindingStatus, number> = { erfuellt: 0, offen: 0, konflikt: 0 };
+  const counts: Record<FindingStatus, number> = { met: 0, open: 0, conflict: 0 };
   run.findings.forEach((f) => (counts[f.status] += 1));
   const verdicts = Object.values(run.verdicts);
 
@@ -368,117 +375,115 @@ export function StoryView({ run, trace, focusId, onCountry, onLineage, onEvent }
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `protokoll-${run.run_id}.json`;
+    a.download = `audit-log-${run.run_id}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
 
   return (
-    <div className="space-y-6">
-      <div className="glass relative overflow-hidden p-6">
-        <div className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-violet-500/20 blur-3xl" aria-hidden />
-        <div className="relative flex flex-wrap items-start justify-between gap-4">
+    <div className="space-y-4">
+      <div className="card p-6">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="max-w-3xl">
-            <p className="eyebrow">Nachvollziehbarkeit</p>
-            <h3 className="mt-1 text-2xl font-bold tracking-tight">Wer hat was auf welcher Grundlage entschieden?</h3>
-            <p className="mt-1 text-slate-400">Fahren Sie über ein Land oder eine Vorschrift – der Weg dorthin leuchtet auf. Ein Klick öffnet Details, Fundstelle oder Protokolleintrag.</p>
+            <p className="eyebrow">Traceability</p>
+            <h3 className="mt-1 text-2xl font-normal tracking-tight">Who decided what, and on which basis?</h3>
+            <p className="mt-1 text-mint-900/65">Hover over a country or regulation to highlight its path. Click for details, the source or the log entry.</p>
           </div>
-          <button type="button" className="btn-secondary" onClick={download}>
-            <Download size={16} /> Protokoll herunterladen
+          <button type="button" className="btn-outline" onClick={download}>
+            <Download size={15} /> Download audit log
           </button>
         </div>
-        <div className="relative mt-8">
+        <div className="mt-8">
           <FlowGraph run={run} trace={trace} onCountry={onCountry} onLineage={onLineage} onEvent={onEvent} />
         </div>
-        <p className="relative mt-5 flex items-center gap-1.5 text-xs text-slate-500">
-          <MousePointerClick size={14} /> Linienfarbe = Agent bzw. Ampelfarbe des Landes
+        <p className="mt-5 flex items-center gap-1.5 text-xs text-mint-900/50">
+          <MousePointerClick size={14} /> Line colour = agent, or the country's traffic light
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="card grid gap-px overflow-hidden bg-mint-900/[0.06] md:grid-cols-3">
         {PRINCIPLES.map(({ icon: Icon, article, title, text }) => (
-          <div key={article} className="glass p-5">
-            <div className="flex items-center gap-3">
-              <span className="grid h-10 w-10 place-items-center rounded-xl bg-teal-300/10 text-teal-300 ring-1 ring-inset ring-teal-300/20">
-                <Icon size={20} />
-              </span>
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">EU AI Act · {article}</p>
-                <p className="font-display font-bold text-white">{title}</p>
-              </div>
+          <div key={article} className="bg-white p-5">
+            <div className="flex items-center gap-2.5">
+              <Icon size={18} className="text-mint-600" />
+              <p className="font-semibold text-mint-950">{title}</p>
+              <span className="text-xs text-mint-900/45">EU AI Act {article}</span>
             </div>
-            <p className="mt-3 text-sm text-slate-400">{text}</p>
+            <p className="mt-2 text-sm text-mint-900/65">{text}</p>
           </div>
         ))}
       </div>
-      <p className="-mt-2 text-center text-xs text-slate-500">Umgesetzt nach dem Vorbild des EU AI Act – keine Aussage zur rechtlichen Konformität.</p>
+      <p className="text-center text-xs text-mint-900/45">Modelled on the EU AI Act – not a statement of legal compliance.</p>
 
-      <div className="glass p-6">
-        <h3 className="mb-6 font-display text-xl font-bold">Die Schritte im Einzelnen</h3>
+      <div className="card p-6">
+        <h3 className="mb-6 text-xl font-normal">Step by step</h3>
         <ol>
-          <Step kind="reader" title="Produktbeschreibung gelesen" event={analyzeEvent ?? specEvent}>
-            <p>{parts.length ? `${plural(parts.length, "Bauteil", "Bauteile")} mit Funktionen und Materialien erkannt:` : `${plural(sections.length, "Abschnitt", "Abschnitte")} erkannt:`}</p>
+          <Step kind="reader" title="Product description read" event={analyzeEvent ?? specEvent}>
+            <p>{parts.length ? `${plural(parts.length, "part", "parts")} with functions and materials found:` : `${plural(sections.length, "section", "sections")} found:`}</p>
             <div className="flex flex-wrap gap-1.5">
               {(parts.length ? parts : sections).map((s) => (
-                <span key={s} className="rounded-full bg-white/[0.06] px-2.5 py-0.5 text-xs text-slate-300">{s}</span>
+                <span key={s} className="chip-soft">
+                  {s}
+                </span>
               ))}
             </div>
           </Step>
 
-          <Step kind="researcher" title={`${plural(regulationEvents.length, "passende Vorschrift", "passende Vorschriften")} gefunden`} event={scopeEvent ?? engineEvent}>
+          <Step kind="researcher" title={`${plural(regulationEvents.length, "applicable regulation", "applicable regulations")} found`} event={scopeEvent ?? engineEvent}>
             <p>
               {run.pipeline?.funnel.regulations
-                ? `Von ${run.pipeline.funnel.regulations} internationalen Fahrzeugvorschriften hat die Pipeline nur die behalten, die für dieses Produkt gelten – jede mit Begründung:`
-                : "Aus über 50 internationalen Fahrzeugvorschriften wurden nur die ausgewählt, die für dieses Produkt gelten:"}
+                ? `Of ${run.pipeline.funnel.regulations} international vehicle regulations, the pipeline kept only those that apply to this product – each with a reason:`
+                : "Out of 50+ international vehicle regulations, only those that apply to this product were selected:"}
             </p>
             <div className="flex flex-wrap gap-1.5">
               {regulationEvents.map((e) => {
                 const source = e.sources[0];
                 return source ? (
-                  <span key={e.id} className="inline-flex items-center gap-1.5 rounded-full bg-violet-400/10 py-0.5 pl-3 pr-1 text-xs font-medium text-violet-100 ring-1 ring-inset ring-violet-300/20">
+                  <span key={e.id} className="inline-flex items-center gap-1.5 rounded-md bg-mint-900/[0.05] py-0.5 pl-2.5 pr-0.5 text-xs text-mint-950">
                     {regulationName(e.tags.regulation, source.title)}
                     <SourceLink source={source} />
                   </span>
                 ) : null;
               })}
             </div>
-            {run.backend_mode === "mock" && <p className="text-xs text-amber-300/90">Demo-Daten: Die Anforderungen stammen aus der Musterlösung des Veranstalters, nicht aus einer Live-Auswertung.</p>}
+            {run.backend_mode === "mock" && <p className="text-xs text-amber-700">Demo data: the requirements come from the organiser's reference solution, not a live analysis.</p>}
           </Step>
 
-          <Step kind="checker" title={`${run.requirements.length} Anforderungen abgeleitet`} event={validatorEvent}>
-            <p>Jede Anforderung nennt ihre Fundstelle: Vorschrift, Version und Seite.</p>
+          <Step kind="checker" title={`${run.requirements.length} requirements derived`} event={validatorEvent}>
+            <p>Every requirement names its source: regulation, version and page.</p>
             {run.validation && (
-              <p className={`flex items-center gap-1.5 font-medium ${run.validation.ok ? "text-emerald-300" : "text-rose-300"}`}>
+              <p className={`flex items-center gap-1.5 font-medium ${run.validation.ok ? "text-emerald-700" : "text-rose-700"}`}>
                 <CircleCheck size={16} />
-                {run.validation.ok ? "Alle Fundstellen automatisch gegen das offizielle Verzeichnis geprüft." : `${run.validation.problems.length} Fundstellen konnten nicht bestätigt werden.`}
+                {run.validation.ok ? "All sources checked automatically against the official index." : `${run.validation.problems.length} sources could not be confirmed.`}
               </p>
             )}
           </Step>
 
-          <Step kind="matcher" title="Mit Ihrem Produkt abgeglichen" event={assessorEvent} actor={assessorUsedAi ? "KI" : "Regelprüfung"}>
-            <p className="flex flex-wrap gap-x-3">
-              {(["erfuellt", "offen", "konflikt"] as FindingStatus[]).map((k) => (
-                <b key={k} className="font-semibold" style={{ color: FINDING[k].color }}>
-                  {counts[k]} {FINDING[k].label}
-                </b>
+          <Step kind="matcher" title="Matched against your product" event={assessorEvent} actor={assessorUsedAi ? "AI" : "Rule check"}>
+            <p className="flex flex-wrap items-center gap-x-4 gap-y-1">
+              {(["met", "open", "conflict"] as FindingStatus[]).map((k) => (
+                <span key={k} className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full" style={{ background: FINDING[k].color }} />
+                  <b className="font-semibold text-mint-950">{counts[k]}</b> {FINDING[k].label}
+                </span>
               ))}
-              {run.spec_notes.length > 0 && <span>· {plural(run.spec_notes.length, "Hinweis", "Hinweise")} zur Beschreibung</span>}
+              {run.spec_notes.length > 0 && <span>· {plural(run.spec_notes.length, "note", "notes")} on the description</span>}
             </p>
           </Step>
 
-          <Step kind="scout" title={`${plural(verdicts.length, "Land", "Länder")} bewertet`} event={countryEvent}>
-            <p>Die Farbe folgt einer festen, nachvollziehbaren Regel – nicht dem Bauchgefühl einer KI:</p>
+          <Step kind="scout" title={`${plural(verdicts.length, "market", "markets")} rated`} event={countryEvent}>
+            <p>The colour follows a fixed, traceable rule – not an AI's gut feeling:</p>
             <div className="flex flex-wrap gap-2">
               {STATUS_ORDER.map((s) => (
-                <span key={s} className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.04] px-3 py-1 text-xs text-slate-300 ring-1 ring-white/10">
+                <span key={s} className="inline-flex items-center gap-1.5 rounded-md bg-mint-900/[0.04] px-2.5 py-1 text-xs">
                   <StatusDot status={s} size={8} />
-                  <b className="font-semibold text-white">{STATUS[s].label}:</b> {RULE[s]}
+                  <b className="font-semibold text-mint-950">{STATUS[s].label}:</b> {RULE[s]}
                 </span>
               ))}
             </div>
             <div className="flex flex-wrap gap-2 pt-1">
               {verdicts.map((v) => (
-                <button key={v.iso3} type="button" onClick={() => onCountry(v.iso3)} className="inline-flex items-center gap-1.5 text-xs text-slate-300 hover:text-white" title={v.name_de}>
+                <button key={v.iso3} type="button" onClick={() => onCountry(v.iso3)} className="inline-flex items-center gap-1.5 rounded text-xs hover:opacity-70" title={countryName(v.iso3, v.name)}>
                   {flag(v.iso3)} <StatusDot status={v.status} size={7} />
                 </button>
               ))}
@@ -486,7 +491,7 @@ export function StoryView({ run, trace, focusId, onCountry, onLineage, onEvent }
           </Step>
 
           {questions.length > 0 && (
-            <Step kind="assistant" title={`${plural(questions.length, "Frage", "Fragen")} an den Assistenten`} event={questions[0]}>
+            <Step kind="assistant" title={`${plural(questions.length, "question", "questions")} to the assistant`} event={questions[0]}>
               <ul className="list-inside list-disc">
                 {questions.map((e) => (
                   <li key={e.id}>{e.inputs_summary}</li>
@@ -495,18 +500,18 @@ export function StoryView({ run, trace, focusId, onCountry, onLineage, onEvent }
             </Step>
           )}
 
-          <Step kind="human" title="Entscheidungen durch Menschen" actor="Mensch" last>
+          <Step kind="human" title="Decisions by humans" actor="Human" last>
             {decisions.length ? (
               <ul className="space-y-1">
                 {decisions.map((e) => (
                   <li key={e.id}>
-                    <span className="font-mono text-xs text-slate-500">{time(e.ts_start)}</span>{" "}
-                    <b className={e.action.includes("akzeptiert") ? "text-emerald-300" : "text-slate-300"}>{e.action.includes("akzeptiert") ? "übernommen" : "abgelehnt"}:</b> {e.inputs_summary}
+                    <span className="font-mono text-xs text-mint-900/45">{time(e.ts_start)}</span>{" "}
+                    <b className={isAccepted(e.action) ? "text-emerald-700" : "text-mint-900"}>{isAccepted(e.action) ? "accepted" : "rejected"}:</b> {e.inputs_summary}
                   </li>
                 ))}
               </ul>
             ) : (
-              <p>Noch keine Vorschläge übernommen oder abgelehnt. Die Agenten entscheiden nicht allein – jede Übernahme wird hier festgehalten.</p>
+              <p>No suggestions accepted or rejected yet. The agents don't decide alone – every acceptance is recorded here.</p>
             )}
           </Step>
         </ol>
@@ -515,8 +520,8 @@ export function StoryView({ run, trace, focusId, onCountry, onLineage, onEvent }
       <PipelineRun run={run} />
 
       <div ref={logRef} className="scroll-mt-24">
-        <button type="button" className="btn-ghost" onClick={() => setTechnical((v) => !v)}>
-          <ChevronDown size={16} className={`transition ${technical ? "rotate-180" : ""}`} /> Technisches Protokoll für Fachleute
+        <button type="button" aria-expanded={technical} className="btn-ghost" onClick={() => setTechnical((v) => !v)}>
+          <ChevronDown size={16} className={`transition ${technical ? "rotate-180" : ""}`} /> Technical log for specialists
         </button>
         {technical && (
           <div className="mt-3 animate-fade-up">
