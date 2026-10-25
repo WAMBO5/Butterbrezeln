@@ -27,7 +27,10 @@ CONTINUATION = {"of", "and", "or", "to", "above", "below", "in", "shall", "is", 
 # gives "II. Text of the Regulation", whose numbering starts again at 1: Part I goes into the Introduction.
 RATIONALE_RE = re.compile(r"^I\.\s+Statement of technical rationale and justification\b", re.I)
 REGULATION_TEXT_RE = re.compile(r"^II\.\s+Text of the (?:global technical )?regulation\b", re.I)
-PARSER_VERSION = "p2"  # part of the corpus store's file key: a new version re-parses every file once
+# Some UN Regulations (UN R171) number the paragraphs of their Introduction; the main text then starts
+# again at "1. Scope", and what was numbered before it is the Introduction.
+SCOPE_HEADING_RE = re.compile(r"^scope\b", re.I)
+PARSER_VERSION = "p3"  # part of the corpus store's file key: a new version re-parses every file once
 REF_PARA_RE = re.compile(r"paragraphs? (\d+(?:\.\d+)*)")
 REF_ANNEX_RE = re.compile(r"Annex (\d+)")
 REF_REG_RE = re.compile(r"(?:UN )?Regulation No\. ?(\d+)")
@@ -162,6 +165,7 @@ def parse_regulation(
     prev: tuple[int, ...] | None = None
     current: _Open | None = None
     rationale = False  # inside a GTR's Part I, until "II. Text of the Regulation"
+    scope_read = False  # the main text's "1. Scope" was read
 
     def close() -> None:
         nonlocal current
@@ -196,6 +200,18 @@ def parse_regulation(
         close()
         current = _Open(label=label, numeric=None, heading_path=list(scope_path[:-1]), page_start=page,
                         page_end=page, lines=[heading], annex_heading=annex_heading)
+
+    def number_introduction() -> None:
+        """Relabel the numbered paragraphs read so far (`10` becomes `Introduction 10`)."""
+        for i, p in enumerate(provisions):
+            if p.paragraph == "Introduction":
+                continue
+            seen.pop(p.paragraph, None)
+            label = f"Introduction {p.paragraph}"
+            seen[label] = 1
+            provisions[i] = p.model_copy(update={
+                "provision_id": f"{regulation}@{version_label}#{label}", "paragraph": label,
+                "heading_path": ["Introduction"], "kind": _kind(p.text, ["Introduction"], None, None)})
 
     for page, page_text in iter_pages(text):
         for raw in page_text.split("\n"):
@@ -259,6 +275,12 @@ def parse_regulation(
             if m_para:
                 numeric, dot, rest = m_para.group(1), m_para.group(2), m_para.group(3)
                 ids = tuple(int(n) for n in numeric.split("."))
+                starts_scope = ids == (1,) and bool(dot) and scope_prefix == "" and bool(SCOPE_HEADING_RE.match(rest))
+                if (starts_scope and prev is not None and not _plausible(prev, ids) and annex is None
+                        and not scope_read):
+                    close()
+                    number_introduction()
+                    prev, headings = None, {}
                 accept = _plausible(prev, ids)
                 first_word = re.split(r"[\s,;]", rest, maxsplit=1)[0]
                 if accept and (len(ids) == 1 and not rest[0].isupper() or first_word in CONTINUATION):
@@ -268,7 +290,7 @@ def parse_regulation(
                     accept = starts_ok and (len(ids) > 1 or not re.search(r"\d", rest))
                 if accept:
                     close()
-                    prev = ids
+                    prev, scope_read = ids, scope_read or starts_scope
                     parents = [".".join(map(str, ids[:k])) for k in range(1, len(ids))]
                     path = list(scope_path) + [f"{p} {headings[p]}" for p in parents if p in headings]
                     headings[numeric] = rest[:120]

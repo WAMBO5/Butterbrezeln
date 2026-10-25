@@ -49,6 +49,24 @@ def test_gtr_rationale_goes_to_introduction_and_numbering_restarts():
     assert by["2.1"].kind == "requirement" and by["2.1"].page_start == 2
 
 
+def test_numbered_introduction_is_relabelled_and_numbering_restarts_at_scope():
+    text = ("=== PDF page 1 ===\nIntroduction\n1. Driver assistance systems support the driver.\n"
+            "2. The system shall not adversely impact road safety.\n3. This Regulation is subject to review.\n"
+            "=== PDF page 2 ===\n1. Scope\n1.1. This Regulation applies to vehicles of category M1.\n"
+            "2. Specifications\n2.1. The system shall warn the driver.\n")
+    by = {p.paragraph: p for p in parse_regulation(text, "UN R1", "1.0.0", "base")}
+    assert set(by) == {"Introduction", "Introduction 1", "Introduction 2", "Introduction 3", "1", "1.1", "2", "2.1"}
+    assert by["Introduction 2"].kind == "requirement" and by["Introduction 2"].heading_path == ["Introduction"]
+    assert by["1"].kind == "scope" and by["2.1"].page_start == 2 and "warn" not in by["Introduction 3"].text
+
+
+def test_scope_after_a_zero_preface_is_a_plain_next_number():
+    text = ("=== PDF page 1 ===\n0. Introduction\n0.1. Amendments to this text.\n1. Scope\n"
+            "1.1. This Regulation applies to safety glazing.\n1. Scope of the test, quoted in a list\n")
+    by = {p.paragraph: p for p in parse_regulation(text, "UN R1", "1.0.0", "base")}
+    assert set(by) == {"0", "0.1", "1", "1.1"} and "quoted in a list" in by["1.1"].text
+
+
 def test_iter_pages_drops_header():
     pages = iter_pages(MINI)
     assert [n for n, _ in pages] == [1, 2, 3]
