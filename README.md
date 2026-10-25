@@ -18,7 +18,7 @@ uv run pytest               # offline, no API calls
 | Command | Paid | What it does |
 | --- | --- | --- |
 | `uv run certivity doctor [--ping]` | `--ping`: cents | Checks the setup; `--ping` makes one tiny call per model tier |
-| `uv run certivity build-corpus [--cards] [--prefill]` | `--cards` ≈ $5, `--prefill` | Parses the corpus (free); writes regulation cards; pre-fills obligations |
+| `uv run certivity build-corpus [--cards] [--prefill]` | `--cards` ≈ $6, `--prefill` | Parses the corpus (free); writes regulation cards; pre-fills obligations |
 | `uv run certivity run <case_dir> [--markets a,b] [--mode benchmark\|assisted]` | yes | The full pipeline; writes `data/runs/<id>/` |
 | `uv run certivity bench` | yes | `run` + validate + score on the rear lamp |
 | `uv run certivity score <run_dir> [--judge]` | `--judge` | Validation, `score_local.py`, funnel metrics; `--judge` estimates the requirement level |
@@ -33,7 +33,7 @@ Every command takes `--fake-llm`, a scripted stand-in model, for offline demos a
 
 The UI is an Astro app in `web/`; `certivity serve` serves its build. Build it once with `cd web && npm ci && npm run build`. For UI work, run `npm run dev` there (it talks to the API on port 8000).
 
-`CERTIVITY_COST_MODE=reduced` runs the match reviewer only on disputed decisions, gives the matcher no tools and skips the extraction verifier. A budget guard (`CERTIVITY_MAX_COST_USD`, default $5) stops a run; a stopped run is marked partial in its report.
+`CERTIVITY_COST_MODE=reduced` runs the match reviewer only on disputed decisions, gives the matcher no tools and skips the extraction verifier. A budget guard (`CERTIVITY_MAX_COST_USD`, default $5) stops a run; a stopped run is marked partial in its report. The guard also covers `build-corpus`: cards for all 56 regulations cost a little more than $5, so raise it for a fresh corpus, or run `build-corpus --cards` again, which writes only the cards still missing.
 
 ## Modes
 
