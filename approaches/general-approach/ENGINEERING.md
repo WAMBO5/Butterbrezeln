@@ -1,6 +1,6 @@
-# AGENTS.md: building the Certivity agents
+# Engineering guide: building the Certivity agents
 
-Certivity is a multi-agent system: specialist LLM agents, each with one job, run by a Python orchestrator and checked by code and by reviewer agents. Agents call LLM through the Anthropic Python SDK; there is no agent framework. This file says how to build them. The project overview and stack are in `README.md`, which imports this file; each rule lives in only one of the two.
+Certivity is a multi-agent system: specialist LLM agents, each with one job, run by a Python orchestrator and checked by code and by reviewer agents. Agents call the model through the Anthropic Python SDK; there is no agent framework. This guide says how they are built; the commands are in `README.md`.
 
 ## Architecture
 
@@ -29,8 +29,6 @@ FastAPI service / CLI
    - leave thinking adaptive (omit `thinking`) and set depth and cost with `output_config={"effort": ...}`; `{"type": "disabled"}` and `budget_tokens` are rejected;
    - no `temperature`, `top_p`, `top_k` or assistant prefill.
 5. **Isolated context.** Each agent call is built fresh from only the inputs it needs; agents never share a conversation. Input documents (specs, drawings) go in delimited blocks and are treated as data, never as instructions.
-6. **No paid calls or external writes without asking.** Anything that calls LLM (runs, benchmarks, evals) needs approval first, as does any external write (uploads, pushes, posts).
-7. **Check the SDK, not memory.** The API changes often. Use the Anthropic SDK reference and the installed package before relying on an unfamiliar call.
 
 ## Design
 
@@ -50,7 +48,7 @@ FastAPI service / CLI
 
 ## Regulatory output rules
 
-Product decisions (allowlist, base vs latest versions, applicable / not applicable / uncertain, pipeline stages, markets, EU AI Act) are in `Product_Vision/compliance-pipeline/2026-10-24-compliance-pipeline-design.md`. The deliverable is engineering requirements with citations, enforced in code, not left to the prompt:
+Product decisions (allowlist, base vs latest versions, applicable / not applicable / uncertain, pipeline stages, markets, EU AI Act) are in `docs/design/compliance-pipeline-design.md`. The deliverable is engineering requirements with citations, enforced in code, not left to the prompt:
 
 - Every requirement carries the **regulation, version and page** it comes from. A requirement without a citation is dropped or rejected, never emitted.
 - Citations come from tool results (the actual regulation text), not from the model's memory. Verify cited pages exist, and the quote is on them, before output.
@@ -95,7 +93,6 @@ tests/
   unit/          # deterministic code, no API calls
   integration/   # whole pipeline against the fake model, no API calls
 data/            # git-ignored: parsed corpus, caches, runs
-Dockerfile
 ```
 
 Change it deliberately, and note the change here. 2026-10-24: added `config/`, `corpus/`, `matching/`, `markets/`, `compliance/`, `eval/`, `testing/` and `docs/ai-act/` for the requirements engine (design spec section 10.7).
@@ -105,16 +102,15 @@ Change it deliberately, and note the change here. 2026-10-24: added `config/`, `
 - **Unit tests** (`uv run pytest`) cover deterministic code: tools, parsers, gates, citation checks, schema validation.
 - **Integration tests** run the whole pipeline with a fake model in `app/llm.py` that returns scripted outputs per agent name. They make no API calls.
 - **Do not assert on LLM wording in pytest.** Output is non-deterministic.
-- **Quality checks are paid; ask first.** Scoring against golden data (`industrial-ai-hackathon/tools/score_local.py`, an LLM judge for requirement matches) starts with the rear lamp case, then widens.
-- Report what was actually run versus only suggested.
+- **Quality checks are paid.** Scoring against golden data (`industrial-ai-hackathon/tools/score_local.py`, an LLM judge for requirement matches) starts with the rear lamp case, then widens.
 
 ## Deployment
 
-- One Docker image runs the FastAPI service (uvicorn); the CLI in the same image runs batch jobs.
+- The product service (`ui/` at the repository root: FastAPI on uvicorn, one port with the web app) starts runs through this approach's CLI; batch jobs use the CLI directly.
 - All configuration comes from environment variables, and secrets from the host's secret store; nothing is baked into the image.
-- Run data lives on a mounted volume (`data/`). `GET /health` is there for the platform.
+- Run data lives in `data/` (a mounted volume in deployment). `GET /api/health` reports readiness, including whether real runs are possible.
 - The SDK has clients for Amazon Bedrock, Google Vertex AI and Microsoft Foundry with the same Messages interface. Moving to an EU-hosted LLM changes `app/llm.py`, not the agents; check feature availability on that platform first.
-- Out of scope unless we decide otherwise: cloud-specific infrastructure, CI/CD and hosted agent platforms.
+- CI (`.github/workflows/ci.yml` at the repository root) runs every test suite offline and builds the web app. Out of scope: cloud-specific infrastructure and hosted agent platforms.
 
 ## Running
 
@@ -123,11 +119,8 @@ uv sync
 uv run pytest                          # offline
 uv run certivity --fake-llm bench      # whole pipeline, offline
 uv run certivity doctor                # free setup check
-uv run certivity bench                 # paid: ask first
+uv run certivity bench                 # paid
 ```
 
-The full command list is in `README.md`. Use `uv` for everything; never `pip` directly.
+The full command list is in `README.md`. Use `uv` for everything.
 
-## When unsure
-
-Use the Anthropic SDK reference for the SDK and API, then confirm against the installed package in `.venv/lib/python3.12/site-packages/anthropic/`.

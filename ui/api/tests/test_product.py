@@ -4,6 +4,8 @@ import hashlib
 import json
 from pathlib import Path
 
+import pytest
+
 from api import benchmark, pipeline_jobs, pipeline_runs
 from api.config import CASES_DIR
 
@@ -51,6 +53,8 @@ def test_a_demo_run_is_used_when_there_is_no_real_one(tmp_path, monkeypatch):
 
 def test_benchmark_scores_only_against_the_challenge_reference(tmp_path):
     case = CASES_DIR / "dev-rear-lamp"
+    if not (case / "expected.json").exists():
+        pytest.skip("challenge case not present (see industrial-ai-hackathon/README.md)")
     expected = json.loads((case / "expected.json").read_text(encoding="utf-8"))
     folder = tmp_path / "run"
     folder.mkdir()

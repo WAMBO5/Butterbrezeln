@@ -28,8 +28,8 @@ BACKEND_MODE = os.environ.get("BACKEND_MODE", "runs")
 ENGINE_ENTRYPOINT = os.environ.get("ENGINE_ENTRYPOINT", "")
 
 # the pipeline: the approaches under approaches/ write each run to data/<approach>/runs/<run_id>/ (see ./certivity
-# in the repository root), so every approach's finished runs show up here, as do the held-out samples of
-# general-approach's tools/sunday_runs.sh in data/<approach>/sunday/<sample>/runs/. Runs on the scripted demo model
+# in the repository root), so every approach's finished runs show up here, as do batch samples in
+# data/<approach>/sunday/<sample>/runs/. Runs on the scripted demo model
 # never go to data/: they live in DEMO_DIR, with their own data folder, and are labelled as demo runs
 PIPELINE_ROOT = Path(os.environ.get("PIPELINE_ROOT", REPO))
 PIPELINE_CHECKOUTS = [PIPELINE_ROOT]
@@ -53,8 +53,8 @@ PIPELINE_CMD = os.environ.get("PIPELINE_CMD", "")
 PIPELINE_FAKE_LLM = os.environ.get("PIPELINE_FAKE_LLM", "").lower() in ("1", "true", "yes")
 PIPELINE_MAX_COST_USD = float(os.environ.get("PIPELINE_MAX_COST_USD") or 12)
 
-# off (default): rule set only, no paid calls; on: use LLM for the spec check and country questions when
+# off (default): rule set only, no paid calls; on: use the model for the spec check and country questions when
 # credentials resolve, falling back to the rule set on any error. The model comes from the environment, as
-# in the pipeline (AGENTS.md rule 3)
+# in the pipeline (ENGINEERING.md rule 3)
 LLM_MODE = os.environ.get("LLM_MODE", "off")
 LLM_MODEL = os.environ.get("LLM_MODEL") or os.environ.get("ANTHROPIC_MODEL", "")

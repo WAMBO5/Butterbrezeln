@@ -2,7 +2,7 @@
 
 From a vehicle component's specification and/or exploded view to the engineering requirements it must meet under the UN Regulations of the challenge corpus, each cited to regulation, version, page and paragraph. Built for the Industrial Agents Hackathon (Munich, 24–25 October 2026).
 
-Specialist LLM agents, each checked by code and by a verifier agent, are run by a plain-Python orchestrator. The design is in `Product_Vision/compliance-pipeline/`; how the agents are built is in `AGENTS.md`.
+Specialist LLM agents, each checked by code and by a verifier agent, are run by a plain-Python orchestrator. The design is in `docs/design/` at the repository root; how the agents are built is in `ENGINEERING.md`.
 
 ## Set up
 

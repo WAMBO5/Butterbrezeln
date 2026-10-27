@@ -1,27 +1,36 @@
-.idea/
-
 # Python / uv
 .venv/
 __pycache__/
 *.pyc
 .pytest_cache/
 
-# Parsed corpus, caches and run output
+# Parsed corpus, caches and run output (the UI's curated country data is source)
 data/
-# ...but the UI's curated country data is source
 !ui/data/
 
-# Local secrets (commit only .env.example)
+# Local secrets: commit only .env.example
 .env
 .env.*
 !.env.example
 
-# Web UI (ui/): its run store and build output
+# Web UI: run store and build output
 ui/runs/
 ui/web/node_modules/
 ui/web/dist/
+ui/web/.vite/
 *.tsbuildinfo
-.env
 
-# Regulation PDFs: hackathon use only, no redistribution (industrial-ai-hackathon/LICENSE-DATA.md)
-industrial-ai-hackathon/regulations/pdf/
+# Certivity hackathon package: not redistributed (see industrial-ai-hackathon/README.md)
+industrial-ai-hackathon/cases/
+industrial-ai-hackathon/subgoal/
+industrial-ai-hackathon/regulations/
+industrial-ai-hackathon/*.pdf
+
+# Evaluation caches
+approaches/*/tools/evalkit/judge_cache/
+
+# Editors and OS
+.DS_Store
+.idea/
+.vscode/
+.mcp.json

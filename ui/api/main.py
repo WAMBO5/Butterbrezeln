@@ -45,7 +45,7 @@ def health() -> dict:
     return {
         "backend_mode": BACKEND_MODE,
         "llm": {"available": store.llm.available, "model": store.llm.model, "reason": store.llm.disabled_reason},
-        # real mode: real pipeline runs and LLM answers, with the .env API key; the reason says what is missing
+        # real mode: real pipeline runs and model answers, with the .env API key; the reason says what is missing
         "real": {"available": real is None, "reason": real, "model": store.llm_real.model},
         "countries_loaded": len(country_data.countries_data().get("countries", {})),
         "pipeline": {"root": str(PIPELINE_ROOT), "finished_runs": len(finished),
@@ -96,7 +96,7 @@ async def create_run(spec: UploadFile = File(...), countries: str = Form(...),
                      image: UploadFile | None = File(None), pipeline_run: str | None = Form(None),
                      real: bool = Form(False)) -> dict:
     """Assesses the spec for the countries; `pipeline_run` is the run just started for it from the UI; `real`:
-    country questions are answered by LLM with the .env API key (paid)."""
+    country questions are answered by the model with the .env API key (paid)."""
     if real and (problem := pipeline_jobs.real_problem()):
         raise HTTPException(409, problem)
     text = (await spec.read()).decode("utf-8", errors="replace")

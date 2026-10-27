@@ -60,7 +60,7 @@ export const KNOWN_FILL = "#c2d4d2"; // we have data for this country
 export const PENDING_FILL = "#93b6b2"; // chosen, not assessed yet
 export const SELECTED_FILL = "#11504b";
 
-/** The team's label for benchmark output (AGENTS.md), shown on every result view. */
+/** The team's label for benchmark output (ENGINEERING.md), shown on every result view. */
 export const DRAFT_LABEL = "Unreviewed AI draft — not for compliance use";
 export const DRAFT_NOTE = "Check everything with an engineer before use; this is not an approval decision.";
 export const COUNTRY_DATA_NOTE = "Country data: research draft of 25 Oct 2026, not legally reviewed.";

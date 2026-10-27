@@ -1,6 +1,6 @@
 # Architecture
 
-Certivity requirements engine: a component's specification and/or exploded view in, the engineering requirements it must meet under the challenge's UN Regulations out, each cited to regulation, base version, page and paragraph. Specialist LLM agents do the judgment; a plain-Python orchestrator, code gates and reviewer agents keep them honest. How agents are built (rules for prompts, tools, the SDK) is in `AGENTS.md`; the product design is in `Product_Vision/compliance-pipeline/`, and the general, outcome-based funnel this branch implements in `Product_Vision/compliance-pipeline/2026-10-25-general-pipeline.md`.
+Certivity requirements engine: a component's specification and/or exploded view in, the engineering requirements it must meet under the challenge's UN Regulations out, each cited to regulation, base version, page and paragraph. Specialist LLM agents do the judgment; a plain-Python orchestrator, code gates and reviewer agents keep them honest. How agents are built (rules for prompts, tools, the SDK) is in `ENGINEERING.md`; the product design is in `docs/design/`, and the general, outcome-based funnel this branch implements in `docs/design/general-pipeline.md`.
 
 ## Pipeline
 
@@ -69,6 +69,6 @@ app/
   eval/            funnel metrics, requirement judge
 tools/evalkit/     scoring, ensemble, held-out checks
 submissions/       uploaded and candidate submission files with scores
-docs/              AI Act technical file, hackathon runbook and scoreboard
+docs/              AI Act technical file and the dev-case scoreboard
 tests/             unit (deterministic) and integration (fake model) tests
 ```

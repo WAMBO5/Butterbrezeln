@@ -52,6 +52,8 @@ def test_covers_may_list_several_products():
 
 
 def _verdict(iso3: str, case: str, cited: list[str], tmp_path):
+    if not (CASES / case / "spec.md").exists():
+        pytest.skip("challenge case not present (see industrial-ai-hackathon/README.md)")
     spec = parse_spec("spec.md", (CASES / case / "spec.md").read_text(encoding="utf-8"))
     reqs = [Requirement(id=f"r{i}", text="x", source=Source(kind="un_regulation", label=r, regulation=r))
             for i, r in enumerate(cited)]

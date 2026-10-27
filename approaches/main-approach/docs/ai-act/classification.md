@@ -8,7 +8,7 @@ Certivity's requirements engine reads a vehicle component's specification and/or
 
 ## Our role
 
-We are the **provider** of an AI system that integrates a general-purpose AI model (Anthropic). The obligations for general-purpose models (Articles 53–55) rest with the model provider. The technical file records the model ids used in each run.
+We are the **provider** of an AI system that integrates a general-purpose AI model (an Anthropic model). The obligations for general-purpose models (Articles 53–55) rest with the model provider. The technical file records the model ids used in each run.
 
 ## Reading
 

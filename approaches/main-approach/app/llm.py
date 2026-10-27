@@ -1,4 +1,4 @@
-"""The only module that talks to the Anthropic API (AGENTS.md ground rule 1).
+"""The only module that talks to the Anthropic API (ENGINEERING.md ground rule 1).
 
 `LLM.call(spec, prompt)` runs any `AgentSpec`: one structured call (`messages.parse`), or a bounded
 tool loop (`beta.messages.tool_runner`) when the spec has tools. It counts tokens and cost per
@@ -164,7 +164,7 @@ def build_request(spec: AgentSpec, prompt: Prompt) -> dict:
     """The Messages API request for one agent call: cached system prompt, one user turn, effort.
 
     No `thinking` (adaptive by default), no sampling parameters, no forced `tool_choice`
-    (AGENTS.md ground rule 4)."""
+    (ENGINEERING.md ground rule 4)."""
     return {
         "model": spec.model,
         "max_tokens": spec.max_tokens,

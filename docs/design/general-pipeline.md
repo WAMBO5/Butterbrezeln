@@ -1,6 +1,6 @@
 # General pipeline: spec to cited requirements for any product
 
-**Date:** 2026-10-25 · **Branch:** `general` (from `pay-to-win` f7dfbf7) · **Status:** sections 3–7 implemented, offline tests pass; not yet measured on a paid run. Decided with the user: role tags at extraction, rule on every obligation and keep unsure, three scope samples, regulations and sections kept at 2 of 3, a separate match tier.
+**Date:** 2026-10-25 · **Branch:** `general` (from `pay-to-win` f7dfbf7) · **Status:** sections 3–7 implemented, offline tests pass; not yet measured on a paid run. Decided with the team: role tags at extraction, rule on every obligation and keep unsure, three scope samples, regulations and sections kept at 2 of 3, a separate match tier.
 
 The pay-to-win branch reached 76.9 % requirement F2 on the rear-lamp worked example; fix/precision peaked at 52.5 % with the same architecture. This note keeps what made the difference, removes what was fitted to the rear lamp, and rebuilds the funnel around one principle: regulations prescribe outcomes, specs describe construction.
 

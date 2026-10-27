@@ -2,7 +2,7 @@ import { FlaskConical, KeyRound } from "lucide-react";
 
 export type Mode = "demo" | "real";
 
-/** Demo: the free scripted model, rules for questions. Real: the pipeline and LLM with the API key from .env (paid). */
+/** Demo: the free scripted model, rules for questions. Real: the pipeline and the AI model with the API key from .env (paid). */
 export function ModeToggle({ mode, realAvailable, reason, onChange }: { mode: Mode; realAvailable: boolean; reason?: string | null; onChange: (mode: Mode) => void }) {
   const item = (active: boolean) =>
     `flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-40 ${
@@ -15,7 +15,7 @@ export function ModeToggle({ mode, realAvailable, reason, onChange }: { mode: Mo
         <FlaskConical size={13} /> Demo
       </button>
       {/* a disabled button shows no tooltip, so the reason sits on its wrapper */}
-      <span title={realAvailable ? "Real analysis: new pipeline runs and country questions use LLM with the API key from .env – paid" : reason ?? "Not available"}>
+      <span title={realAvailable ? "Real analysis: new pipeline runs and country questions use the AI model with the API key from .env – paid" : reason ?? "Not available"}>
         <button type="button" role="radio" aria-checked={mode === "real"} disabled={!realAvailable} className={item(mode === "real")} onClick={() => onChange("real")}>
           <KeyRound size={13} /> Real
         </button>

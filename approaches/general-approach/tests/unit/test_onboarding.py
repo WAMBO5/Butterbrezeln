@@ -47,6 +47,7 @@ def test_claims_carry_context():
 
 
 @pytest.mark.integration
+@pytest.mark.skipif(not Path("industrial-ai-hackathon/regulations/index.json").exists(), reason="challenge data missing")
 def test_cli_onboards_sample(monkeypatch, tmp_path, capsys):
     from app.cli import main
     from app.markets.profiles import load_market_profiles

@@ -1,4 +1,4 @@
-# USD per million tokens, from the Anthropic SDK reference's model table (cached 2026-10-06).
+# USD per million tokens, from Anthropic's published model pricing (as of 2026-10-06).
 # cache_read null = unknown, priced as input. Cache writes are priced at 1.25 x input in code.
 claude-opus-5-5:   {input: 4.00, output: 20.00, cache_read: 0.20}
 claude-sonnet-5-5: {input: 2.00, output: 10.00, cache_read: 0.20}

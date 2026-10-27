@@ -228,7 +228,7 @@ class RunResult(BaseModel):
     spec_text: str
     countries: list[str]
     backend_mode: str
-    real: bool = False  # started in real mode: LLM (the .env API key) answers country questions; paid
+    real: bool = False  # started in real mode: the model (the .env API key) answers country questions; paid
     pipeline_fresh: bool = False  # its pipeline run was started for it; otherwise a finished run of this spec is replayed
     llm_mode: str = "rules"
     has_image: bool = False

@@ -1,7 +1,7 @@
 """Prompt layout shared by every agent: task, context, untrusted inputs, payload.
 
 Untrusted documents (spec text, drawing labels, market sources) appear only inside
-`<untrusted_input name="…">…</untrusted_input>`, so their content stays data (AGENTS.md rule 5).
+`<untrusted_input name="…">…</untrusted_input>`, so their content stays data (ENGINEERING.md rule 5).
 """
 
 from __future__ import annotations

@@ -52,7 +52,7 @@ def bind_call(llm: LLM, ledger: Ledger | None) -> AgentCall:
 
 
 async def gather_limited(coros: list, limit: int) -> list:
-    """Run coroutines with at most `limit` at a time; results in input order (AGENTS.md fan-out)."""
+    """Run coroutines with at most `limit` at a time; results in input order (ENGINEERING.md fan-out)."""
     semaphore = asyncio.Semaphore(max(1, limit))
 
     async def one(coro: Any) -> Any:

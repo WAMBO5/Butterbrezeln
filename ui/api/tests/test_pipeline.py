@@ -8,7 +8,8 @@ from fastapi.testclient import TestClient
 
 from api.config import CASES_DIR
 
-SPEC = (CASES_DIR / "dev-rear-lamp" / "spec.md").read_text(encoding="utf-8")
+CASE = CASES_DIR / "dev-rear-lamp"  # Certivity's worked example: not redistributed, so these tests skip without it
+SPEC = (CASE / "spec.md").read_text(encoding="utf-8") if (CASE / "expected.json").exists() else ""
 
 COUNTRIES = {
     "meta": {"sources": []},
@@ -61,6 +62,8 @@ def client(tmp_path, monkeypatch):
 
 
 def _run(client, countries="DEU,FRA,JPN,CHN,USA,BRA"):
+    if not SPEC:
+        pytest.skip("challenge case not present (see industrial-ai-hackathon/README.md)")
     response = client.post("/api/runs", files={"spec": ("spec.md", SPEC.encode())}, data={"countries": countries})
     assert response.status_code == 200, response.text
     run_id = response.json()["run_id"]
@@ -129,7 +132,7 @@ def test_ask_and_decide_are_logged(client):
 
 
 class ScriptedLLM:
-    """Stands in for LLM in the country Q&A: returns one fixed answer."""
+    """Stands in for the model in the country Q&A: returns one fixed answer."""
     available = True
     model = "scripted"
     disabled_reason = None

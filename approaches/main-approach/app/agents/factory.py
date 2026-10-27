@@ -1,4 +1,4 @@
-"""`AgentSpec`: an agent is a definition, run by `app.llm.LLM` (AGENTS.md, Architecture)."""
+"""`AgentSpec`: an agent is a definition, run by `app.llm.LLM` (ENGINEERING.md, Architecture)."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""`RunState`: everything a run has decided so far, saved after every step (AGENTS.md, Run state).
+"""`RunState`: everything a run has decided so far, saved after every step (ENGINEERING.md, Run state).
 
 A run can stop at a checkpoint (assisted mode), be resumed later from this file, and the server
 keeps nothing in memory that is not in it.

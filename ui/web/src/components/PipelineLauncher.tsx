@@ -99,7 +99,7 @@ export function PipelineLauncher({ spec, image, real, approach, maxCostUsd, agai
             {existing && (
               <p className="mt-3 rounded-lg bg-mint-900/[0.04] p-3 text-sm text-mint-900/80 ring-1 ring-inset ring-mint-900/[0.06]">
                 {existing.approach ?? "The pipeline"} analysed this description on {when(existing.finished_at)}
-                {existing.fake_llm ? " with the scripted demo model (not a real analysis)" : existing.cost_usd != null ? ` with LLM for ${money(existing.cost_usd)}` : ""}. Opening it
+                {existing.fake_llm ? " with the scripted demo model (not a real analysis)" : existing.cost_usd != null ? ` with the AI model for ${money(existing.cost_usd)}` : ""}. Opening it
                 makes no model calls; a fresh run below does.
               </p>
             )}
@@ -110,13 +110,13 @@ export function PipelineLauncher({ spec, image, real, approach, maxCostUsd, agai
             </p>
             {real ? (
               <p className="mt-3 rounded-lg bg-amber-50 p-3 text-sm text-amber-800 ring-1 ring-inset ring-amber-600/20">
-                <b>Real run</b> with LLM and the API key from <code>.env</code>: paid, about $5–7 and 15 minutes for a case like the rear lamp
+                <b>Real run</b> with the AI model and the API key from <code>.env</code>: paid, about $5–7 and 15 minutes for a case like the rear lamp
                 {maxCostUsd ? `; it stops at $${maxCostUsd.toFixed(0)} and keeps what it has decided so far` : ""}.
               </p>
             ) : (
               <p className="mt-3 rounded-lg bg-mint-900/[0.04] p-3 text-sm text-mint-900/80 ring-1 ring-inset ring-mint-900/[0.06]">
                 <b>Demo model:</b> free and done in about a minute, but a scripted stand-in writes the requirements – the result is labelled as not a real analysis.
-                Switch the header to <b>Real</b> for an analysis with LLM.
+                Switch the header to <b>Real</b> for an analysis with the AI model.
               </p>
             )}
           </>

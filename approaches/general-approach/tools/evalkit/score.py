@@ -5,9 +5,9 @@
 - validate.py must pass (exit 2 otherwise)
 - regulation and page level from the organisers' score_local.py, plus F2
 - req(para): free one-to-one pairing by (regulation, paragraph key), an upper bound on the requirement level
-- --judge: requirement level by meaning, Opus through `llm -p` on the user's subscription (no API key),
-  per regulation, one-to-one enforced in code; same instructions as the lane's judge.py so lanes compare
-- --label: append one row to the shared scoreboard (data/scoreboard.md in the main checkout)
+- --judge: requirement level by meaning, through the Anthropic API (paid; model from ANTHROPIC_MODEL_JUDGE,
+  ANTHROPIC_MODEL_MATCH or ANTHROPIC_MODEL), per regulation, one-to-one enforced in code
+- --label: append one row to the scoreboard (data/scoreboard.md)
 
 The expected text is only ever used here, for scoring; it never reaches a generating prompt.
 """
@@ -23,6 +23,8 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+
+from pydantic import BaseModel
 
 def _find_root() -> Path:
     """The repo root: $CERTIVITY_ROOT, else the first parent that holds industrial-ai-hackathon/tools."""
@@ -72,40 +74,42 @@ def lines(reqs: list[dict]) -> str:
     return "\n".join(f"[{r['id']}] (§{r['source'].get('paragraph')}, p.{r['source']['page']}) {r['text']}" for r in reqs)
 
 
-async def judge_json(system: str, prompt: str, schema: dict, tag: str, model: str = "claude-opus-5-5",
-                      effort: str = "medium", timeout: int = 1800) -> dict:
+class _Pair(BaseModel):
+    ours: str
+    expected: str
+
+
+class _Pairs(BaseModel):
+    pairs: list[_Pair]
+
+
+async def judge_json(system: str, prompt: str, schema: dict, tag: str, model: str | None = None,
+                     effort: str = "medium", timeout: int = 1800) -> dict:
+    """One structured judge call through the Anthropic SDK (ANTHROPIC_API_KEY), cached on disk by its inputs.
+
+    The model is ANTHROPIC_MODEL_JUDGE, else ANTHROPIC_MODEL_MATCH, else ANTHROPIC_MODEL."""
+    from anthropic import AsyncAnthropic
+
+    model = model or next((os.environ[k] for k in ("ANTHROPIC_MODEL_JUDGE", "ANTHROPIC_MODEL_MATCH", "ANTHROPIC_MODEL")
+                           if os.environ.get(k)), "")
+    if not model:
+        raise RuntimeError("set ANTHROPIC_MODEL (or ANTHROPIC_MODEL_JUDGE) for --judge")
     key = hashlib.sha256("\x1f".join([system, prompt, json.dumps(schema, sort_keys=True), model, effort]).encode()).hexdigest()[:24]
     CACHE.mkdir(exist_ok=True)
     path = CACHE / f"{key}.json"
     if path.exists():
         return json.loads(path.read_text())["out"]
-    args = ["llm", "-p", "--output-format", "json", "--json-schema", json.dumps(schema), "--model", model,
-            "--effort", effort, "--no-session-persistence", "--system-prompt", system, "--strict-mcp-config",
-            "--setting-sources", "", "--disable-slash-commands", "--tools", ""]
-    env = {k: v for k, v in os.environ.items() if k != "ANTHROPIC_API_KEY"}  # always the subscription
-    last = ""
-    for attempt in range(3):
-        proc = await asyncio.create_subprocess_exec(*args, stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE,
-                                                    stderr=asyncio.subprocess.PIPE, env=env, cwd=str(HERE))
-        try:
-            out, err = await asyncio.wait_for(proc.communicate(prompt.encode()), timeout)
-        except asyncio.TimeoutError:
-            proc.kill()
-            last = "timeout"
-            continue
-        try:
-            d = json.loads(out.decode())
-        except ValueError:
-            last = (out.decode()[-300:] + err.decode()[-300:]).strip()
-            await asyncio.sleep(5 * (attempt + 1))
-            continue
-        so = d.get("structured_output")
-        if so is not None and not d.get("is_error"):
-            path.write_text(json.dumps({"tag": tag, "out": so}))
-            return so
-        last = str(d.get("result") or d.get("subtype"))[:300]
-        await asyncio.sleep(5 * (attempt + 1))
-    raise RuntimeError(f"judge failed [{tag}]: {last}")
+    client = AsyncAnthropic(max_retries=4, timeout=float(timeout))
+    message = await client.messages.parse(
+        model=model, max_tokens=16000,
+        system=[{"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}],
+        messages=[{"role": "user", "content": prompt}],
+        output_config={"effort": effort}, output_format=_Pairs)
+    if message.parsed_output is None:
+        raise RuntimeError(f"judge failed [{tag}]: no structured output ({message.stop_reason})")
+    out = message.parsed_output.model_dump()
+    path.write_text(json.dumps({"tag": tag, "out": out}))
+    return out
 
 
 async def judge(sub: list[dict], exp: list[dict], system: str = JUDGE_SYSTEM) -> tuple[int, dict, list]:
@@ -182,7 +186,7 @@ def main() -> int:
         SCOREBOARD.parent.mkdir(parents=True, exist_ok=True)
         if not SCOREBOARD.exists():
             SCOREBOARD.write_text("# Dev-case scoreboard (rear lamp)\n\nF2 = 5PR/(4P+R), the ranking metric. "
-                                  "req(judge): Opus on the subscription, one-to-one; req(para): free paragraph-pairing upper bound.\n\n"
+                                  "req(judge): LLM judge, one-to-one; req(para): free paragraph-pairing upper bound.\n\n"
                                   "| when | label | n | reg F2 | page F2 (P/R) | req(para) F2 (P/R) | req(judge) F2 (P/R) | file |\n"
                                   "|---|---|---|---|---|---|---|---|\n")
         def cell(k):

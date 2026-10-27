@@ -12,7 +12,7 @@ Every file here passes `industrial-ai-hackathon/tools/validate.py` and carries `
 | `05-ensemble-run4-lane-v7.json` | 347 | `tools/evalkit/ensemble.py` on run 4 (primary) + lane v7 | not uploaded (dominated by 06) |
 | `04-pipeline-run4.json` | 354 | run 3's scope plan and obligations, matching redone with the final matcher prompt | not uploaded (superseded by 07) |
 | `03-pipeline-run3.json` | 310 | pipeline, all changes on this branch except the last matcher refinement | **71.0 %** (49.0 / 80.0) |
-| `lane-dev-v7.json` | 363 | lane (LLM agents over the corpus, built by another session) | 68.6 % (42.4 / 81.1) |
+| `lane-dev-v7.json` | 363 | lane (a second, independent set of LLM agents reading the corpus directly) | 68.6 % (42.4 / 81.1) |
 | `lane-dev-v4.json` | 344 | lane, earlier prompts | 65.7 % (42.2 / 76.3) |
 | `02-pipeline-run2.json` | 405 | pipeline, intermediate prompts | 65.2 % (37.5 / 80.0) |
 | `01-pipeline-run1.json` | 525 | pipeline, first fixes | 59.5 % (29.1 / 80.5) |
@@ -41,4 +41,4 @@ uv run python tools/evalkit/ensemble.py out.json data/runs/<id>/submission.json 
 uv run python tools/evalkit/check_heldout.py out.json --case <case_id>  # blocks wrong ids, versions, pages
 ```
 
-The Sunday plan for the held-out case is in `docs/hackathon/sunday-runbook.md`. **For the held-out case the last valid upload counts, not the best.**
+**For the held-out case the last valid upload counts, not the best.**

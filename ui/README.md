@@ -39,9 +39,9 @@ If no finished run matches, or on "Run the pipeline again", the UI starts one: t
 steps from `trace.jsonl` and opens exactly that run when it has finished. The **Demo / Real** switch in the
 header decides (kept per browser; demo by default):
 
-- **Real**: paid LLM calls with the API key from the root `.env`, about $5–7 and 15 minutes for the rear lamp, into `data/<approach>/runs/`;
+- **Real**: paid model calls with the API key from the root `.env`, about $5–7 and 15 minutes for the rear lamp, into `data/<approach>/runs/`;
   it stops at `PIPELINE_MAX_COST_USD` (default $12) and keeps what it has decided so far.
-  A result started in real mode also answers country questions with LLM (`LLM_MODE` only sets the default
+  A result started in real mode also answers country questions with the model (`LLM_MODE` only sets the default
   for demo results). Real is only offered when `GET /api/health` reports `real.available`: an
   `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` and `ANTHROPIC_MODEL_FAST`, the parsed catalog and the regulation cards;
   otherwise `real.reason` says what is missing, and the API refuses real runs in code (`pipeline_jobs.real_problem`).
@@ -87,9 +87,9 @@ Missing PDFs fall back to the remote `pdf_url` from `regulations/index.json`.
 | `PIPELINE_FAKE_LLM` | – | `1`: runs started from the UI may only use `--fake-llm` (no API calls, not a real analysis) |
 | `PIPELINE_RUN` | – | run id(s) to show when several finished runs share a spec; otherwise the latest |
 | `ENGINE_ENTRYPOINT` | – | `module:function` that returns main-goal requirements, see `api/backend_client.py` |
-| `LLM_MODE` | `off` | `off`: the rule set only, no LLM calls; `on`: LLM checks the spec and answers country questions when credentials resolve (paid, ask first), with the rule set as fallback |
+| `LLM_MODE` | `off` | `off`: the rule set only, no model calls; `on`: the model checks the spec and answers country questions when credentials resolve (paid, ask first), with the rule set as fallback |
 | `LLM_MODEL` | `ANTHROPIC_MODEL` | model for those calls; there is no built-in default |
-| `ANTHROPIC_API_KEY` | – | in the root `.env`: real pipeline runs and LLM answers in real mode (for `LLM_MODE=on` alone, `ant auth login` works too) |
+| `ANTHROPIC_API_KEY` | – | in the root `.env`: real pipeline runs and model answers in real mode (for `LLM_MODE=on` alone, `ant auth login` works too) |
 | `RUNS_DIR` | `ui/runs` | the UI's own results and traces (git-ignored) |
 
 ## Traffic-light rule (`api/assess.py: compute_status`)

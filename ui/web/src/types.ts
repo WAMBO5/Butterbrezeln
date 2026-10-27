@@ -214,7 +214,7 @@ export interface CountryListing {
 export interface Health {
   backend_mode: string;
   llm: { available: boolean; model: string; reason?: string | null };
-  /** Real mode: real pipeline runs and LLM answers with the .env API key; `reason` says what is missing. */
+  /** Real mode: real pipeline runs and model answers with the .env API key; `reason` says what is missing. */
   real?: { available: boolean; reason?: string | null; model?: string };
   countries_loaded: number;
   pipeline?: {

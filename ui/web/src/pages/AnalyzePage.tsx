@@ -28,7 +28,7 @@ interface Props {
   /** Open the pipeline dialog right away for a fresh run on the draft (from "Run again" on a result). */
   rerun?: boolean;
   onRerunHandled?: () => void;
-  /** Real mode (header toggle): real pipeline runs and LLM answers with the .env API key. */
+  /** Real mode (header toggle): real pipeline runs and model answers with the .env API key. */
   real?: boolean;
 }
 

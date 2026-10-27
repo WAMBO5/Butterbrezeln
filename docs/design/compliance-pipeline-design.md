@@ -1,9 +1,9 @@
 # Certivity requirements engine: design spec
 
-> **Framework superseded 2026-10-24.** The project dropped Google ADK: agents call LLM through the Anthropic Python SDK and the orchestrator is plain Python (see `AGENTS.md`). Where this spec names ADK (`Workflow`, `LlmAgent`, `AnthropicLlm`, `RequestInput`, plugins, `adk eval`), read it as the matching `AGENTS.md` pattern. The pipeline design itself still applies.
+> **Framework superseded 2026-10-24.** The project dropped Google ADK: agents call the model through the Anthropic Python SDK and the orchestrator is plain Python (see `ENGINEERING.md`). Where this spec names ADK (`Workflow`, `LlmAgent`, `AnthropicLlm`, `RequestInput`, plugins, `adk eval`), read it as the matching `ENGINEERING.md` pattern. The pipeline design itself still applies.
 
 **Status:** approved 2026-10-24 (revision 3): no functionality groups, native `AnthropicLlm`, paid runs only on request. Revision 4 adds EU AI Act compliance, human oversight and traceability (section 14) · **Date:** 2026-10-24 · **Scope:** a complete, runnable multi-agent application, with a marked hackathon slice
-**Complements:** `industrial-ai-hackathon/PROJECT_PLAN.md` (plan, workstreams, timeline) and `industrial-ai-hackathon/AGENTS.md` (data and output rules). Section 15 lists where this spec changes a project rule.
+**Complements:** the team's hackathon plan (workstreams, timeline; not kept in the repository). Section 15 lists where this spec changes a project rule.
 
 **Revision 3 changes:**
 - The hand-curated functionality groups are replaced by a narrowing agent with a recall audit (section 3).
@@ -40,7 +40,7 @@ It runs as a command-line tool, a FastAPI service and an Astro UI over the same 
 | Narrowing | **An agent narrows**, not a hand-curated catalog: `scope_narrower` reads regulation cards and opens tables of contents with tools; `recall_auditor` challenges what it excluded | No manual curation; works for products we have not seen; recall is checked by a second agent (section 3) |
 | Two preprocessing pipelines | The regulation pipeline (parser, cards, obligations) knows no product; the product pipeline knows no regulation; only the narrowing and matching agents see both | Each side is reusable and testable on its own |
 | Verification | Every producer agent passes through a **code gate** (schema, ids, quotes) and a **verifier agent** (meaning) in a bounded loop; disagreement left at the end becomes `uncertain` | Quality is enforced in the pipeline, not hoped for in a prompt |
-| Orchestration | An ADK `Workflow` graph (code) runs the agents in a fixed order; no LLM supervisor on the main path | `AGENTS.md`: fixed ordering belongs in a graph |
+| Orchestration | An ADK `Workflow` graph (code) runs the agents in a fixed order; no LLM supervisor on the main path | `ENGINEERING.md`: fixed ordering belongs in a graph |
 | Market data | Sample market profiles, labelled illustrative, with made-up names; `market_onboarding` is the agent that will build real profiles from cited sources later | We never present invented law as real |
 | Market layer | Reads the main result and never changes it | The scored output keeps its precision |
 | "Intersection" | Shared core plus extras per market; designing to all of them together ships everywhere | Makes "ship to the most markets" computable |
@@ -594,7 +594,7 @@ Alternatives considered:
 | LLM Agent SDK | Built for autonomous coding and filesystem agents, not typed pipelines |
 | LLM Managed Agents | Hosted sandbox sessions; more than we need; data leaves our machines |
 
-**Connector (approved): ADK's native `AnthropicLlm`** (`google.adk.models.anthropic_llm`) instead of `LiteLlm`. It calls the Anthropic API directly with `ANTHROPIC_API_KEY`; it supports effort, prompt caching and `output_schema`; and it drops the LiteLLM dependency layer. It needs `uv add anthropic` and an update to rule 2 in `README.md` and `AGENTS.md`. `LiteLlm` remains the fallback.
+**Connector (approved): ADK's native `AnthropicLlm`** (`google.adk.models.anthropic_llm`) instead of `LiteLlm`. It calls the Anthropic API directly with `ANTHROPIC_API_KEY`; it supports effort, prompt caching and `output_schema`; and it drops the LiteLLM dependency layer. It needs `uv add anthropic` and an update to rule 2 in `README.md` and `ENGINEERING.md`. `LiteLlm` remains the fallback.
 
 **Required setting:** without a thinking config, ADK 2.13 forces the call to the schema tool (`tool_choice: tool`), which Sonnet 5.5 and Opus 5.5 reject with a 400. Every agent factory therefore sets `AnthropicGenerateContentConfig(thinking_config=ThinkingConfig(thinking_budget=-1), effort=...)` (adaptive thinking, `tool_choice: auto`). A unit test checks every agent in the tree.
 
@@ -696,7 +696,7 @@ data/                          # git-ignored: catalog.sqlite, cache, runs/
 tests/unit/  tests/integration/  tests/eval/
 ```
 
-Regulation text and anything derived from it stays in `data/` and is not committed, per `industrial-ai-hackathon/AGENTS.md`.
+Regulation text and anything derived from it stays in `data/` and is not committed, per `industrial-ai-hackathon/ENGINEERING.md`.
 
 ---
 
@@ -913,12 +913,12 @@ flowchart LR
 
 | Rule today | Change | Status |
 |---|---|---|
-| `PROJECT_PLAN.md` §2, `AGENTS.md`: precomputed candidates per functionality group | Replaced by `scope_narrower` + `recall_auditor` over generated regulation cards; one-time preparation stays separate from per-product decisions | Agreed 2026-10-24; update both files in the first implementation task |
-| `README.md`, `AGENTS.md` rule 2: `LiteLlm`, `ANTHROPIC_MODEL` as `anthropic/<id>` | Native `AnthropicLlm`; bare ids; add `ANTHROPIC_MODEL_FAST`, `ANTHROPIC_MODEL_REVIEW`; `uv add anthropic` | Approved 2026-10-24; one paid smoke test (on request) before relying on it |
-| `AGENTS.md` Design: supervisor plus specialists | Main path is a `Workflow` with verification loops; supervisor later for chat | Note in `AGENTS.md` |
-| `AGENTS.md` Layout | Add `cli.py`, `config/`, `workflows/`, `gates/`, `corpus/`, `matching/`, `markets/`, `plugins/`, `server/`, `web/`, `data/` | Note in `AGENTS.md` |
+| `PROJECT_PLAN.md` §2, `ENGINEERING.md`: precomputed candidates per functionality group | Replaced by `scope_narrower` + `recall_auditor` over generated regulation cards; one-time preparation stays separate from per-product decisions | Agreed 2026-10-24; update both files in the first implementation task |
+| `README.md`, `ENGINEERING.md` rule 2: `LiteLlm`, `ANTHROPIC_MODEL` as `anthropic/<id>` | Native `AnthropicLlm`; bare ids; add `ANTHROPIC_MODEL_FAST`, `ANTHROPIC_MODEL_REVIEW`; `uv add anthropic` | Approved 2026-10-24; one paid smoke test (on request) before relying on it |
+| `ENGINEERING.md` Design: supervisor plus specialists | Main path is a `Workflow` with verification loops; supervisor later for chat | Note in `ENGINEERING.md` |
+| `ENGINEERING.md` Layout | Add `cli.py`, `config/`, `workflows/`, `gates/`, `corpus/`, `matching/`, `markets/`, `plugins/`, `server/`, `web/`, `data/` | Note in `ENGINEERING.md` |
 | `PROJECT_PLAN.md`: multi-market work deferred | Market layer and two market agents, as a read-only overlay after the main path works | This spec |
-| No AI Act rules in `AGENTS.md` | Add: every run writes a manifest, ledger and lineage; benchmark output is labelled unreviewed; exports carry provenance; prompt or model changes must not lower `bench` scores | Update `AGENTS.md` |
+| No AI Act rules in `ENGINEERING.md` | Add: every run writes a manifest, ledger and lineage; benchmark output is labelled unreviewed; exports carry provenance; prompt or model changes must not lower `bench` scores | Update `ENGINEERING.md` |
 
 ---
 
